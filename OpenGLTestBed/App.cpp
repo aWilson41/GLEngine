@@ -1,5 +1,11 @@
 #include "App.h"
 #include "ResourceLoader.h"
+#include <iostream>
+
+#define BUFFER_OFFSET(i) ((char *)NULL + (i))
+GLuint vaoID;
+
+void PrintShaderLinkingError(GLuint shaderProgram);
 
 void App::Initialize()
 {
@@ -8,41 +14,72 @@ void App::Initialize()
 
 void App::UnLoad()
 {
-
+    glDisableVertexAttribArray(0);
+    glDeleteBuffers(1, &scene.mesh[0].vertexVboID);
 }
 
 void App::Load()
 {
-   // Load shaders
-   int shaderProgram = glCreateProgram();
+    // Generate geometry
+    ResourceLoader::LoadAllMeshesFromFolder("Content/*", &scene);
 
-   shaders.push_back(ResourceLoader::LoadShaderFromPath("Content/Shaders/VertexShader.glsl", GL_VERTEX_SHADER));   
-   glAttachShader(shaderProgram, shaders[0]);
+    // Generate a vertex buffer
+    glGenVertexArrays(1, &vaoID);
+    glBindVertexArray(vaoID);
+    glGenBuffers(1, &scene.mesh[0].vertexVboID);
+    glBindBuffer(GL_ARRAY_BUFFER, scene.mesh[0].vertexVboID);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(VertexColor) * scene.mesh[0].vertices.size(), &scene.mesh[0].vertices[0], GL_STATIC_DRAW);
 
-   shaders.push_back(ResourceLoader::LoadShaderFromPath("Content/Shaders/GeometryShader.glsl", GL_GEOMETRY_SHADER));
-   glAttachShader(shaderProgram, shaders[1]);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(VertexColor), BUFFER_OFFSET(0));
 
-   shaders.push_back(ResourceLoader::LoadShaderFromPath("Content/Shaders/FragmentShader.glsl", GL_FRAGMENT_SHADER));
-   glAttachShader(shaderProgram, shaders[2]);
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(VertexColor), BUFFER_OFFSET(6));
 
-	// Generate geometry
-	ResourceLoader::LoadAllMeshesFromFolder("Content/*", &scene);
-   
-	// Set the view
+    // Setup the index buffer
+    glGenBuffers(1, &scene.mesh[0].indexBufferID);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, scene.mesh[0].indexBufferID);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, scene.mesh[0].indices.size() * sizeof(GLuint), &scene.mesh[0].indices[0], GL_STATIC_DRAW);
 
-	// Set the projection
-	//scene.cam.SetPerspective(70.0f, (float)sDevice.screen.GetScreenWidth() / (float)sDevice.screen.GetScreenHeight(), 0.01f, 2000.0f);
 
-   /*for (UINT i = 0; i < scene.mesh.size(); i++)
-   {
-      scene.mesh[i].world = MathHelper::MatrixTranslate(0.0f, -50.0f, 700.0f) * MathHelper::MatrixRotateY(0.0f) * MathHelper::MatrixScale(15.0f);
-   }*/
-	//scene.mesh[1].world = MathHelper::MatrixTranslate(0.0f, -150.0f, 700.0f) * MathHelper::MatrixRotateY(2.0f) * MathHelper::MatrixScale(15.0f);
-	//scene.mesh[2].world = MathHelper::MatrixTranslate(0.0f, -150.0f, 700.0f) * MathHelper::MatrixRotateY(2.0f) * MathHelper::MatrixScale(15.0f);
+    // Load shaders
+    glBindAttribLocation(shaderProgram, 0, "inVertex");
+    glBindAttribLocation(shaderProgram, 1, "inColor");
 
-   // Add a light if the scene doesn't have one
-   if(scene.dirLight.size() == 0)
-	   scene.dirLight.push_back(float4(0.0f, 0.0f, -1.0f, 0.0f));
+    shaders.push_back(ResourceLoader::LoadShaderFromPath("Content/Shaders/VertexShader.glsl", GL_VERTEX_SHADER));   
+    glAttachShader(shaderProgram, shaders[0]);
+
+    shaders.push_back(ResourceLoader::LoadShaderFromPath("Content/Shaders/FragmentShader.glsl", GL_FRAGMENT_SHADER));
+    glAttachShader(shaderProgram, shaders[1]);
+
+    // Where the shaders are inspected, optimized, and uploaded to the GPU
+    glLinkProgram(shaderProgram);
+    int isLinked;
+    glGetProgramiv(shaderProgram, GL_LINK_STATUS, (int*)&isLinked);
+    if (isLinked == false)
+        PrintShaderLinkingError(shaderProgram);
+
+    glUseProgram(shaderProgram);
+
+
+    //// Bind back to nothing
+    //glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    // Set the view
+
+    // Set the projection
+    //scene.cam.SetPerspective(70.0f, (float)sDevice.screen.GetScreenWidth() / (float)sDevice.screen.GetScreenHeight(), 0.01f, 2000.0f);
+
+    /*for (UINT i = 0; i < scene.mesh.size(); i++)
+    {
+        scene.mesh[i].world = MathHelper::MatrixTranslate(0.0f, -50.0f, 700.0f) * MathHelper::MatrixRotateY(0.0f) * MathHelper::MatrixScale(15.0f);
+    }*/
+    //scene.mesh[1].world = MathHelper::MatrixTranslate(0.0f, -150.0f, 700.0f) * MathHelper::MatrixRotateY(2.0f) * MathHelper::MatrixScale(15.0f);
+    //scene.mesh[2].world = MathHelper::MatrixTranslate(0.0f, -150.0f, 700.0f) * MathHelper::MatrixRotateY(2.0f) * MathHelper::MatrixScale(15.0f);
+
+    // Add a light if the scene doesn't have one
+    /*if(scene.dirLight.size() == 0)
+	    scene.dirLight.push_back(float4(0.0f, 0.0f, -1.0f, 0.0f));*/
 }
 
 void App::Update()
@@ -127,5 +164,33 @@ void App::Update()
 
 void App::Draw()
 {
+    glUseProgram(shaderProgram);
+    glBindVertexArray(vaoID);
+    glDrawElements(GL_TRIANGLES, scene.mesh[0].indices.size(), GL_UNSIGNED_INT, 0);
+    GLenum error = glGetError();
+    if (error != GL_NO_ERROR)
+        std::cerr << error << std::endl;
+}
 
+void PrintShaderLinkingError(GLuint shaderProgram)
+{
+    std::cout << "=======================================\n";
+    std::cout << "Shader linking failed : " << std::endl;
+
+    // Find length of shader info log
+    int maxLength;
+    glGetProgramiv(shaderProgram, GL_INFO_LOG_LENGTH, &maxLength);
+
+    std::cout << "Info Length : " << maxLength << std::endl;
+
+    // Get shader info log
+    char* shaderProgramInfoLog = new char[maxLength];
+    glGetProgramInfoLog(shaderProgram, maxLength, &maxLength, shaderProgramInfoLog);
+
+    std::cout << "Linker error message : " << shaderProgramInfoLog << std::endl;
+
+    /* Handle the error in an appropriate way such as displaying a message or writing to a log file. */
+    /* In this simple program, we'll just leave */
+    delete shaderProgramInfoLog;
+    return;
 }
