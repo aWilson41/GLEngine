@@ -6,10 +6,10 @@ in vec4 InColor;
 
 smooth out vec4 Color;
 
-uniform mat4 ProjectionModelviewMatrix;
+//uniform mat4 ProjectionModelviewMatrix;
 
 void main()
 {
-    gl_Position = ProjectionModelviewMatrix * vec4(InVertex, 1.0);
+    gl_Position = /*ProjectionModelviewMatrix **/ vec4(InVertex, 1.0);
     Color = InColor;
 }

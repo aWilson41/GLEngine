@@ -38,102 +38,107 @@ public:
 
     static void LoadSceneFromAIScene(const aiScene* aiscene, Scene* scene)
     {
-        // Load lights
-        if (aiscene->HasLights())
+        if (aiscene != nullptr)
         {
-            for (UINT i = 0; i < aiscene->mNumLights; i++)
+            // Load lightsw
+            if (aiscene->HasLights())
             {
-                aiLight light = aiscene->mLights[0][i];
-                if (light.mType == aiLightSource_DIRECTIONAL)
-                    scene->dirLight.push_back(float4(light.mDirection.x, light.mDirection.y, light.mDirection.z, 0.0f));
-            }
-        }
-
-        if (aiscene->HasMaterials())
-        {
-            // Load materials
-            scene->material.resize(aiscene->mNumMaterials);
-            std::vector<std::string> textureFilePaths;
-            for (UINT i = 0; i < aiscene->mNumMaterials; i++)
-            {
-                // Get the diffuse color
-                aiColor3D diffuseColor(0.0f, 0.0f, 0.0f);
-                aiscene->mMaterials[i]->Get(AI_MATKEY_COLOR_DIFFUSE, diffuseColor);
-                scene->material[i].diffuse = Color((char)(diffuseColor.r * 255.0f), (char)(diffuseColor.g * 255.0f), (char)(diffuseColor.b * 255.0f));
-
-                // Get the specular color
-                aiColor3D specularColor(0.0f, 0.0f, 0.0f);
-                aiscene->mMaterials[i]->Get(AI_MATKEY_COLOR_SPECULAR, specularColor);
-                scene->material[i].specular = Color((char)(specularColor.r * 255.0f), (char)(specularColor.g * 255.0f), (char)(specularColor.b * 255.0f));
-
-                // Get the ambient color and shine
-                aiColor3D ambientColor(0.0f, 0.0f, 0.0f);
-                aiscene->mMaterials[i]->Get(AI_MATKEY_COLOR_AMBIENT, ambientColor);
-                scene->material[i].ambient = Color((char)(ambientColor.r * 255.0f), (char)(ambientColor.g * 255.0f), (char)(ambientColor.b * 255.0f));
-                aiscene->mMaterials[i]->Get(AI_MATKEY_SHININESS, scene->material[i].specularShine);
-
-                // Get the diffuse texture map
-                aiString filePath;
-                UINT texCount = aiscene->mMaterials[i]->GetTextureCount(aiTextureType_DIFFUSE);
-                // Load texture into the scene (also creates a reference in material i)
-                if (texCount > 0 && aiscene->mMaterials[i]->GetTexture(aiTextureType_DIFFUSE, 0, &filePath) == AI_SUCCESS)
-                    textureFilePaths.push_back(filePath.C_Str());
-            }
-
-            // Load textures
-            scene->texture.resize(textureFilePaths.size());
-            for (UINT i = 0; i < scene->texture.size(); i++)
-            {
-                LoadTexture(scene, textureFilePaths[i], DIFFUSEMAP, i);
-                scene->material[i].diffuseMap = &scene->texture[i];
-                scene->material[i].hasDiffuseMap = true;
-            }
-        }
-
-        // Load Meshes
-        if (aiscene->HasMeshes())
-        {
-            for (UINT i = 0; i < aiscene->mNumMeshes; i++)
-            {   
-                Mesh mesh;
-                mesh.name = aiscene->mMeshes[i]->mName.C_Str();
-
-                // Material information is already loaded in
-                // The mesh just needs some direction to it
-                UINT matIndex = aiscene->mMeshes[i]->mMaterialIndex;
-                mesh.mat = &scene->material[matIndex];
-
-                // Size the arrays
-                std::vector<VertexColor> vertices = std::vector<VertexColor>(aiscene->mMeshes[i]->mNumVertices);
-
-                // Get the vertices, vertex normals 
-                for (UINT j = 0; j < aiscene->mMeshes[i]->mNumVertices; j++)
+                for (UINT i = 0; i < aiscene->mNumLights; i++)
                 {
-                    // Vertices
-                    vertices[j].x = aiscene->mMeshes[i]->mVertices[j].x;
-                    vertices[j].y = aiscene->mMeshes[i]->mVertices[j].y;
-                    vertices[j].z = aiscene->mMeshes[i]->mVertices[j].z;
-                    vertices[j].r = 1.0f;
-                    vertices[j].g = 0.0f;
-                    vertices[j].b = 0.0f;
-                    vertices[j].a = 1.0f;
+                    aiLight light = aiscene->mLights[0][i];
+                    if (light.mType == aiLightSource_DIRECTIONAL)
+                        scene->dirLight.push_back(float4(light.mDirection.x, light.mDirection.y, light.mDirection.z, 0.0f));
+                }
+            }
+
+            if (aiscene->HasMaterials())
+            {
+                // Load materials
+                scene->material.resize(aiscene->mNumMaterials);
+                std::vector<std::string> textureFilePaths;
+                for (UINT i = 0; i < aiscene->mNumMaterials; i++)
+                {
+                    // Get the diffuse color
+                    aiColor3D diffuseColor(0.0f, 0.0f, 0.0f);
+                    aiscene->mMaterials[i]->Get(AI_MATKEY_COLOR_DIFFUSE, diffuseColor);
+                    scene->material[i].diffuse = Color((char)(diffuseColor.r * 255.0f), (char)(diffuseColor.g * 255.0f), (char)(diffuseColor.b * 255.0f));
+
+                    // Get the specular color
+                    aiColor3D specularColor(0.0f, 0.0f, 0.0f);
+                    aiscene->mMaterials[i]->Get(AI_MATKEY_COLOR_SPECULAR, specularColor);
+                    scene->material[i].specular = Color((char)(specularColor.r * 255.0f), (char)(specularColor.g * 255.0f), (char)(specularColor.b * 255.0f));
+
+                    // Get the ambient color and shine
+                    aiColor3D ambientColor(0.0f, 0.0f, 0.0f);
+                    aiscene->mMaterials[i]->Get(AI_MATKEY_COLOR_AMBIENT, ambientColor);
+                    scene->material[i].ambient = Color((char)(ambientColor.r * 255.0f), (char)(ambientColor.g * 255.0f), (char)(ambientColor.b * 255.0f));
+                    aiscene->mMaterials[i]->Get(AI_MATKEY_SHININESS, scene->material[i].specularShine);
+
+                    // Get the diffuse texture map
+                    aiString filePath;
+                    UINT texCount = aiscene->mMaterials[i]->GetTextureCount(aiTextureType_DIFFUSE);
+                    // Load texture into the scene (also creates a reference in material i)
+                    if (texCount > 0 && aiscene->mMaterials[i]->GetTexture(aiTextureType_DIFFUSE, 0, &filePath) == AI_SUCCESS)
+                        textureFilePaths.push_back(filePath.C_Str());
                 }
 
-                // Indices
-                std::vector<GLuint> indices = std::vector<GLuint>(aiscene->mMeshes[i]->mNumVertices);
-                for (UINT j = 0; j < aiscene->mMeshes[i]->mNumFaces; j++)
+                // Load textures
+                scene->texture.resize(textureFilePaths.size());
+                for (UINT i = 0; i < scene->texture.size(); i++)
                 {
-                    for (UINT k = 0; k < aiscene->mMeshes[i]->mFaces[j].mNumIndices; k++)
+                    LoadTexture(scene, textureFilePaths[i], DIFFUSEMAP, i);
+                    scene->material[i].diffuseMap = &scene->texture[i];
+                    scene->material[i].hasDiffuseMap = true;
+                }
+            }
+
+            // Load Meshes
+            if (aiscene->HasMeshes())
+            {
+                for (UINT i = 0; i < aiscene->mNumMeshes; i++)
+                {
+                    Mesh mesh;
+                    mesh.name = aiscene->mMeshes[i]->mName.C_Str();
+
+                    // Material information is already loaded in
+                    // The mesh just needs some direction to it
+                    UINT matIndex = aiscene->mMeshes[i]->mMaterialIndex;
+                    mesh.mat = &scene->material[matIndex];
+
+                    // Size the arrays
+                    std::vector<VertexColor> vertices = std::vector<VertexColor>(aiscene->mMeshes[i]->mNumVertices);
+
+                    // Get the vertices, vertex normals 
+                    for (UINT j = 0; j < aiscene->mMeshes[i]->mNumVertices; j++)
                     {
-	                    indices[j * 3 + k] = aiscene->mMeshes[i]->mFaces[j].mIndices[k];
+                        // Vertices
+                        vertices[j].x = aiscene->mMeshes[i]->mVertices[j].x / 10.0f;
+                        vertices[j].y = aiscene->mMeshes[i]->mVertices[j].y / 10.0f;
+                        vertices[j].z = aiscene->mMeshes[i]->mVertices[j].z / 10.0f;
+                        vertices[j].r = 0.5f;
+                        vertices[j].g = 0.5f;
+                        vertices[j].b = 0.5f;
+                        vertices[j].a = 1.0f;
                     }
-                }
 
-                mesh.SetVertexColorBuffer(vertices);
-                mesh.SetIndexBuffer(indices);
-                scene->mesh.push_back(mesh);
+                    // Indices
+                    std::vector<GLuint> indices = std::vector<GLuint>(aiscene->mMeshes[i]->mNumVertices);
+                    for (UINT j = 0; j < aiscene->mMeshes[i]->mNumFaces; j++)
+                    {
+                        for (UINT k = 0; k < aiscene->mMeshes[i]->mFaces[j].mNumIndices; k++)
+                        {
+                            indices[j * 3 + k] = aiscene->mMeshes[i]->mFaces[j].mIndices[k];
+                        }
+                    }
+
+                    mesh.SetVertexColorBuffer(vertices);
+                    mesh.SetIndexBuffer(indices);
+                    scene->mesh.push_back(mesh);
+                }
             }
         }
+        else
+            std::cout << "Unable to load scene" << std::endl;
     }
 
 

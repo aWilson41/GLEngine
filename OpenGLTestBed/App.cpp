@@ -31,10 +31,10 @@ void App::Load()
     glBufferData(GL_ARRAY_BUFFER, sizeof(VertexColor) * scene.mesh[0].vertices.size(), &scene.mesh[0].vertices[0], GL_STATIC_DRAW);
 
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(VertexColor), BUFFER_OFFSET(0));
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(VertexColor), 0);
 
     glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(VertexColor), BUFFER_OFFSET(6));
+    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(VertexColor), BUFFER_OFFSET(12));
 
     // Setup the index buffer
     glGenBuffers(1, &scene.mesh[0].indexBufferID);
@@ -164,7 +164,6 @@ void App::Update()
 
 void App::Draw()
 {
-    glUseProgram(shaderProgram);
     glBindVertexArray(vaoID);
     glDrawElements(GL_TRIANGLES, scene.mesh[0].indices.size(), GL_UNSIGNED_INT, 0);
     GLenum error = glGetError();
