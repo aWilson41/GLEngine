@@ -1,5 +1,6 @@
 #include "App.h"
 #include "ResourceLoader.h"
+
 #include <iostream>
 
 #define BUFFER_OFFSET(i) ((char *)NULL + (i))
@@ -16,6 +17,7 @@ void App::UnLoad()
 {
     glDisableVertexAttribArray(0);
     glDeleteBuffers(1, &scene.mesh[0].vertexVboID);
+    glDeleteVertexArrays(1, &vaoID);
 }
 
 void App::Load()
@@ -28,13 +30,13 @@ void App::Load()
     glBindVertexArray(vaoID);
     glGenBuffers(1, &scene.mesh[0].vertexVboID);
     glBindBuffer(GL_ARRAY_BUFFER, scene.mesh[0].vertexVboID);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(VertexColor) * scene.mesh[0].vertices.size(), &scene.mesh[0].vertices[0], GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(VertexNormal) * scene.mesh[0].vertices.size(), &scene.mesh[0].vertices[0], GL_STATIC_DRAW);
 
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(VertexColor), 0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(VertexNormal), 0);
 
     glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(VertexColor), BUFFER_OFFSET(12));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(VertexNormal), BUFFER_OFFSET(sizeof(float) * 3));
 
     // Setup the index buffer
     glGenBuffers(1, &scene.mesh[0].indexBufferID);
@@ -43,8 +45,8 @@ void App::Load()
 
 
     // Load shaders
-    glBindAttribLocation(shaderProgram, 0, "inVertex");
-    glBindAttribLocation(shaderProgram, 1, "inColor");
+    glBindAttribLocation(shaderProgram, 0, "InVertex");
+    glBindAttribLocation(shaderProgram, 1, "InNormal");
 
     shaders.push_back(ResourceLoader::LoadShaderFromPath("Content/Shaders/VertexShader.glsl", GL_VERTEX_SHADER));   
     glAttachShader(shaderProgram, shaders[0]);
@@ -61,25 +63,30 @@ void App::Load()
 
     glUseProgram(shaderProgram);
 
-
-    //// Bind back to nothing
-    //glBindBuffer(GL_ARRAY_BUFFER, 0);
+    // Set the projection
+    int width = 1;
+    int height = 1;
+    SDL_GetWindowSize(mWindow, &width, &height);
+    scene.cam.SetPerspective(70.0f, (float)width / height, 0.01f, 2000.0f);
 
     // Set the view
+    scene.cam.SetCamPos(glm::vec3(0.0f, 0.0f, -20.0f));
+    scene.cam.LookAt(glm::vec3(0.0f, 0.0f, 0.0f));
 
-    // Set the projection
-    //scene.cam.SetPerspective(70.0f, (float)sDevice.screen.GetScreenWidth() / (float)sDevice.screen.GetScreenHeight(), 0.01f, 2000.0f);
+    // Set the scene directional light
+	scene.dirLight = glm::vec3(0.0f, 0.0f, 1.0f);
 
-    /*for (UINT i = 0; i < scene.mesh.size(); i++)
-    {
-        scene.mesh[i].world = MathHelper::MatrixTranslate(0.0f, -50.0f, 700.0f) * MathHelper::MatrixRotateY(0.0f) * MathHelper::MatrixScale(15.0f);
-    }*/
-    //scene.mesh[1].world = MathHelper::MatrixTranslate(0.0f, -150.0f, 700.0f) * MathHelper::MatrixRotateY(2.0f) * MathHelper::MatrixScale(15.0f);
-    //scene.mesh[2].world = MathHelper::MatrixTranslate(0.0f, -150.0f, 700.0f) * MathHelper::MatrixRotateY(2.0f) * MathHelper::MatrixScale(15.0f);
+    // Pass the uniforms
+    scene.mesh[0].modelMatID = glGetUniformLocation(shaderProgram, "modelMat");
+    scene.cam.viewMatID = glGetUniformLocation(shaderProgram, "viewMat");
+    scene.cam.projMatID = glGetUniformLocation(shaderProgram, "projMat");
+    scene.mesh[0].tInvModelViewMatID = glGetUniformLocation(shaderProgram, "tInvModelViewMat");
 
-    // Add a light if the scene doesn't have one
-    /*if(scene.dirLight.size() == 0)
-	    scene.dirLight.push_back(float4(0.0f, 0.0f, -1.0f, 0.0f));*/
+    scene.mesh[0].mat->matID = glGetUniformLocation(shaderProgram, "mat");
+    glUniformMatrix4fv(scene.mesh[0].mat->matID, 1, GL_FALSE, &scene.mesh[0].mat->mat[0][0]);
+
+    scene.dirLightID = glGetUniformLocation(shaderProgram, "dirLight");
+    glUniform3fv(scene.dirLightID, 1, &scene.dirLight[0]);
 }
 
 void App::Update()
@@ -87,37 +94,39 @@ void App::Update()
 	if (IsCurrentKeyDown(27) && !IsPreviousKeyDown(27))
 		Quit();
 
+    // Model controls
 	// Rotation
 	if (IsCurrentKeyDown('d'))
-		scene.mesh[0].world = scene.mesh[0].world * MathHelper::MatrixRotateZ(0.05f);
-
+		scene.mesh[0].model *= MathHelper::MatrixRotateZ(0.05f);
 	if (IsCurrentKeyDown('a'))
-		scene.mesh[0].world = scene.mesh[0].world * MathHelper::MatrixRotateZ(-0.05f);
+		scene.mesh[0].model *= MathHelper::MatrixRotateZ(-0.05f);
 
 	if (IsCurrentKeyDown('w'))
-		scene.mesh[0].world = scene.mesh[0].world * MathHelper::MatrixRotateX(0.05f);
-
+		scene.mesh[0].model *= MathHelper::MatrixRotateX(0.05f);
 	if (IsCurrentKeyDown('s'))
-		scene.mesh[0].world = scene.mesh[0].world * MathHelper::MatrixRotateX(-0.05f);
+		scene.mesh[0].model *= MathHelper::MatrixRotateX(-0.05f);
 
 	if (IsCurrentKeyDown('e'))
-		scene.mesh[0].world = scene.mesh[0].world * MathHelper::MatrixRotateY(0.05f);
-
+		scene.mesh[0].model *= MathHelper::MatrixRotateY(0.05f);
 	if (IsCurrentKeyDown('q'))
-		scene.mesh[0].world = scene.mesh[0].world * MathHelper::MatrixRotateY(-0.05f);
+		scene.mesh[0].model *= MathHelper::MatrixRotateY(-0.05f);
 
+    // Translation
 	if(IsCurrentKeyDown('g'))
-		scene.mesh[0].world = scene.mesh[0].world * MathHelper::MatrixTranslate(-0.2f, 0.0f, 0.0f);
-
+		scene.mesh[0].model *= MathHelper::MatrixTranslate(-0.1f, 0.0f, 0.0f);
 	if (IsCurrentKeyDown('h'))
-		scene.mesh[0].world = scene.mesh[0].world * MathHelper::MatrixTranslate(0.2f, 0.0f, 0.0f);
+		scene.mesh[0].model *= MathHelper::MatrixTranslate(0.1f, 0.0f, 0.0f);
+
+    if (IsCurrentKeyDown('z'))
+        scene.mesh[0].model *= MathHelper::MatrixTranslate(0.0f, 0.0f, -0.1f);
+    if (IsCurrentKeyDown('x'))
+        scene.mesh[0].model *= MathHelper::MatrixTranslate(0.0f, 0.0f, 0.1f);
 
 	// Scaling
 	if (IsCurrentKeyDown('p'))
-		scene.mesh[0].world = scene.mesh[0].world * MathHelper::MatrixScale(1.05f);
-
+		scene.mesh[0].model *= MathHelper::MatrixScale(1.02f);
 	if (IsCurrentKeyDown('o'))
-		scene.mesh[0].world = scene.mesh[0].world * MathHelper::MatrixScale(0.95f);
+		scene.mesh[0].model *= MathHelper::MatrixScale(0.98f);
 
 	// Camera controls
    //if (IsCurrentKeyDown('j'))
@@ -164,6 +173,13 @@ void App::Update()
 
 void App::Draw()
 {
+    // We pass the model, view, proj, and tInvModelViewMat every time. (we should only do this when they change though)
+    glm::mat3 normalMat = glm::transpose(glm::inverse(glm::mat3(scene.cam.GetView()) * glm::mat3(scene.mesh[0].model)));
+    glUniformMatrix4fv(scene.mesh[0].modelMatID, 1, GL_FALSE, &scene.mesh[0].model[0][0]);
+    glUniformMatrix4fv(scene.cam.viewMatID, 1, GL_FALSE, &scene.cam.GetView()[0][0]);
+    glUniformMatrix4fv(scene.cam.projMatID, 1, GL_FALSE, &scene.cam.GetProj()[0][0]);
+    glUniformMatrix3fv(scene.mesh[0].tInvModelViewMatID, 1, GL_FALSE, &normalMat[0][0]);
+
     glBindVertexArray(vaoID);
     glDrawElements(GL_TRIANGLES, scene.mesh[0].indices.size(), GL_UNSIGNED_INT, 0);
     GLenum error = glGetError();

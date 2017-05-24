@@ -40,8 +40,8 @@ public:
     {
         if (aiscene != nullptr)
         {
-            // Load lightsw
-            if (aiscene->HasLights())
+            // Load lights
+            /*if (aiscene->HasLights())
             {
                 for (UINT i = 0; i < aiscene->mNumLights; i++)
                 {
@@ -49,7 +49,7 @@ public:
                     if (light.mType == aiLightSource_DIRECTIONAL)
                         scene->dirLight.push_back(float4(light.mDirection.x, light.mDirection.y, light.mDirection.z, 0.0f));
                 }
-            }
+            }*/
 
             if (aiscene->HasMaterials())
             {
@@ -61,18 +61,17 @@ public:
                     // Get the diffuse color
                     aiColor3D diffuseColor(0.0f, 0.0f, 0.0f);
                     aiscene->mMaterials[i]->Get(AI_MATKEY_COLOR_DIFFUSE, diffuseColor);
-                    scene->material[i].diffuse = Color((char)(diffuseColor.r * 255.0f), (char)(diffuseColor.g * 255.0f), (char)(diffuseColor.b * 255.0f));
+                    scene->material[i].SetDiffuseColor(glm::vec4(diffuseColor.r, diffuseColor.g, diffuseColor.b, 1.0f));
 
                     // Get the specular color
                     aiColor3D specularColor(0.0f, 0.0f, 0.0f);
                     aiscene->mMaterials[i]->Get(AI_MATKEY_COLOR_SPECULAR, specularColor);
-                    scene->material[i].specular = Color((char)(specularColor.r * 255.0f), (char)(specularColor.g * 255.0f), (char)(specularColor.b * 255.0f));
+                    scene->material[i].SetSpecularColor(glm::vec4(specularColor.r, specularColor.g, specularColor.b, 1.0f));
 
                     // Get the ambient color and shine
                     aiColor3D ambientColor(0.0f, 0.0f, 0.0f);
                     aiscene->mMaterials[i]->Get(AI_MATKEY_COLOR_AMBIENT, ambientColor);
-                    scene->material[i].ambient = Color((char)(ambientColor.r * 255.0f), (char)(ambientColor.g * 255.0f), (char)(ambientColor.b * 255.0f));
-                    aiscene->mMaterials[i]->Get(AI_MATKEY_SHININESS, scene->material[i].specularShine);
+                    scene->material[i].SetAmbientColor(glm::vec4(ambientColor.r, ambientColor.g, ambientColor.b, 1.0f));
 
                     // Get the diffuse texture map
                     aiString filePath;
@@ -106,19 +105,18 @@ public:
                     mesh.mat = &scene->material[matIndex];
 
                     // Size the arrays
-                    std::vector<VertexColor> vertices = std::vector<VertexColor>(aiscene->mMeshes[i]->mNumVertices);
+                    std::vector<VertexNormal> vertices = std::vector<VertexNormal>(aiscene->mMeshes[i]->mNumVertices);
 
                     // Get the vertices, vertex normals 
                     for (UINT j = 0; j < aiscene->mMeshes[i]->mNumVertices; j++)
                     {
                         // Vertices
-                        vertices[j].x = aiscene->mMeshes[i]->mVertices[j].x / 10.0f;
-                        vertices[j].y = aiscene->mMeshes[i]->mVertices[j].y / 10.0f;
-                        vertices[j].z = aiscene->mMeshes[i]->mVertices[j].z / 10.0f;
-                        vertices[j].r = 0.5f;
-                        vertices[j].g = 0.5f;
-                        vertices[j].b = 0.5f;
-                        vertices[j].a = 1.0f;
+                        vertices[j].x = aiscene->mMeshes[i]->mVertices[j].x;
+                        vertices[j].y = aiscene->mMeshes[i]->mVertices[j].y;
+                        vertices[j].z = aiscene->mMeshes[i]->mVertices[j].z;
+                        vertices[j].nx = aiscene->mMeshes[i]->mNormals[j].x;
+                        vertices[j].ny = aiscene->mMeshes[i]->mNormals[j].y;
+                        vertices[j].nz = aiscene->mMeshes[i]->mNormals[j].z;
                     }
 
                     // Indices
@@ -131,7 +129,7 @@ public:
                         }
                     }
 
-                    mesh.SetVertexColorBuffer(vertices);
+                    mesh.SetVertexBuffer(vertices);
                     mesh.SetIndexBuffer(indices);
                     scene->mesh.push_back(mesh);
                 }

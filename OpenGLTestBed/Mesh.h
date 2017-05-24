@@ -1,12 +1,20 @@
 #pragma once
-#include <GL\glew.h>
 #include "Material.h"
+#include "MathHelper.h"
+
+#include <GL\glew.h>
 
 struct VertexNormalTex
 {
     float x, y, z; // Vertex
     float nx, ny, nz; // Normal
     float s0, t0; // Texcoords
+};
+
+struct VertexNormal
+{
+    float x, y, z; // Vertex
+    float nx, ny, nz; // Normal
 };
 
 struct VertexColor
@@ -18,16 +26,17 @@ struct VertexColor
 class Mesh
 {
 public:
-   std::vector<VertexColor> vertices;
-   std::vector<GLuint> indices;
-
    std::string name;
 
    // Vertex, Color, Index
    GLuint vertexVboID;
    GLuint indexBufferID;
+   GLuint modelMatID;
+   GLuint tInvModelViewMatID;
 
-   matrix4x4 world;
+   std::vector<VertexNormal> vertices;
+   std::vector<GLuint> indices;
+   glm::mat4 model;
 
    Material* mat;
 
@@ -35,7 +44,7 @@ public:
    Mesh();
    ~Mesh();
 
-   void SetVertexColorBuffer(std::vector<VertexColor> vertices);
+   void SetVertexBuffer(std::vector<VertexNormal> vertices);
    void SetIndexBuffer(std::vector<GLuint> indices);
 
 public:

@@ -1,6 +1,7 @@
 #pragma once
 #include "Camera.h"
 #include "Mesh.h"
+#include "MathHelper.h"
 
 class Scene
 {
@@ -15,10 +16,10 @@ public:
    std::vector<Material> material;
    std::vector<Texture> texture;
 
-   std::vector<float4> dirLight;
+   glm::vec3 dirLight;
+   GLuint dirLightID;
 
    ~Scene();
 
    int FindTexture(std::string name);
-   //void DrawSceneToBuffer(SoftwareDevice* sDevice);
 };

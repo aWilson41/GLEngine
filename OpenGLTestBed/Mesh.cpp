@@ -2,10 +2,10 @@
 
 Mesh::Mesh()
 {
-   world = MathHelper::MatrixIdentity();
+    model = glm::mat4();
 }
 
-void Mesh::SetVertexColorBuffer(std::vector<VertexColor> vertices)
+void Mesh::SetVertexBuffer(std::vector<VertexNormal> vertices)
 {
    Mesh::vertices = vertices;
    //glGenBuffers(1u, &vboID);

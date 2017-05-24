@@ -69,6 +69,9 @@ Engine::Engine() :
 
     glewExperimental = GL_TRUE;
     glewInit();
+
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LESS);
 }
 
 Engine::~Engine()
@@ -152,14 +155,14 @@ void Engine::EngineUnLoad()
     SDL_GL_DeleteContext(glContext);
     SDL_DestroyWindow(mWindow);
     glUseProgram(0);
-    for (int i = 0; i < shaders.size(); i++)
+    for (UINT i = 0; i < shaders.size(); i++)
     {
         glDetachShader(shaderProgram, shaders[i]);
     }
 
     glDeleteProgram(shaderProgram);
 
-    for (int i = 0; i < shaders.size(); i++)
+    for (UINT i = 0; i < shaders.size(); i++)
     {
         glDeleteShader(shaders[i]);
     }
@@ -177,7 +180,7 @@ void Engine::EngineDraw()
 {
     // Display texture
     //glClearColor(0.5f, 0.2f, 0.2f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // Prepare contents on screen buffer
     Draw();

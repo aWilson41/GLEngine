@@ -70,7 +70,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>C:\Program Files %28x86%29\SDL 2.0.4\SDL2-devel-2.0.4-VC\SDL2-2.0.4\include;C:\Program Files %28x86%29\assimp-3.3.1\include;C:\Program Files %28x86%29\glew-2.0.0\include;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Program Files %28x86%29\SDL 2.0.4\SDL2-devel-2.0.4-VC\SDL2-2.0.4\include;C:\Program Files %28x86%29\assimp-3.3.1\include;C:\Program Files %28x86%29\glew-2.0.0\include;C:\Program Files %28x86%29\glm;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Program Files %28x86%29\SDL 2.0.4\SDL2-devel-2.0.4-VC\SDL2-2.0.4\lib\x86;C:\Program Files %28x86%29\assimp-3.3.1\lib\x86;C:\Program Files %28x86%29\glew-2.0.0\lib\Release\Win32;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">

@@ -1,16 +1,19 @@
 #pragma once
 #include "MathHelper.h"
+#include <GL\glew.h>
 
 class Camera
 {
 private:
 	// Camera View
-	matrix4x4 view;
+    glm::mat4 view;
 	// Camera Projection
-	matrix4x4 proj;
+	glm::mat4 proj;
+    // Camera position
+    glm::vec3 eye;
 
    // Direction
-   float3 dir;
+   //float3 dir;
    
 	float fov;
 	float width;
@@ -20,19 +23,25 @@ private:
 	float farZ;
 
 public:
+    GLuint viewMatID;
+    GLuint projMatID;
+
+public:
 	Camera();
 
 	// Sets the Camera's Projection
 	void SetPerspective(float fov, float aspectRatio, float nearZ, float farZ);
-   void SetCameraView(matrix4x4 dM); // Delta transform
+    void SetCamPos(glm::vec3 eye) { Camera::eye = eye; }
+    void LookAt(glm::vec3 pos);
+    void SetCameraView(glm::mat4 dM); // Delta transform
 
 	float GetFOV() { return fov; }
 	float GetAspectRatio() { return aspectRatio; }
 	float GetNearZ() { return nearZ; }
 	float GetFarZ() { return farZ; }
 
-	matrix4x4 GetProj() { return proj; }
-	matrix4x4 GetView() { return view; }
+	glm::mat4 GetProj() { return proj; }
+	glm::mat4 GetView() { return view; }
 
-   float3 GetViewDir() { return dir; }
+    //float3 GetViewDir() { return dir; }
 };
