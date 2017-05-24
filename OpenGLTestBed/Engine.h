@@ -19,8 +19,8 @@ private:
 
 private:
     // Posts the key
-    void KeyIsDown(char key) { mCurrentKeyState[key] = true; }
-    void KeyIsUp(char key) { mCurrentKeyState[key] = false; }
+    void KeyIsDown(char key) { mCurrentKeyState[key - 1] = true; }
+    void KeyIsUp(char key) { mCurrentKeyState[key - 1] = false; }
 
 
 protected:
@@ -34,8 +34,8 @@ protected:
 
 protected:
     // Gets the key
-    bool IsCurrentKeyDown(char key) { return mCurrentKeyState[key]; }
-    bool IsPreviousKeyDown(char key) { return mPreviousKeyState[key]; }
+    bool IsCurrentKeyDown(char key) { return mCurrentKeyState[key - 1]; }
+    bool IsPreviousKeyDown(char key) { return mPreviousKeyState[key - 1]; }
 
 
 public:

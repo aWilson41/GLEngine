@@ -45,8 +45,8 @@ void App::Load()
 
 
     // Load shaders
-    glBindAttribLocation(shaderProgram, 0, "InVertex");
-    glBindAttribLocation(shaderProgram, 1, "InNormal");
+    glBindAttribLocation(shaderProgram, 0, "inVertex");
+    glBindAttribLocation(shaderProgram, 1, "inNormal");
 
     shaders.push_back(ResourceLoader::LoadShaderFromPath("Content/Shaders/VertexShader.glsl", GL_VERTEX_SHADER));   
     glAttachShader(shaderProgram, shaders[0]);
@@ -102,9 +102,9 @@ void App::Update()
 		scene.mesh[0].model *= MathHelper::MatrixRotateZ(-0.05f);
 
 	if (IsCurrentKeyDown('w'))
-		scene.mesh[0].model *= MathHelper::MatrixRotateX(0.05f);
-	if (IsCurrentKeyDown('s'))
 		scene.mesh[0].model *= MathHelper::MatrixRotateX(-0.05f);
+	if (IsCurrentKeyDown('s'))
+		scene.mesh[0].model *= MathHelper::MatrixRotateX(0.05f);
 
 	if (IsCurrentKeyDown('e'))
 		scene.mesh[0].model *= MathHelper::MatrixRotateY(0.05f);

@@ -1,8 +1,8 @@
 #pragma once
 #include "Scene.h"
+#include "LodePNG\lodepng.h"
 #define NOMINMAX
 #include <Windows.h>
-#include "LodePNG\lodepng.h"
 #include <fstream>
 #include <iostream>
 
@@ -59,19 +59,21 @@ public:
                 for (UINT i = 0; i < aiscene->mNumMaterials; i++)
                 {
                     // Get the diffuse color
-                    aiColor3D diffuseColor(0.0f, 0.0f, 0.0f);
+                    aiColor4D diffuseColor(0.0f, 0.0f, 0.0f, 1.0f);
                     aiscene->mMaterials[i]->Get(AI_MATKEY_COLOR_DIFFUSE, diffuseColor);
-                    scene->material[i].SetDiffuseColor(glm::vec4(diffuseColor.r, diffuseColor.g, diffuseColor.b, 1.0f));
+                    scene->material[i].SetDiffuseColor(glm::vec4(diffuseColor.r, diffuseColor.g, diffuseColor.b, diffuseColor.a));
 
                     // Get the specular color
-                    aiColor3D specularColor(0.0f, 0.0f, 0.0f);
+                    aiColor4D specularColor(0.0f, 0.0f, 0.0f, 1.0f);
                     aiscene->mMaterials[i]->Get(AI_MATKEY_COLOR_SPECULAR, specularColor);
-                    scene->material[i].SetSpecularColor(glm::vec4(specularColor.r, specularColor.g, specularColor.b, 1.0f));
+                    float shine = 1.0f;
+                    aiscene->mMaterials[i]->Get(AI_MATKEY_SHININESS, shine);
+                    scene->material[i].SetSpecularColor(glm::vec4(specularColor.r, specularColor.g, specularColor.b, shine));
 
                     // Get the ambient color and shine
-                    aiColor3D ambientColor(0.0f, 0.0f, 0.0f);
+                    aiColor4D ambientColor(0.0f, 0.0f, 0.0f, 1.0f);
                     aiscene->mMaterials[i]->Get(AI_MATKEY_COLOR_AMBIENT, ambientColor);
-                    scene->material[i].SetAmbientColor(glm::vec4(ambientColor.r, ambientColor.g, ambientColor.b, 1.0f));
+                    scene->material[i].SetAmbientColor(glm::vec4(ambientColor.r, ambientColor.g, ambientColor.b, ambientColor.a));
 
                     // Get the diffuse texture map
                     aiString filePath;
