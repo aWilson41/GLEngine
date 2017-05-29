@@ -12,6 +12,7 @@ public:
    Camera cam;
 
    // Resources
+   GLuint vaoID;
    std::vector<Mesh> mesh;
    std::vector<Material> material;
    std::vector<Texture> texture;
@@ -19,7 +20,8 @@ public:
    glm::vec3 dirLight;
    GLuint dirLightID;
 
-   ~Scene();
+   Scene();
 
    int FindTexture(std::string name);
+   void cleanup();
 };

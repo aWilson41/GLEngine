@@ -4,7 +4,6 @@
 #include <iostream>
 
 #define BUFFER_OFFSET(i) ((char *)NULL + (i))
-GLuint vaoID;
 
 void PrintShaderLinkingError(GLuint shaderProgram);
 
@@ -15,34 +14,13 @@ void App::Initialize()
 
 void App::UnLoad()
 {
-    glDisableVertexAttribArray(0);
-    glDeleteBuffers(1, &scene.mesh[0].vertexVboID);
-    glDeleteVertexArrays(1, &vaoID);
+    scene.cleanup();
 }
 
 void App::Load()
 {
     // Generate geometry
     ResourceLoader::LoadAllMeshesFromFolder("Content/*", &scene);
-
-    // Generate a vertex buffer
-    glGenVertexArrays(1, &vaoID);
-    glBindVertexArray(vaoID);
-    glGenBuffers(1, &scene.mesh[0].vertexVboID);
-    glBindBuffer(GL_ARRAY_BUFFER, scene.mesh[0].vertexVboID);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(VertexNormal) * scene.mesh[0].vertices.size(), &scene.mesh[0].vertices[0], GL_STATIC_DRAW);
-
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(VertexNormal), 0);
-
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(VertexNormal), BUFFER_OFFSET(sizeof(float) * 3));
-
-    // Setup the index buffer
-    glGenBuffers(1, &scene.mesh[0].indexBufferID);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, scene.mesh[0].indexBufferID);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, scene.mesh[0].indices.size() * sizeof(GLuint), &scene.mesh[0].indices[0], GL_STATIC_DRAW);
-
 
     // Load shaders
     glBindAttribLocation(shaderProgram, 0, "inVertex");
@@ -77,13 +55,14 @@ void App::Load()
 	scene.dirLight = glm::vec3(0.0f, 0.0f, -1.0f);
 
     // Pass the uniforms
-    scene.mesh[0].mvpID = glGetUniformLocation(shaderProgram, "mvp");
-    scene.mesh[0].tInvModelID = glGetUniformLocation(shaderProgram, "tInvModel");
+    for (UINT i = 0; i < scene.mesh.size(); i++)
+    {
+        scene.mesh[i].mvpID = glGetUniformLocation(shaderProgram, "mvp");
+        scene.mesh[i].tInvModelID = glGetUniformLocation(shaderProgram, "tInvModel");
+        scene.mesh[i].mat->matID = glGetUniformLocation(shaderProgram, "mat");
+    }
+    
     scene.cam.viewDirID = glGetUniformLocation(shaderProgram, "viewDir");
-
-    scene.mesh[0].mat->matID = glGetUniformLocation(shaderProgram, "mat");
-    glUniformMatrix4fv(scene.mesh[0].mat->matID, 1, GL_FALSE, &scene.mesh[0].mat->mat[0][0]);
-
     scene.dirLightID = glGetUniformLocation(shaderProgram, "dirLight");
     glUniform3fv(scene.dirLightID, 1, &scene.dirLight[0]);
 }
@@ -163,18 +142,25 @@ void App::Draw()
     glm::vec3 viewDir = -glm::vec3(view[0][2], view[1][2], view[2][2]);
     glm::mat4 proj = scene.cam.GetProj();
 
-    glm::mat3 normalMatrix = glm::transpose(glm::inverse(glm::mat3(glm::mat3(scene.mesh[0].model))));
-    glm::mat4 mvp = proj * view * scene.mesh[0].model;
-    
-    glUniformMatrix4fv(scene.mesh[0].mvpID, 1, GL_FALSE, &mvp[0][0]);
-    glUniformMatrix3fv(scene.mesh[0].tInvModelID, 1, GL_FALSE, &normalMatrix[0][0]);
     glUniform3fv(scene.cam.viewDirID, 1, &viewDir[0]);
+    glBindVertexArray(scene.vaoID);
 
-    glBindVertexArray(vaoID);
-    glDrawElements(GL_TRIANGLES, scene.mesh[0].indices.size(), GL_UNSIGNED_INT, 0);
-    GLenum error = glGetError();
-    if (error != GL_NO_ERROR)
-        std::cerr << error << std::endl;
+    for (UINT i = 0; i < scene.mesh.size(); i++)
+    {
+        glm::mat3 normalMatrix = glm::transpose(glm::inverse(glm::mat3(glm::mat3(scene.mesh[i].model))));
+        glm::mat4 mvp = proj * view * scene.mesh[i].model;
+
+        glUniformMatrix4fv(scene.mesh[i].mat->matID, 1, GL_FALSE, &scene.mesh[i].mat->mat[0][0]);
+        glUniformMatrix4fv(scene.mesh[i].mvpID, 1, GL_FALSE, &mvp[0][0]);
+        glUniformMatrix3fv(scene.mesh[i].tInvModelID, 1, GL_FALSE, &normalMatrix[0][0]);
+
+        glBindBuffer(GL_ARRAY_BUFFER, scene.mesh[i].vboID);
+        glDrawElements(GL_TRIANGLES, scene.mesh[i].indices.size(), GL_UNSIGNED_INT, 0);
+
+        GLenum error = glGetError();
+        if (error != GL_NO_ERROR)
+            std::cerr << error << std::endl;
+    }
 }
 
 void PrintShaderLinkingError(GLuint shaderProgram)

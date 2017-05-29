@@ -29,7 +29,7 @@ public:
    std::string name;
 
    // Vertex, Color, Index
-   GLuint vertexVboID;
+   GLuint vboID;
    GLuint indexBufferID;
    GLuint mvpID;
    GLuint tInvModelID;

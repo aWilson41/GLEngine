@@ -242,7 +242,7 @@ public:
         bool results = false;
         // Remove all the preceding text in the texture filePath
         //int pos = filePath.find_last_of('\\') + 1;
-        int pos = filePath.find_last_of('//') + 1;
+        int pos = filePath.find_last_of(static_cast<char>('//')) + 1;
         filePath = filePath.substr(pos, filePath.size() - pos);
         std::string name = filePath.substr(0, filePath.length() - 4);
 
