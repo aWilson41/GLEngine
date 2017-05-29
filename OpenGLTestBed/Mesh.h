@@ -31,8 +31,8 @@ public:
    // Vertex, Color, Index
    GLuint vertexVboID;
    GLuint indexBufferID;
-   GLuint modelMatID;
-   GLuint tInvModelViewMatID;
+   GLuint mvpID;
+   GLuint tInvModelID;
 
    std::vector<VertexNormal> vertices;
    std::vector<GLuint> indices;

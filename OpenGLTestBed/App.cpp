@@ -51,7 +51,7 @@ void App::Load()
     shaders.push_back(ResourceLoader::LoadShaderFromPath("Content/Shaders/VertexShader.glsl", GL_VERTEX_SHADER));   
     glAttachShader(shaderProgram, shaders[0]);
 
-    shaders.push_back(ResourceLoader::LoadShaderFromPath("Content/Shaders/FragmentShader.glsl", GL_FRAGMENT_SHADER));
+    shaders.push_back(ResourceLoader::LoadShaderFromPath("Content/Shaders/PhongFragmentShader.glsl", GL_FRAGMENT_SHADER));
     glAttachShader(shaderProgram, shaders[1]);
 
     // Where the shaders are inspected, optimized, and uploaded to the GPU
@@ -74,13 +74,12 @@ void App::Load()
     scene.cam.LookAt(glm::vec3(0.0f, 0.0f, 0.0f));
 
     // Set the scene directional light
-	scene.dirLight = glm::vec3(0.0f, 0.0f, 1.0f);
+	scene.dirLight = glm::vec3(0.0f, 0.0f, -1.0f);
 
     // Pass the uniforms
-    scene.mesh[0].modelMatID = glGetUniformLocation(shaderProgram, "modelMat");
-    scene.cam.viewMatID = glGetUniformLocation(shaderProgram, "viewMat");
-    scene.cam.projMatID = glGetUniformLocation(shaderProgram, "projMat");
-    scene.mesh[0].tInvModelViewMatID = glGetUniformLocation(shaderProgram, "tInvModelViewMat");
+    scene.mesh[0].mvpID = glGetUniformLocation(shaderProgram, "mvp");
+    scene.mesh[0].tInvModelID = glGetUniformLocation(shaderProgram, "tInvModel");
+    scene.cam.viewDirID = glGetUniformLocation(shaderProgram, "viewDir");
 
     scene.mesh[0].mat->matID = glGetUniformLocation(shaderProgram, "mat");
     glUniformMatrix4fv(scene.mesh[0].mat->matID, 1, GL_FALSE, &scene.mesh[0].mat->mat[0][0]);
@@ -112,7 +111,7 @@ void App::Update()
 		scene.mesh[0].model *= MathHelper::MatrixRotateY(-0.05f);
 
     // Translation
-	if(IsCurrentKeyDown('g'))
+	/*if(IsCurrentKeyDown('g'))
 		scene.mesh[0].model *= MathHelper::MatrixTranslate(-0.1f, 0.0f, 0.0f);
 	if (IsCurrentKeyDown('h'))
 		scene.mesh[0].model *= MathHelper::MatrixTranslate(0.1f, 0.0f, 0.0f);
@@ -120,7 +119,7 @@ void App::Update()
     if (IsCurrentKeyDown('z'))
         scene.mesh[0].model *= MathHelper::MatrixTranslate(0.0f, 0.0f, -0.1f);
     if (IsCurrentKeyDown('x'))
-        scene.mesh[0].model *= MathHelper::MatrixTranslate(0.0f, 0.0f, 0.1f);
+        scene.mesh[0].model *= MathHelper::MatrixTranslate(0.0f, 0.0f, 0.1f);*/
 
 	// Scaling
 	if (IsCurrentKeyDown('p'))
@@ -128,57 +127,48 @@ void App::Update()
 	if (IsCurrentKeyDown('o'))
 		scene.mesh[0].model *= MathHelper::MatrixScale(0.98f);
 
-	// Camera controls
-   //if (IsCurrentKeyDown('j'))
-   //{
-   //   //scene.mesh[0].mat->specularShine += 0.1f;
-   //   //scene.dirLight = MathHelper::MatrixRotateY(0.05f) * scene.dirLight;
-   //   scene.cam.SetCameraView(MathHelper::MatrixRotateY(0.02f));
-   //}
 
-   //if (IsCurrentKeyDown('l'))
-   //{
-   //   //scene.mesh[0].mat->specularShine -= 0.1f;
-   //   //scene.dirLight = MathHelper::MatrixRotateY(-0.05f) * scene.dirLight;
-   //   scene.cam.SetCameraView(MathHelper::MatrixRotateY(-0.02f));
-   //}
+    // Camera controls
+    if (IsCurrentKeyDown('j'))
+        scene.cam.SetCameraView(MathHelper::MatrixRotateY(0.02f));
 
-   //if (IsCurrentKeyDown('i'))
-   //{
-   //   //scene.dirLight = MathHelper::MatrixRotateX(0.05f) * scene.dirLight;
-   //   scene.cam.SetCameraView(MathHelper::MatrixRotateX(-0.02f));
-   //}
+    if (IsCurrentKeyDown('l'))
+       scene.cam.SetCameraView(MathHelper::MatrixRotateY(-0.02f));
 
-   //if (IsCurrentKeyDown('k'))
-   //{
-   //   //scene.dirLight = MathHelper::MatrixRotateX(-0.05f) * scene.dirLight;
-   //   scene.cam.SetCameraView(MathHelper::MatrixRotateX(0.02f));
-   //}
+    if (IsCurrentKeyDown('i'))
+       scene.cam.SetCameraView(MathHelper::MatrixRotateX(-0.02f));
 
-   //if (IsCurrentKeyDown('g'))
-   //   scene.cam.SetCameraView(MathHelper::MatrixTranslate(0.0f, 0.0f, 8.0f));
+    if (IsCurrentKeyDown('k'))
+       scene.cam.SetCameraView(MathHelper::MatrixRotateX(0.02f));
 
-   //if (IsCurrentKeyDown('t'))
-   //   scene.cam.SetCameraView(MathHelper::MatrixTranslate(0.0f, 0.0f, -8.0f));
+    if (IsCurrentKeyDown('g'))
+       scene.cam.SetCameraView(MathHelper::MatrixTranslate(0.0f, 0.0f, 0.1f));
 
-   //if (IsCurrentKeyDown('h'))
-   //   scene.cam.SetCameraView(MathHelper::MatrixTranslate(-8.0f, 0.0f, 0.0f));
+    if (IsCurrentKeyDown('t'))
+       scene.cam.SetCameraView(MathHelper::MatrixTranslate(0.0f, 0.0f, -0.1f));
 
-   //if (IsCurrentKeyDown('f'))
-   //   scene.cam.SetCameraView(MathHelper::MatrixTranslate(8.0f, 0.0f, 0.0f));
+    if (IsCurrentKeyDown('h'))
+       scene.cam.SetCameraView(MathHelper::MatrixTranslate(-0.1f, 0.0f, 0.0f));
+
+    if (IsCurrentKeyDown('f'))
+       scene.cam.SetCameraView(MathHelper::MatrixTranslate(0.1f, 0.0f, 0.0f));
 
 	/*if (IsCurrentKeyDown('m') && !IsPreviousKeyDown('m'))
-		Utility::SaveScreenshot(sDevice.screen.GetBuffer(), sDevice.screen.GetScreenWidth(), sDevice.screen.GetScreenHeight(), "Output/output.png");*/
+	Utility::SaveScreenshot(sDevice.screen.GetBuffer(), sDevice.screen.GetScreenWidth(), sDevice.screen.GetScreenHeight(), "Output/output.png");*/
 }
 
 void App::Draw()
 {
-    // We pass the model, view, proj, and tInvModelViewMat every time. (we should only do this when they change though)
-    glm::mat3 normalMat = glm::transpose(glm::inverse(glm::mat3(scene.cam.GetView()) * glm::mat3(scene.mesh[0].model)));
-    glUniformMatrix4fv(scene.mesh[0].modelMatID, 1, GL_FALSE, &scene.mesh[0].model[0][0]);
-    glUniformMatrix4fv(scene.cam.viewMatID, 1, GL_FALSE, &scene.cam.GetView()[0][0]);
-    glUniformMatrix4fv(scene.cam.projMatID, 1, GL_FALSE, &scene.cam.GetProj()[0][0]);
-    glUniformMatrix3fv(scene.mesh[0].tInvModelViewMatID, 1, GL_FALSE, &normalMat[0][0]);
+    glm::mat4 view = scene.cam.GetView();
+    glm::vec3 viewDir = -glm::vec3(view[0][2], view[1][2], view[2][2]);
+    glm::mat4 proj = scene.cam.GetProj();
+
+    glm::mat3 normalMatrix = glm::transpose(glm::inverse(glm::mat3(glm::mat3(scene.mesh[0].model))));
+    glm::mat4 mvp = proj * view * scene.mesh[0].model;
+    
+    glUniformMatrix4fv(scene.mesh[0].mvpID, 1, GL_FALSE, &mvp[0][0]);
+    glUniformMatrix3fv(scene.mesh[0].tInvModelID, 1, GL_FALSE, &normalMatrix[0][0]);
+    glUniform3fv(scene.cam.viewDirID, 1, &viewDir[0]);
 
     glBindVertexArray(vaoID);
     glDrawElements(GL_TRIANGLES, scene.mesh[0].indices.size(), GL_UNSIGNED_INT, 0);

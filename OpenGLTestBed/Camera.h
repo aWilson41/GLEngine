@@ -11,9 +11,6 @@ private:
 	glm::mat4 proj;
     // Camera position
     glm::vec3 eye;
-
-   // Direction
-   //float3 dir;
    
 	float fov;
 	float width;
@@ -23,8 +20,7 @@ private:
 	float farZ;
 
 public:
-    GLuint viewMatID;
-    GLuint projMatID;
+    GLuint viewDirID;
 
 public:
 	Camera();
@@ -42,6 +38,4 @@ public:
 
 	glm::mat4 GetProj() { return proj; }
 	glm::mat4 GetView() { return view; }
-
-    //float3 GetViewDir() { return dir; }
 };

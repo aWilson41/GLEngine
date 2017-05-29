@@ -156,8 +156,10 @@
     <ClInclude Include="Utility.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Content\Shaders\FragmentShader.glsl" />
-    <None Include="Content\Shaders\GeometryShader.glsl" />
+    <None Include="Content\Shaders\PhongFragmentShader.glsl" />
+    <None Include="Content\Shaders\NormalFragmentShader.glsl" />
+    <None Include="Content\Shaders\NormalGeometryShader.glsl" />
+    <None Include="Content\Shaders\NormalVertexShader.glsl" />
     <None Include="Content\Shaders\VertexShader.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
