@@ -2,13 +2,13 @@
 
 #define BUFFER_OFFSET(i) ((char *)NULL + (i))
 
-Mesh::Mesh()
-{
-    model = glm::mat4();
-}
-
 void Mesh::SetVertexBuffer(std::vector<VertexNormal> vertices)
 {
+    // Generate a vertex buffer array
+    // we use these when we have vbo's with the same layouts
+    glGenVertexArrays(1, &vaoID);
+    glBindVertexArray(vaoID);
+
    Mesh::vertices = vertices;
    
    // Generate a vertex buffer
@@ -28,12 +28,7 @@ void Mesh::SetIndexBuffer(std::vector<GLuint> indices)
    Mesh::indices = indices;
 
    // Setup the index buffer
-   glGenBuffers(1, &indexBufferID);
-   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBufferID);
+   glGenBuffers(1, &iboID);
+   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, iboID);
    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(GLuint), &indices[0], GL_STATIC_DRAW);
-}
-
-Mesh::~Mesh()
-{
-   //glDeleteBuffers(vertices.size() * 3 * sizeof(float), &vboID);
 }

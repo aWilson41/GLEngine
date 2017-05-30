@@ -14,27 +14,28 @@
 class ResourceLoader
 {
 public:
-    static void LoadAllMeshesFromFolder(const std::string path, Scene* scene)
-    {
-        WIN32_FIND_DATA fd;
-        HANDLE hFind = FindFirstFile(path.c_str(), &fd);
-        Assimp::Importer importer;
-        if (hFind != INVALID_HANDLE_VALUE) 
-        {
-            do {
-                // read all (real) files in current folder
-                // , delete '!' read other 2 default folder . and ..
-                if (!(fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
-                {					
-                    std::string filePath = path.substr(0, path.size() - 1) + fd.cFileName;
-                    const aiScene* aiscene = importer.ReadFile(filePath, aiProcess_Triangulate | aiProcess_FlipUVs);
-                    LoadSceneFromAIScene(aiscene, scene);
-                }
-            } while (FindNextFile(hFind, &fd));
+	static void LoadAllMeshesFromFolder(const std::string path, Scene* scene)
+	{
+		WIN32_FIND_DATA fd;
+		HANDLE hFind = FindFirstFile(path.c_str(), &fd);
+		Assimp::Importer importer;
+		if (hFind != INVALID_HANDLE_VALUE) 
+		{
+			do {
+				// read all (real) files in current folder, delete '!' read other 2 default folder . and ..
+				if (!(fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
+				{					
+					std::string filePath = path.substr(0, path.size() - 1) + fd.cFileName;
+					const aiScene* aiscene = importer.ReadFile(filePath, aiProcess_Triangulate | aiProcess_FlipUVs);
+					Scene fileScene;
+					LoadSceneFromAIScene(aiscene, &fileScene);
+					scene->merge(&fileScene);
+				}
+			} while (FindNextFile(hFind, &fd));
 
-            FindClose(hFind);
-        }
-    }
+			FindClose(hFind);
+		}
+	}
 
     static void LoadSceneFromAIScene(const aiScene* aiscene, Scene* scene)
     {
@@ -53,44 +54,59 @@ public:
 
             if (aiscene->HasMaterials())
             {
-                // Load materials
-                scene->material.resize(aiscene->mNumMaterials);
-                std::vector<std::string> textureFilePaths;
+                // Load materials. (texture path, index of all the objects using it)
+				std::map<std::string, std::vector<UINT>> texPath;
                 for (UINT i = 0; i < aiscene->mNumMaterials; i++)
                 {
+					Material* mat = new Material();
                     // Get the diffuse color
                     aiColor4D diffuseColor(0.0f, 0.0f, 0.0f, 1.0f);
                     aiscene->mMaterials[i]->Get(AI_MATKEY_COLOR_DIFFUSE, diffuseColor);
-                    scene->material[i].SetDiffuseColor(glm::vec4(diffuseColor.r, diffuseColor.g, diffuseColor.b, diffuseColor.a));
+                    mat->SetDiffuseColor(glm::vec4(diffuseColor.r, diffuseColor.g, diffuseColor.b, diffuseColor.a));
 
                     // Get the specular color
                     aiColor4D specularColor(0.0f, 0.0f, 0.0f, 1.0f);
                     aiscene->mMaterials[i]->Get(AI_MATKEY_COLOR_SPECULAR, specularColor);
                     float shine = 1.0f;
                     aiscene->mMaterials[i]->Get(AI_MATKEY_SHININESS, shine);
-                    scene->material[i].SetSpecularColor(glm::vec4(specularColor.r, specularColor.g, specularColor.b, shine));
+                    mat->SetSpecularColor(glm::vec4(specularColor.r, specularColor.g, specularColor.b, shine));
 
                     // Get the ambient color and shine
                     aiColor4D ambientColor(0.0f, 0.0f, 0.0f, 1.0f);
                     aiscene->mMaterials[i]->Get(AI_MATKEY_COLOR_AMBIENT, ambientColor);
-                    scene->material[i].SetAmbientColor(glm::vec4(ambientColor.r, ambientColor.g, ambientColor.b, ambientColor.a));
+                    mat->SetAmbientColor(glm::vec4(ambientColor.r, ambientColor.g, ambientColor.b, ambientColor.a));
 
-                    // Get the diffuse texture map
-                    aiString filePath;
+                    // Save the diffuse texture path
                     UINT texCount = aiscene->mMaterials[i]->GetTextureCount(aiTextureType_DIFFUSE);
-                    // Load texture into the scene (also creates a reference in material i)
-                    if (texCount > 0 && aiscene->mMaterials[i]->GetTexture(aiTextureType_DIFFUSE, 0, &filePath) == AI_SUCCESS)
-                        textureFilePaths.push_back(filePath.C_Str());
+					if (texCount > 0)
+					{
+						aiString filePath;
+						mat->hasDiffuseMap = true;
+						if (aiscene->mMaterials[i]->GetTexture(aiTextureType_DIFFUSE, 0, &filePath) == AI_SUCCESS)
+							texPath[filePath.C_Str()].push_back(i);
+					}
+
+					scene->material.push_back(mat);
                 }
 
                 // Load textures
-                scene->texture.resize(textureFilePaths.size());
-                for (UINT i = 0; i < scene->texture.size(); i++)
-                {
-                    LoadTexture(scene, textureFilePaths[i], DIFFUSEMAP, i);
-                    scene->material[i].diffuseMap = &scene->texture[i];
-                    scene->material[i].hasDiffuseMap = true;
-                }
+                scene->texture.resize(texPath.size());
+				UINT j = 0;
+				// For every texture
+				for (auto const &pair : texPath)
+				{
+					scene->texture[j] = new Texture();
+					// Load texture into scene texture array
+					LoadTexture(pair.first, DIFFUSEMAP, scene->texture[j]);
+
+					// Reference the textures correctly in the materials that use them
+					for (UINT k = 0; k < pair.second.size(); k++)
+					{
+						scene->material[pair.second[k]]->diffuseMap = scene->texture[j];
+					}
+
+					j++;
+				}
             }
 
             // Load Meshes
@@ -101,10 +117,8 @@ public:
                     Mesh mesh;
                     mesh.name = aiscene->mMeshes[i]->mName.C_Str();
 
-                    // Material information is already loaded in
-                    // The mesh just needs some direction to it
-                    UINT matIndex = aiscene->mMeshes[i]->mMaterialIndex;
-                    mesh.mat = &scene->material[matIndex];
+                    // Material information is already loaded in the mesh just needs some direction to it
+                    mesh.mat = scene->material[aiscene->mMeshes[i]->mMaterialIndex];
 
                     // Size the arrays
                     std::vector<VertexNormal> vertices = std::vector<VertexNormal>(aiscene->mMeshes[i]->mNumVertices);
@@ -133,6 +147,7 @@ public:
 
                     mesh.SetVertexBuffer(vertices);
                     mesh.SetIndexBuffer(indices);
+                    mesh.model = Utility::aiMat4x4ToGLM(aiscene->mRootNode->mChildren[0]->mTransformation);
                     scene->mesh.push_back(mesh);
                 }
             }
@@ -237,49 +252,47 @@ public:
 
 
 	// Adds texture to scene
-	static bool LoadTexture(Scene*& scene, std::string filePath, TextureType texType, int textureIndex)
+	static bool LoadTexture(std::string filePath, TextureType texType, Texture* texture)
 	{
         bool results = false;
         // Remove all the preceding text in the texture filePath
-        //int pos = filePath.find_last_of('\\') + 1;
-        int pos = filePath.find_last_of(static_cast<char>('//')) + 1;
+        int pos = filePath.find_last_of(static_cast<unsigned char>(47)) + 1;
         filePath = filePath.substr(pos, filePath.size() - pos);
         std::string name = filePath.substr(0, filePath.length() - 4);
 
         // If the texture doesn't already exist
-        int texIndex = scene->FindTexture(name);
-        if (texIndex == -1)
-        {
-	        filePath = "Content/Textures/" + filePath;
+	    filePath = "Content/Textures/" + filePath;
 
-	        // Load the png using LodePng
-	        std::vector<unsigned char> image;
-	        UINT width, height;
-	        UINT error = lodepng::decode(image, width, height, filePath);
-	        //std::string errorStr = lodepng_error_text(error);
+	    // Load the png using LodePng
+	    std::vector<unsigned char> image;
+	    UINT width, height;
+	    UINT error = lodepng::decode(image, width, height, filePath);
+	    //std::string errorStr = lodepng_error_text(error);
 
-	        if (error == 0)
-	        {
-		        // Parse the image so I can use it as a pointer
-		        unsigned char* buffer = new unsigned char[width * height * 3];
-		        for (UINT y = 0; y < height; y++)
-		        {
-			        for (UINT x = 0; x < width; x++)
-			        {
-				        UINT i = y * width + x;
-				        UINT j = i * 3;
-				        UINT k = i * 4;
-				        buffer[j] = image[k];
-				        buffer[j + 1] = image[k + 1];
-				        buffer[j + 2] = image[k + 2];
-			        }
-		        }
+	    if (error == 0)
+	    {
+		    // Parse the image so I can use it as a pointer
+		    texture->buffer = new unsigned char[width * height * 3];
+		    for (UINT y = 0; y < height; y++)
+		    {
+			    for (UINT x = 0; x < width; x++)
+			    {
+				    UINT i = y * width + x;
+				    UINT j = i * 3;
+				    UINT k = i * 4;
+					texture->buffer[j] = image[k];
+					texture->buffer[j + 1] = image[k + 1];
+					texture->buffer[j + 2] = image[k + 2];
+			    }
+		    }
 
-		        // Add the texture to the scene
-		        scene->texture[textureIndex] = Texture(name, width, height, buffer, texType);
-		        results = true;
-	        }
-        }
+		    // Add the texture to the scene
+			texture->name = name;
+			texture->width = width;
+			texture->height = height;
+			texture->type = texType;
+		    results = true;
+	    }
 
         return results;
 	}

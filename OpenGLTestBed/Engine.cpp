@@ -85,7 +85,7 @@ void Engine::EngineInitialize()
 	Initialize();
 }
 
-// Virtual Method Implemented in App
+// Virtual method implemented in App
 void Engine::Initialize()
 {
 
@@ -98,7 +98,7 @@ void Engine::EngineLoad()
 	Load();
 }
 
-// Virtual Method Implemented in App
+// Virtual method implemented in App
 void Engine::Load()
 {
 
@@ -118,6 +118,7 @@ void Engine::EngineUpdate()
     Update();
 }
 
+// Virtual method implemented in App
 void Engine::Update()
 {
 
@@ -169,7 +170,7 @@ void Engine::EngineUnLoad()
     SDL_Quit();
 }
 
-// Virtual Method Implemented in App
+// Virtual method implemented in App
 void Engine::UnLoad()
 {
 	
@@ -189,7 +190,7 @@ void Engine::EngineDraw()
     SDL_GL_SwapWindow(mWindow);
 }
 
-// Virtual Method Implemented in App
+// Virtual method implemented in App
 void Engine::Draw()
 {
 

@@ -29,24 +29,21 @@ public:
    std::string name;
 
    // Vertex, Color, Index
+   GLuint vaoID;
    GLuint vboID;
-   GLuint indexBufferID;
+   GLuint iboID;
    GLuint mvpID;
    GLuint tInvModelID;
 
    std::vector<VertexNormal> vertices;
    std::vector<GLuint> indices;
-   glm::mat4 model;
+   glm::mat4 model = glm::mat4();;
 
    Material* mat;
 
 public:
-   Mesh();
-   ~Mesh();
-
    void SetVertexBuffer(std::vector<VertexNormal> vertices);
    void SetIndexBuffer(std::vector<GLuint> indices);
 
-public:
    int GetVertexCount() { return vertices.size(); }
 };

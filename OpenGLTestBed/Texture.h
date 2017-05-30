@@ -1,4 +1,5 @@
 #pragma once
+#include "MathHelper.h"
 #include "Utility.h"
 
 enum TextureType
@@ -24,7 +25,7 @@ public:
 	void SetDim(UINT width, UINT height);
 	void SetPixel(int x, int y, Color color);
 
-	float2 GetDim() { return float2((float)width, (float)height); }
+	glm::vec2 GetDim() { return glm::vec2((float)width, (float)height); }
 	Color GetPixel(int x, int y);
 	Color GetPixel(UINT i);
 

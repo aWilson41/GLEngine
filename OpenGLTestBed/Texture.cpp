@@ -5,22 +5,23 @@ Texture::Texture()
 
 }
 
-Texture::Texture(const std::string name, const UINT width, const UINT height, const TextureType type)
+Texture::Texture(std::string name, UINT width, UINT height, TextureType type)
 {
 	Texture::type = type;
 	Texture::name = name;
 	SetDim(width, height);
 }
 
-Texture::Texture(const std::string name, const UINT width, const UINT height, unsigned char* data, const TextureType type)
+Texture::Texture(std::string name, UINT width, UINT height, unsigned char* data, TextureType type)
 {
-   Texture::type = type;
+	Texture::type = type;
 	Texture::name = name;
 	SetDim(width, height);
 	buffer = data;
 }
 
-void Texture::SetPixel(const int x, const int y, Color color)
+
+void Texture::SetPixel(int x, int y, Color color)
 {
 	if (x >= 0 && y >= 0 && x < (int)width && y < (int)height)
 	{
@@ -31,7 +32,7 @@ void Texture::SetPixel(const int x, const int y, Color color)
 	}
 }
 
-Color Texture::GetPixel(const int x, const int y)
+Color Texture::GetPixel(int x, int y)
 {
 	if (x >= 0 && y >= 0 && x < (int)width && y < (int)height)
 	{

@@ -1,75 +1,48 @@
 #pragma once
-#include <algorithm>
 #include "MathHelper.h"
 #include "LodePNG\lodepng.h"
+#include <assimp\matrix4x4.h>
 
-enum RenderTechnique
-{
-	POINTGRAPH,
-	WIREFRAME,
-	RASTER,
-	RAYTRACE
-};
-
-enum Shader
-{
-	NOSHADER,
-	FLAT,
-	SMOOTH,
-   PHONGFLAT,
-   PHONGSMOOTH
-};
-
-enum Sampler
-{
-	NOSAMPLE,
-	POINTSAMPLE
-};
-
-enum RasterizationTechnique
-{
-	BARYCENTRIC,
-	DDA
-};
+#include <algorithm>
 
 class Color
 {
 public:
-	unsigned char r;
-	unsigned char g;
-	unsigned char b;
+    unsigned char r;
+    unsigned char g;
+    unsigned char b;
 
-	Color() : r(0), g(0), b(0)
-	{
+    Color() : r(0), g(0), b(0)
+    {
 
-	}
+    }
 
-	Color(unsigned char r, unsigned char g, unsigned char b)
-	{
-		Color::r = r;
-		Color::g = g;
-		Color::b = b;
-	}
+    Color(unsigned char r, unsigned char g, unsigned char b)
+    {
+        Color::r = r;
+        Color::g = g;
+        Color::b = b;
+    }
 
-	Color operator+(const Color& a)
-	{
-		return Color(r + a.r, g + a.g, b + a.b);
-	}
+    Color operator+(const Color& a)
+    {
+        return Color(r + a.r, g + a.g, b + a.b);
+    }
 
-   Color operator-(const Color& a)
-   {
-      return Color(r - a.r, g - a.g, b - a.b);
-   }
+    Color operator-(const Color& a)
+    {
+        return Color(r - a.r, g - a.g, b - a.b);
+    }
 
-	Color operator*(const float& a)
-	{
-		return Color((char)(r * a), (char)(g * a), (char)(b * a));
-	}
+    Color operator*(const float& a)
+    {
+        return Color((char)(r * a), (char)(g * a), (char)(b * a));
+    }
 
-	Color operator*(const Color& a)
-	{
-		return Color(r * a.r, g * a.g, b * a.b);
-	}
+    Color operator*(const Color& a)
+    {
+        return Color(r * a.r, g * a.g, b * a.b);
+    }
 };
 
 class Utility
@@ -130,4 +103,21 @@ public:
 		else
 			return true;
 	}
+
+    static glm::mat4 aiMat4x4ToGLM(aiMatrix4x4 mat, bool transpose = true)
+    {
+        glm::mat4 results;
+        for (UINT i = 0; i < 4; i++)
+        {
+            for (UINT j = 0; j < 4; j++)
+            {
+                if (transpose)
+                    results[i][j] = mat[j][i];
+                else
+                    results[i][j] = mat[i][j];
+            }
+        }
+
+        return results;
+    }
 };

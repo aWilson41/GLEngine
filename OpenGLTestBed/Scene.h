@@ -12,10 +12,9 @@ public:
    Camera cam;
 
    // Resources
-   GLuint vaoID;
    std::vector<Mesh> mesh;
-   std::vector<Material> material;
-   std::vector<Texture> texture;
+   std::vector<Material*> material;
+   std::vector<Texture*> texture;
 
    glm::vec3 dirLight;
    GLuint dirLightID;
@@ -24,4 +23,8 @@ public:
 
    int FindTexture(std::string name);
    void cleanup();
+   // Merges the mesh, material, and textures
+   void merge(Scene* scene);
+
+   void draw();
 };
