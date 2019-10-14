@@ -30,15 +30,18 @@ find_path(GLFW
 	NAMES "/include/GLFW"
 	PATHS ENV PATH)
 
-#include the directories
-include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_SOURCE_DIR}/src/Rendering ${CMAKE_CURRENT_BINARY_DIR} ${GLM}/glm ${GLEW}/include ${GLFW}/include ${OPENGL_INCLUDE_DIRS})
+#Set the includes and libraries
+set(GLENGINE_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_SOURCE_DIR}/src/Rendering ${CMAKE_CURRENT_BINARY_DIR} ${GLM}/glm ${GLEW}/include ${GLFW}/include ${OPENGL_INCLUDE_DIRS})
 
-add_library(GLEngine SHARED ${ENGINE_FILES} ${ENGINE_RENDERING_FILES} ${SHADER_FILES} ${LODEPNG_FILES})
-
-target_link_libraries(GLEngine 
+set(GLENGINE_LIBRARIES
 	debug ${GLEW}/lib/Release/x64/glew32.lib optimized ${GLEW}/lib/Release/x64/glew32.lib
 	debug ${GLFW}/lib/glfw3d.lib optimized ${GLFW}/lib/glfw3.lib
 	debug ${OPENGL_LIBRARIES} optimized ${OPENGL_LIBRARIES})
+
+
+add_library(GLEngine STATIC ${ENGINE_FILES} ${ENGINE_RENDERING_FILES} ${SHADER_FILES} ${LODEPNG_FILES})
+target_include_directories(GLEngine PUBLIC ${GLENGINE_INCLUDE_DIRS})
+target_link_libraries(GLEngine ${GLENGINE_LIBRARIES})
 
 if(WIN32) # Check if we are on Windows
   if(MSVC) # Check if we are using the Visual Studio compiler
@@ -51,18 +54,18 @@ endif()
 add_custom_command(
 	TARGET GLEngine POST_BUILD
 	COMMAND ${CMAKE_COMMAND} -E copy_directory
-			${CMAKE_SOURCE_DIR}/src/Shaders
-			${CMAKE_CURRENT_BINARY_DIR}/Shaders)
+			${CMAKE_CURRENT_SOURCE_DIR}/src/Shaders
+			${CMAKE_BINARY_DIR}/Shaders)
 add_custom_command(
 	TARGET GLEngine POST_BUILD
 	COMMAND ${CMAKE_COMMAND} -E copy_directory
-			${CMAKE_SOURCE_DIR}/src/Shaders
-			${CMAKE_CURRENT_BINARY_DIR}/Release/Shaders)
+			${CMAKE_CURRENT_SOURCE_DIR}/src/Shaders
+			${CMAKE_BINARY_DIR}/Release/Shaders)
 add_custom_command(
 	TARGET GLEngine POST_BUILD
 	COMMAND ${CMAKE_COMMAND} -E copy_directory
-			${CMAKE_SOURCE_DIR}/src/Shaders
-			${CMAKE_CURRENT_BINARY_DIR}/Debug/Shaders)
+			${CMAKE_CURRENT_SOURCE_DIR}/src/Shaders
+			${CMAKE_BINARY_DIR}/Debug/Shaders)
 			
 # Sort these into folders/filters
 source_group("Main" FILES ${ENGINE_FILES})
