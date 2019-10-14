@@ -35,7 +35,7 @@ void main()
 
 	// Specular reflection
 	vec3 r = reflect(lightDir, normal);
-	float specular = clamp(pow(dot(r, viewDir), 1.0) * 0.3f, 0.0f, 1.0f);
+	float specular = clamp(pow(dot(r, viewDir), 0.2) * 0.1f, 0.0f, 1.0f);
 
 	// Fresnel
 	float fresnelScale = 0.5f;
@@ -44,9 +44,9 @@ void main()
 	float fresnel = min(fresnelScale * pow(1.0f + dot(rayDir, normal), fresnelPower), 1.0);
 
 	if (pos.x != 0.0f || pos.y != 0.0f || pos.z != 0.0f)
-		fColor = vec4(diffuse + specular + fresnel + ambient, 1.0f);
+		//fColor = vec4(diffuse + specular + fresnel + ambient, 1.0f);
 		//fColor = vec4(diffuse + specular + ambient, 1.0f);
-		//fColor = vec4(diffuse + ambient, 1.0f);
+		fColor = vec4(diffuse + ambient, 1.0f);
 	else
 		fColor = vec4(ambient, 1.0f);
 

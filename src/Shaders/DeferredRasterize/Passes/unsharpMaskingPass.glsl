@@ -37,14 +37,18 @@ void main()
             {
                 vec2 dx = vec2(float(i), float(j)) / dim;
 				vec2 pos = texCoord + dx;
-
+				
                 float currDepth = texture(depthTex, pos).r;
-                float r = sqrt(float(i * i + j * j));
-                float weight = gaussian(r, sigma);
-                blurDepth += currDepth * weight;
-                sum += weight;
+				if (abs(currDepth - depth) <= 0.08f)
+				{
+					float r = sqrt(float(i * i + j * j));
+					float weight = gaussian(r, sigma);
+					blurDepth += currDepth * weight;
+					sum += weight;
+				}
             }
         }
+
         float delta = darknessFactor * max(depth - blurDepth / sum, 0.0f);
         fragColor = vec4(color - delta, 1.0f);
     }
