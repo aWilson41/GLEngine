@@ -21,6 +21,7 @@ public:
 	glm::mat4 getModelMatrix() { return model; }
 	CellType getPolyRepresentation() { return representation; }
 	GLfloat getPointSize() { return pointSize; }
+	GLfloat getLineWidth() { return lineWidth; }
 	GLuint getShaderProgramID() override;
 
 	void setInput(PolyData* input) { polyData = input; }
@@ -33,6 +34,7 @@ public:
 	void setModelMatrix(glm::mat4 model) { PolyDataMapper::model = model; }
 	void setPolyRepresentation(CellType representation) { PolyDataMapper::representation = representation; }
 	void setPointSize(GLfloat pointSize) { PolyDataMapper::pointSize = pointSize; }
+	void setLineWidth(GLfloat lineWidth) { PolyDataMapper::lineWidth = lineWidth; }
 	void setUseNormals(bool val) { useNormals = val; }
 	void setUseTexCoords(bool val) { useTexCoords = val; }
 	void setUseScalars(bool val) { useScalars = val; }
@@ -62,8 +64,9 @@ protected:
 	GLint iboSize = -1;
 	GLuint vaoID = -1;
 
-	CellType representation = TRIANGLE;
+	CellType representation = CellType::TRIANGLE;
 	GLfloat pointSize = 4.0f;
+	GLfloat lineWidth = 1.0f;
 
 	ShaderProgram* shaderProgram = nullptr;
 

@@ -5,6 +5,13 @@
 #include "Renderer.h"
 #include "Shaders.h"
 
+// Maps cell type to mode
+static  std::map<CellType, GLenum> mode = {
+	{ CellType::POINT, GL_POINTS },
+	{ CellType::LINE, GL_LINES },
+	{ CellType::TRIANGLE, GL_TRIANGLES },
+	{ CellType::QUAD, GL_QUADS } };
+
 PolyDataMapper::PolyDataMapper()
 {
 	// Create a property map for this mapper
@@ -86,7 +93,7 @@ void PolyDataMapper::update()
 	updateBuffer();
 
 	// Verify the desired representation (we can't map cells with more elements to one of fewer ie: can't represent point with triangle)
-	representation = MathHelp::clamp(representation, POINT, polyData->getCellType());
+	representation = MathHelp::clamp(representation, CellType::POINT, polyData->getCellType());
 }
 void PolyDataMapper::updateInfo()
 {
@@ -204,11 +211,14 @@ void PolyDataMapper::draw(Renderer* ren)
 	glGetIntegerv(GL_POLYGON_MODE, &prevPolyMode);
 
 	// Set the polygon mode needed
-	if (representation == TRIANGLE)
+	if (representation == CellType::TRIANGLE)
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	else if (representation == LINE)
+	else if (representation == CellType::LINE)
+	{
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	else if (representation == POINT)
+		glLineWidth(lineWidth);
+	}
+	else if (representation == CellType::POINT)
 	{
 		glPolygonMode(GL_FRONT_AND_BACK, GL_POINT);
 		glPointSize(pointSize);
@@ -240,10 +250,11 @@ void PolyDataMapper::draw(Renderer* ren)
 		glUniform3fv(ambientColorLocation, 1, &ambientColor[0]);
 
 	glBindVertexArray(vaoID);
+	CellType cellType = polyData->getCellType();
 	if (polyData->getIndexData() != nullptr && useIndex)
-		glDrawElements(GL_TRIANGLES, polyData->getIndexCount(), GL_UNSIGNED_INT, (void*)(uintptr_t)0);
+		glDrawElements(mode[cellType], polyData->getIndexCount(), GL_UNSIGNED_INT, (void*)(uintptr_t)0);
 	else
-		glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(polyData->getPointCount()));
+		glDrawArrays(mode[cellType], 0, static_cast<GLsizei>(polyData->getPointCount()));
 	glBindVertexArray(0);
 
 	// Restore poly mode

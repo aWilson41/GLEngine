@@ -1,4 +1,5 @@
 #include "Geometry3D.h"
+#include "PolyData.h"
 
 namespace geom3d
 {
@@ -50,24 +51,6 @@ namespace geom3d
 	GLfloat Rect::volume() { return extent.x * extent.y * extent.z * 8.0f; }
 	glm::vec3 Rect::size() { return extent * 2.0f; }
 	glm::vec3 Rect::origin() { return pos - extent; }
-
-	// Polygon
-	Poly::Poly() { type = ShapeType::POLY; }
-	Poly::Poly(glm::vec3* vertices, UINT count)
-	{
-		// Copy the vertices
-		for (UINT i = 0; i < count; i++)
-		{
-			Poly::vertices[i] = vertices[i];
-		}
-		type = POLY;
-		pos = MathHelp::calcCentroid(vertices, count);
-	}
-	void Poly::FromSphere(Sphere sphere, UINT thetaDiv, UINT phiDiv)
-	{
-
-	}
-	GLfloat Poly::volume() { return MathHelp::polygonVolume(this); }
 
 	// Ray
 	Ray::Ray()

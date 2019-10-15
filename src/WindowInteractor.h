@@ -54,8 +54,8 @@ public:
 	virtual void windowResize(int width, int height) { }
 
 protected:
-	glm::vec2 prevMousePos;
-	glm::vec2 mousePos;
+	glm::vec2 prevMousePos = glm::vec2(0.0f);
+	glm::vec2 mousePos = glm::vec2(0.0f);
 
 	bool leftButtonDown = false;
 	bool rightButtonDown = false;

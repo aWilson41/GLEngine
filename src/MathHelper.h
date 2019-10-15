@@ -4,8 +4,9 @@
 #include <gtc/matrix_transform.hpp>
 #include <math.h>
 #include <vector>
+#include <algorithm>
 
-typedef unsigned int UINT;
+using UINT = unsigned int;
 
 // Conversion of Math double of PI to float PI
 const GLfloat PI = glm::pi<GLfloat>();
@@ -16,17 +17,17 @@ const GLfloat TORADIANS = 180.0f / PI;
 const glm::mat2 I2 = glm::mat2(1.0f);
 const glm::mat3 I3 = glm::mat3(1.0f);
 const glm::mat4 I4 = glm::mat4(1.0f);
+const GLfloat FLOAT_MAX = std::numeric_limits<GLfloat>::max();
+const GLfloat FLOAT_MIN = std::numeric_limits<GLfloat>::min();
 
 // Forward declartions
 namespace geom2d
 {
 	class Rect;
-	class Poly;
 }
 namespace geom3d
 {
 	class Rect;
-	class Poly;
 }
 
 class MathHelp
@@ -47,6 +48,11 @@ public:
 
 	// Makes a unit vector from radians
 	static glm::vec2 slope(GLfloat theta);
+
+	// Compute 2d perp vector (-y, x)
+	static glm::vec2 perp(glm::vec2 a);
+
+	static GLfloat sqrDistance(glm::vec3 a, glm::vec3 b);
 
 	static glm::vec2 projAToB(glm::vec2 a, glm::vec2 b);
 	static glm::vec3 projAToB(glm::vec3 a, glm::vec3 b);
@@ -80,16 +86,6 @@ public:
 	// Calculates a bounding rectangle around the point set
 	static geom2d::Rect get2dBounds(glm::vec2* vertices, UINT count);
 	static geom3d::Rect get3dBounds(glm::vec3* vertices, UINT count);
-
-	// Generates a point cloud in a polygon
-	static std::vector<glm::vec2> generatePointCloud(geom2d::Poly* poly, UINT ptCount);
-	static std::vector<glm::vec3> generatePointCloud(geom3d::Poly* poly, UINT ptCount);
-
-	static bool isPointInPolygon(geom2d::Poly* poly, glm::vec2 pt);
-
-	static GLfloat polygonArea(geom2d::Poly* poly);
-	// Assumes duplicate vertices/triangle soup
-	static GLfloat polygonVolume(geom3d::Poly* poly);
 
 	static GLfloat trace(glm::mat2 mat) { return mat[0][0] + mat[1][1]; }
 

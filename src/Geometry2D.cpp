@@ -54,30 +54,6 @@ namespace geom2d
 	glm::vec2 Rect::bottomLeft() { return pos + glm::vec2(-extent.x, extent.y); }
 	glm::vec2 Rect::size() { return extent * 2.0f; }
 
-	// Polygon
-	Poly::Poly() { type = POLY; }
-	Poly::Poly(glm::vec2* vertices, UINT count)
-	{
-		// Copy the vertices
-		for (UINT i = 0; i < count; i++)
-		{
-			Poly::vertices[i] = vertices[i];
-		}
-		type = ShapeType::POLY;
-		pos = MathHelp::calcCentroid(vertices, count);
-	}
-	void Poly::FromCircle(Circle circle, UINT divisions)
-	{
-		vertices = std::vector<glm::vec2>(divisions);
-		GLfloat dTheta = TWOPI / divisions;
-		for (UINT i = 0; i < divisions; i++)
-		{
-			vertices[i] = MathHelp::slope(dTheta * i) * circle.radius + circle.pos;
-		}
-		pos = circle.pos;
-	}
-	GLfloat Poly::area() { return MathHelp::polygonArea(this); }
-
 	// Ray
 	Ray::Ray(glm::vec3 start, glm::vec3 direction)
 	{

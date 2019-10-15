@@ -5,6 +5,13 @@
 #include "Renderer.h"
 #include "Shaders.h"
 
+// Maps cell type to mode
+static std::map<CellType, GLenum> mode = {
+	{ CellType::POINT, GL_POINTS },
+	{ CellType::LINE, GL_LINES },
+	{ CellType::TRIANGLE, GL_TRIANGLES },
+	{ CellType::QUAD, GL_QUADS } };
+
 GlyphPolyDataMapper::GlyphPolyDataMapper()
 {
 	// Don't inherit parent properties
@@ -83,7 +90,7 @@ void GlyphPolyDataMapper::update()
 	}
 	updateBuffer();
 
-	representation = MathHelp::clamp(representation, POINT, polyData->getCellType());
+	representation = MathHelp::clamp(representation, CellType::POINT, polyData->getCellType());
 }
 void GlyphPolyDataMapper::updateInfo()
 {
@@ -191,11 +198,11 @@ void GlyphPolyDataMapper::draw(Renderer* ren)
 	glGetIntegerv(GL_POLYGON_MODE, &polyMode);
 
 	// Set the polygon mode needed
-	if (representation == TRIANGLE)
+	if (representation == CellType::TRIANGLE)
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	else if (representation == LINE)
+	else if (representation == CellType::LINE)
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	else if (representation == POINT)
+	else if (representation == CellType::POINT)
 	{
 		glPolygonMode(GL_FRONT_AND_BACK, GL_POINT);
 		glPointSize(pointSize);
@@ -222,10 +229,11 @@ void GlyphPolyDataMapper::draw(Renderer* ren)
 		glUniform3fv(ambientColorLocation, 1, &ambient[0]);
 
 	glBindVertexArray(vaoID);
+	CellType cellType = polyData->getCellType();
 	if (polyData->getIndexData() != nullptr && useIndex)
-		glDrawElementsInstanced(GL_TRIANGLES, polyData->getIndexCount(), GL_UNSIGNED_INT, (void*)(uintptr_t)0, instanceCount);
+		glDrawElementsInstanced(mode[cellType], polyData->getIndexCount(), GL_UNSIGNED_INT, (void*)(uintptr_t)0, instanceCount);
 	else
-		glDrawArraysInstanced(GL_TRIANGLES, 0, static_cast<GLsizei>(polyData->getPointCount()), instanceCount);
+		glDrawArraysInstanced(mode[cellType], 0, static_cast<GLsizei>(polyData->getPointCount()), instanceCount);
 	glBindVertexArray(0);
 
 	// Set the poly mode back to what it was

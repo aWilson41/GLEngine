@@ -8,16 +8,16 @@ void PolyData::allocateVertexData(UINT cellCount, CellType type)
 
 	switch (type)
 	{
-	case POINT:
+	case CellType::POINT:
 		points.count = cellCount;
 		break;
-	case LINE:
+	case CellType::LINE:
 		points.count = cellCount * 2;
 		break;
-	case TRIANGLE:
+	case CellType::TRIANGLE:
 		points.count = cellCount * 3;
 		break;
-	case QUAD:
+	case CellType::QUAD:
 		points.count = cellCount * 4;
 		break;
 	default:
@@ -42,16 +42,16 @@ void PolyData::allocateIndexData(UINT indexCount)
 
 	switch (cells.type)
 	{
-	case POINT:
+	case CellType::POINT:
 		cells.cellCount = indexCount;
 		break;
-	case LINE:
+	case CellType::LINE:
 		cells.cellCount = indexCount / 2;
 		break;
-	case TRIANGLE:
+	case CellType::TRIANGLE:
 		cells.cellCount = indexCount / 3;
 		break;
-	case QUAD:
+	case CellType::QUAD:
 		cells.cellCount = indexCount / 4;
 		break;
 	default:

@@ -10,7 +10,7 @@ void PNGWriter::update()
 		return;
 	}
 
-	if (imageData->getScalarType() != UCHAR_T)
+	if (imageData->getScalarType() != ScalarType::UCHAR_T)
 	{
 		printf("PNGWriter: Can only write unsigned char images.\n");
 		return;

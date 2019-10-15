@@ -14,7 +14,7 @@ void SphereSource::update()
 
 	// Vertices
 	UINT vertexCount = (divTheta - 1) * divPhi + 2;
-	outputData->allocateSharedVertexData(vertexCount, TRIANGLE);
+	outputData->allocateSharedVertexData(vertexCount, CellType::TRIANGLE);
 	glm::vec3* vData = reinterpret_cast<glm::vec3*>(outputData->getVertexData());
 	vData[0] = glm::vec3(0.0f, radius, 0.0f) + origin;
 

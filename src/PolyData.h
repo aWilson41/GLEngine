@@ -5,9 +5,9 @@
 #include "Types.h"
 #include <vector>
 // Plans:
-//  Add something to specify the content of a slot. This I can do things like: Give me the first
-//    available set of normals from the vertices attributes. Rather then relying on them being in certain index.
-//  Make this and imageData inherit the same base dataset
+//    - Add unlimited attributes but specific slots. So an attribute could be set as scalars or normals rather than relying
+//   on attribute position to tell.
+//    - Inherit DataSet base class
 
 // Data = structure + attributes
 // structure = topology + geometry

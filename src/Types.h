@@ -1,6 +1,6 @@
 #pragma once
 
-enum ScalarType
+enum class ScalarType
 {
 	UCHAR_T = 0,
 	INT_T = 1,
@@ -8,19 +8,19 @@ enum ScalarType
 	DOUBLE_T = 3
 };
 
-enum CellType
+enum class CellType
 {
-	POINT,
-	LINE,
-	TRIANGLE,
-	QUAD
+	POINT = 0,
+	LINE = 1,
+	TRIANGLE = 2,
+	QUAD = 3
 };
 
-// Typedef the call with the type
+	// Typedef the call with the type
 #define TemplateMacroCase(typeN, type, call) \
 	case typeN: { typedef type TT; call; }; break
 #define TemplateMacro(call) \
-	TemplateMacroCase(UCHAR_T, unsigned char, call); \
-	TemplateMacroCase(INT_T, int, call); \
-	TemplateMacroCase(FLOAT_T, float, call); \
-	TemplateMacroCase(DOUBLE_T, double, call)
+	TemplateMacroCase(ScalarType::UCHAR_T, unsigned char, call); \
+	TemplateMacroCase(ScalarType::INT_T, int, call); \
+	TemplateMacroCase(ScalarType::FLOAT_T, float, call); \
+	TemplateMacroCase(ScalarType::DOUBLE_T, double, call)

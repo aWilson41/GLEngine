@@ -4,6 +4,7 @@
 class PolyData;
 
 // Defines a uv sphere (defaults 0.5 radius for 1x1x1 sphere)
+// TODO: Other types of spheres, namely icosphere (subdivision of tetrahedron)
 class SphereSource
 {
 public:
@@ -11,16 +12,24 @@ public:
 	~SphereSource();
 
 public:
-	// Updates the output poly data to the plane specified by the parameters
+	PolyData* getOutput() { return outputData; }
+	// Updates the output poly data to the sphere specified by the parameters
 	void update();
 
-	PolyData* getOutput() { return outputData; }
-
+public:
 	glm::vec3 getOrigin() { return origin; }
 	GLfloat getRadius() { return radius; }
+	GLuint getThetaDivisions() { return divTheta; }
+	GLuint getPhiDivisions() { return divPhi; }
 
 	void setOrigin(glm::vec3 origin) { SphereSource::origin = origin; }
+	void setOrigin(GLfloat x, GLfloat y, GLfloat z) { origin = glm::vec3(x, y, z); }
 	void setRadius(GLfloat radius) { SphereSource::radius = radius; }
+	void setDivisions(GLuint divTheta, GLuint divPhi)
+	{
+		SphereSource::divTheta = divTheta;
+		SphereSource::divPhi = divPhi;
+	}
 
 protected:
 	PolyData* outputData = nullptr;

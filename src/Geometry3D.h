@@ -1,7 +1,10 @@
 #pragma once
 #include "MathHelper.h"
 
+class PolyData;
+
 // Just a little 3d geometry helper
+// Serves as a lightweight abstraction for geometric functions
 namespace geom3d
 {
 	enum ShapeType
@@ -9,8 +12,7 @@ namespace geom3d
 		POINT = 0,
 		SPHERE = 1,
 		RECT = 2,
-		POLY = 3,
-		RAY = 4
+		RAY = 3
 	};
 
 	class Shape
@@ -54,20 +56,6 @@ namespace geom3d
 
 	public:
 		glm::vec3 extent = glm::vec3(0.0f);
-	};
-
-	class Poly : public Shape
-	{
-	public:
-		Poly();
-		Poly(glm::vec3* vertices, UINT count);
-
-	public:
-		void FromSphere(Sphere sphere, UINT thetaDiv, UINT phiDiv);
-		GLfloat volume() override;
-
-	public:
-		std::vector<glm::vec3> vertices;
 	};
 
 	class Ray : public Shape

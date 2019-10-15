@@ -11,11 +11,11 @@ public:
 	~PlaneSource();
 
 public:
+	PolyData* getOutput() { return outputData; }
 	// Updates the output poly data to the plane specified by the parameters
 	void update();
 
-	PolyData* getOutput() { return outputData; }
-
+public:
 	glm::vec3 getOrigin() { return origin; }
 	glm::vec3 getP1() { return p1; }
 	glm::vec3 getP2() { return p2; }

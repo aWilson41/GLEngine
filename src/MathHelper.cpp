@@ -76,6 +76,14 @@ GLfloat MathHelp::cross(glm::vec2 a, glm::vec2 b) { return a.x * b.y - a.y * b.x
 
 glm::vec2 MathHelp::slope(GLfloat theta) { return glm::vec2(glm::cos(theta), glm::sin(theta)); }
 
+glm::vec2 MathHelp::perp(glm::vec2 a) { return glm::vec2(-a.y, a.x); }
+
+GLfloat MathHelp::sqrDistance(glm::vec3 a, glm::vec3 b)
+{
+	glm::vec3 diff = b - a;
+	return glm::dot(diff, diff);
+}
+
 glm::vec2 MathHelp::projAToB(glm::vec2 a, glm::vec2 b)
 {
 	GLfloat m = glm::length(b);
@@ -285,106 +293,6 @@ geom3d::Rect MathHelp::get3dBounds(glm::vec3* vertices, UINT count)
 	}
 	glm::vec3 size = glm::vec3(maxX - minX, maxY - minY, maxZ - minZ);
 	return geom3d::Rect(glm::vec3(minX, minY, minZ) + size * 0.5f, size);
-}
-
-std::vector<glm::vec2> MathHelp::generatePointCloud(geom2d::Poly* poly, UINT ptCount)
-{
-	// Just a rectangle hit or miss strategy. Maybe later I'll triangulate and actually calculate points inside the poly
-	std::vector<glm::vec2> results;
-	results.reserve(ptCount);
-	geom2d::Rect aabb = get2dBounds(poly->vertices.data(), static_cast<UINT>(poly->vertices.size()));
-	glm::vec2 pos = aabb.pos;
-	glm::vec2 extent = aabb.extent;
-	glm::vec2 size = extent * 2.0f;
-
-	UINT maxUint = std::numeric_limits<UINT>::max();
-	std::uniform_int_distribution<std::mt19937::result_type> random(0, maxUint);
-	std::mt19937 rng = std::mt19937(static_cast<UINT>(time(NULL)));
-	while (results.size() < ptCount)
-	{
-		// Generate a random point
-		glm::vec2 newPt = glm::vec2(static_cast<GLfloat>(random(rng)), static_cast<GLfloat>(random(rng)));
-		// Change random to [-1, 1]
-		newPt = newPt / (maxUint * 0.5f) - 1.0f;
-		// Change random to [-(width or height) / 2, (width or height) / 2] and add center
-		newPt = newPt * extent + pos;
-
-		// Check if the point lies in the polygon
-		if (isPointInPolygon(poly, newPt))
-			results.push_back(newPt);
-	}
-
-	return results;
-}
-std::vector<glm::vec3> MathHelp::generatePointCloud(geom3d::Poly* poly, UINT ptCount)
-{
-	// Just a rectangle hit or miss strategy. Maybe later I'll triangulate and actually calculate points inside the poly
-	std::vector<glm::vec3> results;
-	results.reserve(ptCount);
-	geom3d::Rect aabb = get3dBounds(poly->vertices.data(), static_cast<UINT>(poly->vertices.size()));
-	glm::vec2 pos = aabb.pos;
-	glm::vec2 extent = aabb.extent;
-	glm::vec2 size = extent * 2.0f;
-
-	UINT maxUint = std::numeric_limits<UINT>::max();
-	std::uniform_int_distribution<std::mt19937::result_type> random(0, maxUint);
-	std::mt19937 rng = std::mt19937(static_cast<UINT>(time(NULL)));
-	while (results.size() < ptCount)
-	{
-		// Generate a random point
-		glm::vec2 newPt = glm::vec2(static_cast<GLfloat>(random(rng)), static_cast<GLfloat>(random(rng)));
-		// Change random to [-1, 1]
-		newPt = newPt / (maxUint * 0.5f) - 1.0f;
-		// Change random to [-(width or height) / 2, (width or height) / 2] and add center
-		newPt = newPt * extent + pos;
-
-		// Check if the point lies in the polygon
-		/*if (isPointInPolygon(poly, newPt))
-			results.push_back(newPt);*/
-	}
-
-	return results;
-}
-
-bool MathHelp::isPointInPolygon(geom2d::Poly* poly, glm::vec2 pt)
-{
-	bool result = false;
-	UINT len = static_cast<UINT>(poly->vertices.size());
-	for (UINT i = 0, j = len - 1; i < len; j = i++)
-	{
-		glm::vec2& vi = poly->vertices[i];
-		glm::vec2& vj = poly->vertices[j];
-		if ((vi.y > pt.y) != (vj.y > pt.y) && (pt.x < (vj.x - vi.x) * (pt.y - vi.y) / (vj.y - vi.y) + vi.x))
-			result = !result;
-	}
-	return result;
-}
-
-GLfloat MathHelp::polygonArea(geom2d::Poly* poly)
-{
-	GLfloat area = 0.0f;
-	std::vector<glm::vec2>& vertices = poly->vertices;
-	UINT count = static_cast<UINT>(vertices.size());
-	for (UINT i = 0; i < count - 1; i++)
-	{
-		area += cross(vertices[i], vertices[i + 1]);
-	}
-	area += cross(vertices[count - 1], vertices[0]);
-	return area * 0.5f;
-}
-GLfloat MathHelp::polygonVolume(geom3d::Poly* poly)
-{
-	GLfloat volume = 0.0f;
-	std::vector<glm::vec3>& vertices = poly->vertices;
-	UINT count = static_cast<UINT>(vertices.size());
-	for (UINT i = 0; i < count; i+=3)
-	{
-		glm::vec3 a = vertices[i];
-		glm::vec3 b = vertices[i + 1];
-		glm::vec3 c = vertices[i + 2];
-		volume += glm::dot(a, glm::cross(b - a, c - a));
-	}
-	return volume / 6.0f;
 }
 
 void MathHelp::setData(glm::mat2x2& m, GLfloat m00, GLfloat m01, GLfloat m10, GLfloat m11)

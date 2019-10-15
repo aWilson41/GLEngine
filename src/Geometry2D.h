@@ -7,8 +7,7 @@ namespace geom2d
 	{
 		POINT = 0,
 		CIRCLE = 1,
-		RECT = 2,
-		POLY = 3
+		RECT = 2
 	};
 
 	class Shape
@@ -56,22 +55,6 @@ namespace geom2d
 	public:
 		glm::vec2 extent = glm::vec2(0.0f);
 	};
-
-	class Poly : public Shape
-	{
-	public:
-		Poly();
-		Poly(glm::vec2* vertices, UINT count);
-
-	public:
-		void FromCircle(Circle circle, UINT divisions);
-		// Signed area
-		GLfloat area() override;
-
-	public:
-		std::vector<glm::vec2> vertices;
-	};
-
 
 	class Ray
 	{

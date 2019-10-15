@@ -12,7 +12,7 @@ void PlaneSource::update()
 	if (outputData == nullptr)
 		return;
 
-	outputData->allocateSharedVertexData(4, TRIANGLE);
+	outputData->allocateSharedVertexData(4, CellType::TRIANGLE);
 	glm::vec3* vertexData = reinterpret_cast<glm::vec3*>(outputData->getVertexData());
 	// Defines a 1x1x1 plane
 	vertexData[0] = origin;
