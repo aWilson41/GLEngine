@@ -89,9 +89,8 @@ public:
 
 	static GLfloat trace(glm::mat2 mat) { return mat[0][0] + mat[1][1]; }
 
-	//static glm::mat2 outer(glm::vec2 a, glm::vec2 b);
 	template<glm::length_t C, glm::length_t R, typename T, glm::qualifier Q>
-	static glm::mat<C, R, T, Q> outer(glm::vec<C, T, Q> a, glm::vec<C, T, Q> b)
+	static glm::mat<C, R, T, Q> outer(glm::vec<C, T, Q> a, glm::vec<R, T, Q> b)
 	{
 		glm::mat<C, R, T, Q> results;
 		for (glm::length_t r = 0; r < R; r++)
@@ -140,7 +139,7 @@ public:
 
 	static void setData(glm::mat2x2& m, GLfloat m00, GLfloat m01, GLfloat m10, GLfloat m11);
 
-#ifdef EIGEN
+#ifdef USEEIGEN
 	// Singular value decomp source = u * (s * Identity) * v^T
 	static void svd(glm::mat2x2 source, glm::mat2x2* u, glm::vec2* s, glm::mat2x2* v);
 	// Polar decomp but only returns the rotational

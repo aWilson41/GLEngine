@@ -45,7 +45,6 @@ public:
 	void update() override;
 
 	void useShader(std::string shaderGroup) override;
-
 	void draw(Renderer* ren) override;
 
 protected:

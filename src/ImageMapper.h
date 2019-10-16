@@ -15,6 +15,7 @@ public:
 public:
 	ImageData* getInput() { return imageData; }
 	glm::mat4 getModelMatrix() { return model; }
+	GLuint getShaderProgramID() override;
 
 	void setInput(ImageData* data);
 	void setModelMatrix(glm::mat4 model) { ImageMapper::model = model; }
@@ -25,10 +26,7 @@ public:
 	void update() override;
 
 	void useShader(std::string shaderGroup) override;
-
 	void draw(Renderer* ren) override;
-
-	GLuint getShaderProgramID() override;
 
 protected:
 	void updateBuffer();
@@ -40,6 +38,7 @@ protected:
 	glm::mat4 imageSizeMat = glm::mat4(1.0f);
 
 	GLuint vboID = -1;
+	GLuint iboID = -1;
 	GLuint vaoID = -1;
 	GLuint texID = -1;
 

@@ -20,6 +20,14 @@ ImageMapper::~ImageMapper()
 {
 	if (planeSource != nullptr)
 		delete planeSource;
+
+	glUseProgram(0);
+	if (vaoID != -1)
+		glDeleteVertexArrays(1, &vaoID);
+	if (vboID != -1)
+		glDeleteBuffers(1, &vboID);
+	if (iboID != -1)
+		glDeleteBuffers(1, &iboID);
 }
 
 GLuint ImageMapper::getShaderProgramID() { return shaderProgram->getProgramID(); }
@@ -33,7 +41,7 @@ void ImageMapper::setInput(ImageData* data)
 
 void ImageMapper::update()
 {
-	// Failed to get shader or has no input
+	// Has no input
 	if (imageData == nullptr)
 		return;
 
@@ -72,8 +80,12 @@ void ImageMapper::update()
 		// Gen and allocate space for vbo
 		glGenBuffers(1, &vboID);
 		glBindBuffer(GL_ARRAY_BUFFER, vboID);
-		const GLuint numPts = planeSource->getOutput()->getPointCount();
+		const GLuint numPts = planeSource->getOutput()->getPointCount(); // 3coords 2texcoords
 		glBufferData(GL_ARRAY_BUFFER, numPts * sizeof(GLfloat) * 5, NULL, GL_DYNAMIC_DRAW);
+
+		glGenBuffers(1, &iboID);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, iboID);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * 6, NULL, GL_DYNAMIC_DRAW);
 
 		updateBuffer();
 	}
@@ -98,7 +110,7 @@ void ImageMapper::update()
 		else if (numComps == 3)
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, dim[0], dim[1], 0, GL_RGB, GL_UNSIGNED_BYTE, imageData->getData());
 
-		glUniform1i(glGetUniformLocation(shaderProgram->getProgramID(), "tex"), 0);
+		glUniform1i(glGetUniformLocation(0, "tex"), 0);
 	}
 	// If it already has update the one in there
 	else
@@ -114,7 +126,7 @@ void ImageMapper::updateBuffer()
 {
 	const GLfloat* vertexData = planeSource->getOutput()->getVertexData();
 	const GLfloat* texCoordData = planeSource->getOutput()->getTexCoordData();
-	const GLuint shaderID = shaderProgram->getProgramID();
+	const UINT* indexData = planeSource->getOutput()->getIndexData();
 	const GLint numPts = planeSource->getOutput()->getPointCount();
 
 	glBindBuffer(GL_ARRAY_BUFFER, vboID);
@@ -134,8 +146,13 @@ void ImageMapper::updateBuffer()
 	glEnableVertexAttribArray(texCoordAttribLocation);
 	glVertexAttribPointer(texCoordAttribLocation, 2, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 2, (void*)(uintptr_t)size1);
 
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, iboID);
+	glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, sizeof(GLuint) * 6, indexData);
+
 	glBindVertexArray(0);
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
 void ImageMapper::useShader(std::string shaderGroup)
@@ -168,7 +185,7 @@ void ImageMapper::draw(Renderer* ren)
 	glBindTexture(GL_TEXTURE_2D, texID);
 
 	glBindVertexArray(vaoID);
-	glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(planeSource->getOutput()->getPointCount()));
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)(uintptr_t)0);
 	glBindVertexArray(0);
 
 	// Set the poly mode back to what it was

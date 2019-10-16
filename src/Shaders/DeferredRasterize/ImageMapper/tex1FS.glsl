@@ -1,12 +1,19 @@
 #version 460
 uniform sampler2D tex;
 
+smooth in vec3 pos;
 smooth in vec2 texCoord;
 
-out vec4 fColor;
+layout (location = 0) out vec3 gPosition;
+layout (location = 1) out vec3 gNormal;
+layout (location = 2) out vec4 gDiffuseColor;
+layout (location = 3) out vec4 gAmbientColor;
 
 void main()
 {
-	vec4 val = texture2D(tex, texCoord);
-	fColor = vec4(val.x, val.x, val.x, 1.0f);
+	gPosition = pos;
+	gNormal = vec3(0.0f, 0.0f, 1.0f);
+	gDiffuseColor = vec4(0.0f, 0.0f, 0.0f, 1.0f);
+	float val = texture2D(tex, texCoord).r;
+	gAmbientColor = vec4(val, val, val, 1.0f);
 }

@@ -53,36 +53,28 @@ void PolyDataPointCloud::update()
 	glm::vec3* outputVertexData = reinterpret_cast<glm::vec3*>(outputData->getVertexData());
 
 	glm::vec3* inputVertexData = reinterpret_cast<glm::vec3*>(inputData->getVertexData());
-	UINT numInputPts = inputData->getPointCount();
+	const UINT numInputPts = inputData->getPointCount();
 
 	// Assume line segments
+	geom3d::Rect rect = MathHelp::get3dBounds(inputVertexData, numInputPts);
+	bounds[0] = rect.pos.x - rect.extent.x;
+	bounds[1] = rect.pos.x + rect.extent.x;
+	bounds[2] = rect.pos.y - rect.extent.y;
+	bounds[3] = rect.pos.y + rect.extent.y;
+	bounds[4] = rect.pos.z - rect.extent.z;
+	bounds[5] = rect.pos.z + rect.extent.z;
 	if (use2d)
 	{
 		// Just a rectangle hit or miss strategy. Maybe later I'll come up with a better scheme but for small polygons
-		// this is just as fast
+		// this is sufficient for me
 		if (numInputPts < 3)
 			return;
 
-		geom3d::Rect rect = MathHelp::get3dBounds(inputVertexData, numInputPts);
 		if (rect.size().z < 0.00001f)
 		{
-			const GLfloat z = inputVertexData[0].z;
-			GLfloat bounds[4] = { FLOAT_MAX, FLOAT_MIN, FLOAT_MAX, FLOAT_MIN };
-			for (UINT i = 0; i < numInputPts; i++)
-			{
-				const glm::vec3& pt = inputVertexData[i];
-				if (pt.x < bounds[0])
-					bounds[0] = pt.x;
-				if (pt.x > bounds[1])
-					bounds[1] = pt.x;
-				if (pt.y < bounds[2])
-					bounds[2] = pt.y;
-				if (pt.y > bounds[3])
-					bounds[3] = pt.y;
-			}
 			geom2d::Rect aabb;
-			aabb.pos = glm::vec2(bounds[0] + bounds[1], bounds[2] + bounds[3]) * 0.5f;
-			aabb.extent = glm::vec2(bounds[1] - bounds[0], bounds[3] - bounds[2]) * 0.5f;
+			aabb.pos = rect.pos;
+			aabb.extent = rect.extent;
 
 			const std::uniform_int_distribution<std::mt19937::result_type> random(0, UINT_MAX);
 			std::mt19937 rng = std::mt19937(static_cast<UINT>(time(NULL)));
@@ -97,8 +89,38 @@ void PolyDataPointCloud::update()
 				newPt = newPt * aabb.extent + aabb.pos;
 
 				// Check if the point lies in the polygon
-				if (isPointInPolygon2d(inputVertexData, numInputPts, glm::vec3(newPt, z)))
+				if (isPointInPolygon2d(inputVertexData, numInputPts, glm::vec3(newPt, rect.pos.z)))
 					outputVertexData[count++] = glm::vec3(newPt, 0.0f);
+			}
+
+			// Iteratively move points out of each other
+			const GLfloat r2 = radius * radius;
+			for (UINT i = 0; i < numIterations; i++)
+			{
+				for (UINT j = 0; j < numPts; j++)
+				{
+					for (UINT k = j + 1; k < numPts; k++)
+					{
+						glm::vec3& p1 = outputVertexData[j];
+						glm::vec3& p2 = outputVertexData[k];
+						const glm::vec3 diff = p2 - p1;
+						const GLfloat sqrLength = glm::dot(diff, diff);
+
+						if (sqrLength < r2)
+						{
+							GLfloat dist = glm::sqrt(sqrLength);
+							glm::vec3 n = diff / dist;
+
+							glm::vec3 halfResolve = n * (dist - radius) * 0.5f;
+							glm::vec3 resolvedPt1 = p1 + halfResolve;
+							glm::vec3 resolvedPt2 = p2 - halfResolve;
+							if (isPointInPolygon2d(inputVertexData, numInputPts, resolvedPt1))
+								p1 = resolvedPt1;
+							if (isPointInPolygon2d(inputVertexData, numInputPts, resolvedPt2))
+								p2 = resolvedPt2;
+						}
+					}
+				}
 			}
 		}
 		else
@@ -164,8 +186,6 @@ void PolyDataPointCloud::update()
 
 		UINT* indices = inputData->getIndexData();
 		UINT numIndices = inputData->getIndexCount();
-
-		geom3d::Rect rect = MathHelp::get3dBounds(inputVertexData, numInputPts);
 
 		const std::uniform_int_distribution<std::mt19937::result_type> random(0, UINT_MAX);
 		std::mt19937 rng = std::mt19937(static_cast<UINT>(time(NULL)));

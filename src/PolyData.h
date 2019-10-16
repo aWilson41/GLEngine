@@ -33,6 +33,9 @@ public:
 	GLfloat* getTexCoordData() { return static_cast<GLfloat*>(points.attrib[1]); }
 	GLfloat* getScalarData() { return static_cast<GLfloat*>(points.attrib[2]); }
 	GLuint* getIndexData() { return cells.data; }
+	
+	// Computes area of a 2d XY polygon
+	GLfloat getArea();
 
 	// Allocate vertices by cells. Resulting amount of vertices depend on cell type
 	void allocateVertexData(UINT cellCount, CellType type);

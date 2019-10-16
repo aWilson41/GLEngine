@@ -14,6 +14,6 @@ void main()
 	gPosition = pos;
 	gNormal = vec3(0.0f, 0.0f, 1.0f);
 	gDiffuseColor = vec4(0.0f, 0.0f, 0.0f, 1.0f);
-	vec4 val = texture2D(tex, texCoord);
-	gAmbientColor = vec4(val.x, val.x, val.x, 1.0f);
+	float val = texture2D(tex, texCoord).r;
+	gAmbientColor = vec4(val, val, val, 1.0f);
 }

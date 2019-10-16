@@ -29,6 +29,14 @@ find_path(GLEW
 find_path(GLFW
 	NAMES "/include/GLFW"
 	PATHS ENV PATH)
+# Find quiet/optional packages (don't complain when they aren't found)
+find_package(Eigen3 3.3 QUIET)
+
+if(USE_EIGEN OR (TARGET Eigen3::Eigen))
+	option(USE_EIGEN "Toggle for Eigen usage." ON)
+else()
+	option(USE_EIGEN "Toggle for Eigen usage." OFF)
+endif()
 
 #Set the includes and libraries
 set(GLENGINE_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_SOURCE_DIR}/src/Rendering ${CMAKE_CURRENT_BINARY_DIR} ${GLM}/glm ${GLEW}/include ${GLFW}/include ${OPENGL_INCLUDE_DIRS})
@@ -38,6 +46,10 @@ set(GLENGINE_LIBRARIES
 	debug ${GLFW}/lib/glfw3d.lib optimized ${GLFW}/lib/glfw3.lib
 	debug ${OPENGL_LIBRARIES} optimized ${OPENGL_LIBRARIES})
 
+if (USE_EIGEN)
+	set(GLENGINE_LIBRARIES ${GLENGINE_LIBRARIES} Eigen3::Eigen)
+	add_definitions(-DUSEEIGEN)
+endif()
 
 add_library(GLEngine STATIC ${ENGINE_FILES} ${ENGINE_RENDERING_FILES} ${SHADER_FILES} ${LODEPNG_FILES})
 target_include_directories(GLEngine PUBLIC ${GLENGINE_INCLUDE_DIRS})
