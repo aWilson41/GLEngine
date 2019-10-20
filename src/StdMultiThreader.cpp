@@ -1,6 +1,4 @@
 #include "StdMultiThreader.h"
-#include <thread>
-#include <vector>
 
 StdMultiThreader::StdMultiThreader()
 {
@@ -13,16 +11,28 @@ StdMultiThreader::StdMultiThreader()
 	threadInfo = new ThreadInfo[NumberOfThreads];
 }
 
-void StdMultiThreader::SetSingleMethod(ThreadFunctionType method, void* data)
+StdMultiThreader::~StdMultiThreader()
+{
+	if (threadInfo != nullptr)
+		delete[] threadInfo;
+}
+
+void StdMultiThreader::setMethod(std::function<void(ThreadInfo*)> method, void* data)
 {
 	StdMultiThreader::method = method;
 	StdMultiThreader::data = data;
 }
 
-void StdMultiThreader::SingleMethodExecute()
+void StdMultiThreader::executeComplete()
+{
+	execute();
+	synchronize();
+}
+
+void StdMultiThreader::execute()
 {
 	// Spawn all the threads
-	std::vector<std::thread> threads = std::vector<std::thread>(NumberOfThreads);
+	threads = std::vector<std::thread>(NumberOfThreads);
 	for (unsigned int i = 0; i < NumberOfThreads; i++)
 	{
 		threadInfo[i].NumberOfThreads = NumberOfThreads;
@@ -30,15 +40,13 @@ void StdMultiThreader::SingleMethodExecute()
 		threadInfo[i].UserData = data;
 		threads[i] = std::thread(method, &threadInfo[i]);
 	}
+}
+
+void StdMultiThreader::synchronize()
+{
 	// Wait for all the threads to finish
 	for (unsigned int i = 0; i < NumberOfThreads; i++)
 	{
 		threads[i].join();
 	}
-}
-
-StdMultiThreader::~StdMultiThreader()
-{
-	if (threadInfo != nullptr)
-		delete[] threadInfo;
 }

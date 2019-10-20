@@ -1,6 +1,7 @@
 #pragma once
-
-typedef void(*ThreadFunctionType)(void*);
+#include <thread>
+#include <vector>
+#include <functional>
 
 class ThreadInfo
 {
@@ -16,19 +17,27 @@ public:
 	StdMultiThreader();
 	~StdMultiThreader();
 
-	void SingleMethodExecute();
+	// Executes the function specified on the number of threads specified
+	// Waits for completion
+	void executeComplete();
 
-	void SetSingleMethod(ThreadFunctionType method, void* data);
+	// Executes the function specified on the number of threads specified
+	// Does not wait for completion
+	void execute();
 
-	void SetNumberOfThreads(unsigned int numThreads) { NumberOfThreads = numThreads; }
-	unsigned int GetNumberOfThreads() { return NumberOfThreads; }
+	void setMethod(std::function<void(ThreadInfo*)> method, void* data);
 
-	int GetNumOfThreads() { return NumberOfThreads; }
+	void setNumberOfThreads(unsigned int numThreads) { NumberOfThreads = numThreads; }
+	unsigned int getNumberOfThreads() { return NumberOfThreads; }
+
+	// Waits for all the threads to finish
+	void synchronize();
 
 protected:
+	std::vector<std::thread> threads;
 	unsigned int NumberOfThreads = 1;
 	ThreadInfo* threadInfo = nullptr;
 
-	ThreadFunctionType method = nullptr;
+	std::function<void(ThreadInfo*)> method;
 	void* data = nullptr;
 };
