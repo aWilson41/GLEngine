@@ -22,7 +22,7 @@ namespace geom3d
 		Shape(glm::vec3 pos);
 
 	public:
-		virtual GLfloat volume();
+		virtual GLfloat volume() const;
 
 	public:
 		ShapeType type = ShapeType::POINT;
@@ -37,7 +37,7 @@ namespace geom3d
 		Sphere(glm::vec3 center, GLfloat radius);
 
 	public:
-		GLfloat volume() override;
+		GLfloat volume() const override;
 
 	public:
 		GLfloat radius = 0.0f;
@@ -50,9 +50,9 @@ namespace geom3d
 		Rect(glm::vec3 center, glm::vec3 size);
 
 	public:
-		GLfloat volume() override;
-		glm::vec3 size();
-		glm::vec3 origin();
+		GLfloat volume() const override;
+		glm::vec3 size() const;
+		glm::vec3 origin() const;
 
 	public:
 		glm::vec3 extent = glm::vec3(0.0f);

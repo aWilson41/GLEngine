@@ -4,9 +4,6 @@
 #ifdef USEEIGEN
 #include <Eigen/SVD>
 #endif
-#include <random>
-#include <time.h>
-#include <tuple>
 
 glm::mat4 MathHelp::matrixRotateX(GLfloat radians)
 {

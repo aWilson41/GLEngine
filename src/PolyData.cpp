@@ -85,7 +85,7 @@ void PolyData::allocateScalarData(UINT numComps)
 	memset(points.attrib[2], 0, sizeof(GLfloat) * points.count * numComps);
 }
 
-GLfloat PolyData::getArea()
+GLfloat PolyData::getArea() const
 {
 	GLfloat area = 0.0f;
 	glm::vec3* vertices = reinterpret_cast<glm::vec3*>(getVertexData());

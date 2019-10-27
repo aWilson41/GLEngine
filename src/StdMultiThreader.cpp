@@ -17,12 +17,6 @@ StdMultiThreader::~StdMultiThreader()
 		delete[] threadInfo;
 }
 
-void StdMultiThreader::setMethod(std::function<void(ThreadInfo*)> method, void* data)
-{
-	StdMultiThreader::method = method;
-	StdMultiThreader::data = data;
-}
-
 void StdMultiThreader::executeComplete()
 {
 	execute();

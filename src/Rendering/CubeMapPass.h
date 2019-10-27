@@ -14,7 +14,6 @@ public:
 	GLuint* getColorOutput() { return &cubeMapTexID; }
 	GLuint* getDepthOutput() { return &cubeMapDepthTexID; }
 
-public:
 	void render(DeferredRenderer* ren) override;
 	void resizeFramebuffer(int width, int height) override;
 

@@ -9,21 +9,19 @@ class Renderer;
 class ShaderProperties
 {
 public:
-	// Updates the property combining all the properties to produce a unique 64bit value
-	unsigned long long update();
-
 	PropertyMap<32>* getObjectProperties() { return &objectProperties; }
 	PropertyMap<16>* getSceneProperties() { return &sceneProperties; }
 	PropertyMap<16>* getRenderProperties() { return &renderProperties; }
-	unsigned long long getKey() { return keyLong; }
+	unsigned long long getKey() const { return keyLong; }
+	std::string getFullBitString() const { return key.to_string(); }
+	std::string getFullPropertyString();
 
 	void setObjectProperties(PropertyMap<32> objectProperties) { ShaderProperties::objectProperties = objectProperties; }
 	void setSceneProperties(PropertyMap<16> sceneProperties) { ShaderProperties::sceneProperties = sceneProperties; }
 	void setRenderProperties(PropertyMap<16> renderProperties) { ShaderProperties::renderProperties = renderProperties; }
 
-	std::string getFullBitString() { return key.to_string(); }
-
-	std::string getFullPropertyString();
+	// Updates the property combining all the properties to produce a unique 64bit value
+	unsigned long long update();
 
 protected:
 	PropertyMap<32> objectProperties;
@@ -39,9 +37,10 @@ class AbstractMapper
 public:
 	AbstractMapper() { objectProperties = properties.getObjectProperties(); }
 
-	virtual GLuint getShaderProgramID() = 0;
+public:
+	virtual GLuint getShaderProgramID() const = 0;
 	bool getUseCustomShader() { return useCustomShader; }
-	virtual std::string getMapperName() = 0;
+	virtual std::string getMapperName() const = 0;
 
 	void setUseCustomShader(bool useCustomShader) { AbstractMapper::useCustomShader = useCustomShader; }
 
@@ -50,8 +49,7 @@ public:
 	// Binds the shader program
 	void use(Renderer* ren);
 	virtual void useShader(std::string shaderGroup) = 0;
-
-	virtual void draw(Renderer* ren) = 0;
+	virtual void draw(Renderer* ren) const = 0;
 
 protected:
 	PropertyMap<32>* objectProperties = nullptr;

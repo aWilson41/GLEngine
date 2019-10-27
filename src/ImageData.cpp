@@ -16,7 +16,7 @@ void ImageData::allocate2DImage(UINT* dim, double* spacing, double* origin, UINT
 	ImageData::numComps = numComps;
 	updateBounds();
 
-	UINT count = dim[0] * dim[1] * numComps;
+	const UINT count = dim[0] * dim[1] * numComps;
 	switch (type)
 	{
 		TemplateMacro(allocateData(static_cast<TT>(0), count));
@@ -38,7 +38,7 @@ void ImageData::allocate3DImage(UINT* dim, double* spacing, double* origin, UINT
 	ImageData::numComps = numComps;
 	updateBounds();
 
-	UINT count = dim[0] * dim[1] * dim[2] * numComps;
+	const UINT count = dim[0] * dim[1] * dim[2] * numComps;
 	switch (type)
 	{
 		TemplateMacro(allocateData(static_cast<TT>(0), count));

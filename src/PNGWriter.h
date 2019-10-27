@@ -6,9 +6,9 @@ class ImageData;
 class PNGWriter
 {
 public:
-	void setInput(ImageData* data) { imageData = data; }
-	std::string getFileName() { return fileName; }
+	std::string getFileName() const { return fileName; }
 
+	void setInput(ImageData* data) { imageData = data; }
 	void setFileName(std::string fileName) { PNGWriter::fileName = fileName; }
 
 	void update();

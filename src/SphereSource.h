@@ -12,15 +12,11 @@ public:
 	~SphereSource();
 
 public:
-	PolyData* getOutput() { return outputData; }
-	// Updates the output poly data to the sphere specified by the parameters
-	void update();
-
-public:
-	glm::vec3 getOrigin() { return origin; }
-	GLfloat getRadius() { return radius; }
-	GLuint getThetaDivisions() { return divTheta; }
-	GLuint getPhiDivisions() { return divPhi; }
+	PolyData* getOutput() const { return outputData; }
+	glm::vec3 getOrigin() const { return origin; }
+	GLfloat getRadius() const { return radius; }
+	GLuint getThetaDivisions() const { return divTheta; }
+	GLuint getPhiDivisions() const { return divPhi; }
 
 	void setOrigin(glm::vec3 origin) { SphereSource::origin = origin; }
 	void setOrigin(GLfloat x, GLfloat y, GLfloat z) { origin = glm::vec3(x, y, z); }
@@ -30,6 +26,9 @@ public:
 		SphereSource::divTheta = divTheta;
 		SphereSource::divPhi = divPhi;
 	}
+
+	// Updates the output poly data to the sphere specified by the parameters
+	void update();
 
 protected:
 	PolyData* outputData = nullptr;

@@ -10,6 +10,15 @@ public:
 	RenderPass(std::string name) { passName = name; }
 
 public:
+	GLuint getNumberOfInputPorts() const { return static_cast<GLuint>(inputs.size()); }
+	GLuint getNumberOfOutputPorts() const { return static_cast<GLuint>(outputs.size()); }
+	GLuint* getInput(size_t portNum) const { return inputs[portNum]; };
+	GLuint getOutput(size_t portNum) const { return outputs[portNum]; }
+	std::vector<GLuint*> getInputs() const { return inputs; }
+	std::vector<GLuint> getOutputs() const { return outputs; }
+	std::string getPassName() const { return passName; }
+	GLuint getFramebuffer() const { return fboID; }
+
 	void setPassDim(int width, int height)
 	{
 		fboWidth = width;
@@ -23,18 +32,7 @@ public:
 	}
 	void setNumberOfOutputPorts(GLuint numberOfPorts) { outputs.resize(numberOfPorts); }
 
-	GLuint getNumberOfInputPorts() { return static_cast<GLuint>(inputs.size()); }
-	GLuint getNumberOfOutputPorts() { return static_cast<GLuint>(outputs.size()); }
-	GLuint* getInput(size_t portNum) { return inputs[portNum]; };
-	GLuint getOutput(size_t portNum) { return outputs[portNum]; }
-	std::vector<GLuint*> getInputs() { return inputs; }
-	std::vector<GLuint> getOutputs() { return outputs; }
-	std::string getPassName() { return passName; }
-	GLuint getFramebuffer() { return fboID; }
-
-public:
 	virtual void render(DeferredRenderer* ren) = 0;
-
 	virtual void resizeFramebuffer(int width, int height) = 0;
 
 protected:

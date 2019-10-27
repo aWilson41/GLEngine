@@ -16,29 +16,28 @@ public:
 	~Renderer();
 
 public:
-	virtual void render();
-	// The direct renderer uses the default framebuffer
-	virtual void resizeFramebuffer(int width, int height);
-
-	// Might split mapper into actor where this becomes addActor
-	void addRenderItem(AbstractMapper* mapper) { mappers.push_back(mapper); }
-	void addMaterial(PhongMaterial material);
-
-	bool containsRenderItem(AbstractMapper* mapper);
-
-	PhongMaterial* getMaterial(UINT i) { return materials[i]; }
-	AbstractMapper* getRenderItem(UINT i) { return mappers[i]; }
-	Camera* getCamera() { return cam; }
-	ImageData* getOutputImage();
+	PhongMaterial* getMaterial(UINT i) const { return materials[i]; }
+	AbstractMapper* getRenderItem(UINT i) const { return mappers[i]; }
+	Camera* getCamera() const { return cam; }
+	ImageData* getOutputImage() const;
 	float* getClearColor() { return clearColor; }
-	glm::vec3 getLightDir() { return lightDir; }
-	int getFramebufferWidth() { return defaultFboWidth; }
-	int getFramebufferHeight() { return defaultFboHeight; }
-	std::string getShaderGroup() { return shaderGroup; };
+	glm::vec3 getLightDir() const { return lightDir; }
+	int getFramebufferWidth() const { return defaultFboWidth; }
+	int getFramebufferHeight() const { return defaultFboHeight; }
+	std::string getShaderGroup() const { return shaderGroup; };
+	// Returns if renderer contains the mapper
+	bool containsRenderItem(AbstractMapper* mapper) const;
 
 	void setCamera(Camera* cam) { Renderer::cam = cam; }
 	void setClearColor(float r, float g, float b, float a);
 	void setShaderGroup(std::string shaderGroup) { Renderer::shaderGroup = shaderGroup; }
+	// Might split mapper into actor where this becomes addActor
+	void addRenderItem(AbstractMapper* mapper) { mappers.push_back(mapper); }
+	void addMaterial(PhongMaterial material);
+
+	virtual void render();
+	// The direct renderer uses the default framebuffer
+	virtual void resizeFramebuffer(int width, int height);
 
 protected:
 	// Will eventually hold actors instead of mappers

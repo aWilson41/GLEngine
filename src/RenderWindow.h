@@ -17,22 +17,22 @@ public:
 	~RenderWindow() { stop(); }
 
 public:
+	WindowInteractor* getInteractor() const { return interactor; }
+	int getWindowWidth() const;
+	int getWindowHeight() const;
+	int getFramebufferWidth() const;
+	int getFramebufferHeight() const;
+
+	void setRenderer(Renderer* ren);
+	void setWindowName(std::string name);
+	void setInteractor(WindowInteractor* interactor);
+
 	void start();
 	void stop();
 	void render();
 	bool isActive();
 
-	void setRenderer(Renderer* ren);
-	void setWindowName(std::string name);
-	void setInteractor(WindowInteractor* interactor);
-	WindowInteractor* getInteractor() { return interactor; }
-
 	void glfwWindowResize(int width, int height);
-
-	int getWindowWidth();
-	int getWindowHeight();
-	int getFramebufferWidth();
-	int getFramebufferHeight();
 
 protected:
 	void createWindow(std::string windowName, int x, int y, int windowWidth, int windowHeight, bool fullscreen = false);

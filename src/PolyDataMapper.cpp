@@ -6,7 +6,7 @@
 #include "Shaders.h"
 
 // Maps cell type to mode
-static  std::map<CellType, GLenum> mode = {
+static std::map<CellType, GLenum> mode = {
 	{ CellType::POINT, GL_POINTS },
 	{ CellType::LINE, GL_LINES },
 	{ CellType::TRIANGLE, GL_TRIANGLES },
@@ -33,7 +33,7 @@ PolyDataMapper::~PolyDataMapper()
 		glDeleteBuffers(1, &iboID);
 }
 
-GLuint PolyDataMapper::getShaderProgramID() { return shaderProgram->getProgramID(); }
+GLuint PolyDataMapper::getShaderProgramID() const { return shaderProgram->getProgramID(); }
 
 void PolyDataMapper::update()
 {
@@ -201,7 +201,7 @@ void PolyDataMapper::useShader(std::string shaderGroup)
 	glUseProgram(shaderProgram->getProgramID());
 }
 
-void PolyDataMapper::draw(Renderer* ren)
+void PolyDataMapper::draw(Renderer* ren) const
 {
 	if (polyData == nullptr || vaoID == -1)
 		return;
@@ -225,9 +225,9 @@ void PolyDataMapper::draw(Renderer* ren)
 	}
 
 	// Set object uniforms
-	GLuint shaderProgramId = shaderProgram->getProgramID();
+	const GLuint shaderProgramId = shaderProgram->getProgramID();
 	glm::mat4 mvp = ren->getCamera()->proj * ren->getCamera()->view * model;
-	GLuint mvpMatrixLocation = glGetUniformLocation(shaderProgramId, "mvp_matrix");
+	const GLuint mvpMatrixLocation = glGetUniformLocation(shaderProgramId, "mvp_matrix");
 	if (mvpMatrixLocation != -1)
 		glUniformMatrix4fv(mvpMatrixLocation, 1, GL_FALSE, &mvp[0][0]);
 	glm::vec3 diffuseColor = glm::vec3(0.7f, 0.7f, 0.7f);
@@ -239,18 +239,18 @@ void PolyDataMapper::draw(Renderer* ren)
 		specularColor = material->getSpecular();
 		ambientColor = material->getAmbient();
 	}
-	GLuint diffuseColorLocation = glGetUniformLocation(shaderProgramId, "mat.diffuseColor");
+	const GLuint diffuseColorLocation = glGetUniformLocation(shaderProgramId, "mat.diffuseColor");
 	if (diffuseColorLocation != -1)
 		glUniform3fv(diffuseColorLocation, 1, &diffuseColor[0]);
-	GLuint specularColorLocation = glGetUniformLocation(shaderProgramId, "mat.specularColor");
+	const GLuint specularColorLocation = glGetUniformLocation(shaderProgramId, "mat.specularColor");
 	if (specularColorLocation != -1)
 		glUniform3fv(specularColorLocation, 1, &specularColor[0]);
-	GLuint ambientColorLocation = glGetUniformLocation(shaderProgramId, "mat.ambientColor");
+	const GLuint ambientColorLocation = glGetUniformLocation(shaderProgramId, "mat.ambientColor");
 	if (ambientColorLocation != -1)
 		glUniform3fv(ambientColorLocation, 1, &ambientColor[0]);
 
 	glBindVertexArray(vaoID);
-	CellType cellType = polyData->getCellType();
+	const CellType cellType = polyData->getCellType();
 	if (polyData->getIndexData() != nullptr && useIndex)
 		glDrawElements(mode[cellType], polyData->getIndexCount(), GL_UNSIGNED_INT, (void*)(uintptr_t)0);
 	else

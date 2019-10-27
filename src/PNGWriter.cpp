@@ -17,11 +17,11 @@ void PNGWriter::update()
 	}
 
 	// Copy the image to std vector because that's how lodepng wants it (add component)
-	UINT* dim = imageData->getDimensions();
+	const UINT* dim = imageData->getDimensions();
 	std::vector<unsigned char> image(dim[0] * dim[1] * 4);
 	unsigned char* data = static_cast<unsigned char*>(imageData->getData());
 
-	UINT numComps = imageData->getNumComps();
+	const UINT numComps = imageData->getNumComps();
 	if (numComps == 1)
 	{
 		for (UINT i = 0; i < dim[0] * dim[1]; i++)

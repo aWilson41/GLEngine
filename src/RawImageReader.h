@@ -9,8 +9,8 @@ public:
 	~RawImageReader();
 
 public:
-	ImageData* getOutput() { return imageData; }
-	std::string getFileName() { return fileName; }
+	ImageData* getOutput() const { return imageData; }
+	std::string getFileName() const { return fileName; }
 
 	void setFileName(std::string fileName) { RawImageReader::fileName = fileName; }
 

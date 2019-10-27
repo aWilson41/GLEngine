@@ -13,20 +13,19 @@ public:
 	~ImageMapper();
 
 public:
-	ImageData* getInput() { return imageData; }
-	glm::mat4 getModelMatrix() { return model; }
-	GLuint getShaderProgramID() override;
+	ImageData* getInput() const { return imageData; }
+	glm::mat4 getModelMatrix() const { return model; }
+	GLuint getShaderProgramID() const override;
+	std::string getMapperName() const override { return "ImageMapper"; }
 
 	void setInput(ImageData* data);
 	void setModelMatrix(glm::mat4 model) { ImageMapper::model = model; }
-
-	std::string getMapperName() override { return "ImageMapper"; }
 
 	// Updates the buffers to match the input data
 	void update() override;
 
 	void useShader(std::string shaderGroup) override;
-	void draw(Renderer* ren) override;
+	void draw(Renderer* ren) const override;
 
 protected:
 	void updateBuffer();

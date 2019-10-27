@@ -9,8 +9,8 @@ public:
 	~PNGReader();
 
 public:
-	ImageData* getOutput() { return imageData; }
-	std::string getFileName() { return fileName; }
+	ImageData* getOutput() const { return imageData; }
+	std::string getFileName() const { return fileName; }
 
 	void setFileName(std::string fileName) { PNGReader::fileName = fileName; }
 

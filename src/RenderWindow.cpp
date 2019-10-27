@@ -31,6 +31,57 @@ RenderWindow::RenderWindow(std::string windowName, int x, int y, int width, int 
 	glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
 }
 
+int RenderWindow::getWindowWidth() const
+{
+	int width, height;
+	glfwGetWindowSize(window, &width, &height);
+	return width;
+}
+int RenderWindow::getWindowHeight() const
+{
+	int width, height;
+	glfwGetWindowSize(window, &width, &height);
+	return height;
+}
+int RenderWindow::getFramebufferWidth() const
+{
+	int width, height;
+	glfwGetFramebufferSize(window, &width, &height);
+	return width;
+}
+int RenderWindow::getFramebufferHeight() const
+{
+	int width, height;
+	glfwGetFramebufferSize(window, &width, &height);
+	return height;
+}
+
+void RenderWindow::setRenderer(Renderer* ren)
+{
+	RenderWindow::ren = ren;
+	// Get the default framebuffers new size
+	int frameBufferWidth, frameBufferHeight;
+	glfwGetFramebufferSize(window, &frameBufferWidth, &frameBufferHeight);
+	// Initialize renderer to the same size framebuffer as the windows default
+	ren->resizeFramebuffer(frameBufferWidth, frameBufferHeight);
+}
+void RenderWindow::setWindowName(std::string name)
+{
+	windowName = name;
+	glfwSetWindowTitle(window, windowName.c_str());
+}
+void RenderWindow::setInteractor(WindowInteractor* interactor)
+{
+	RenderWindow::interactor = interactor;
+	// Initialize interactor with mouse position
+	double posX, posY;
+	glfwGetCursorPos(window, &posX, &posY);
+	int width, height;
+	glfwGetWindowSize(window, &width, &height);
+	interactor->init(glm::vec2(posX, posY), width, height);
+}
+
+
 void RenderWindow::start()
 {
 	// Update loop
@@ -54,57 +105,6 @@ void RenderWindow::render()
 
 bool RenderWindow::isActive() { return !glfwWindowShouldClose(window); }
 
-void RenderWindow::setRenderer(Renderer* ren)
-{
-	RenderWindow::ren = ren;
-	// Get the default framebuffers new size
-	int frameBufferWidth, frameBufferHeight;
-	glfwGetFramebufferSize(window, &frameBufferWidth, &frameBufferHeight);
-	// Initialize renderer to the same size framebuffer as the windows default
-	ren->resizeFramebuffer(frameBufferWidth, frameBufferHeight);
-}
-
-void RenderWindow::setWindowName(std::string name)
-{
-	windowName = name;
-	glfwSetWindowTitle(window, windowName.c_str());
-}
-
-void RenderWindow::setInteractor(WindowInteractor* interactor)
-{
-	RenderWindow::interactor = interactor;
-	// Initialize interactor with mouse position
-	double posX, posY;
-	glfwGetCursorPos(window, &posX, &posY);
-	int width, height;
-	glfwGetWindowSize(window, &width, &height);
-	interactor->init(glm::vec2(posX, posY), width, height);
-}
-
-int RenderWindow::getWindowWidth()
-{
-	int width, height;
-	glfwGetWindowSize(window, &width, &height);
-	return width;
-}
-int RenderWindow::getWindowHeight()
-{
-	int width, height;
-	glfwGetWindowSize(window, &width, &height);
-	return height;
-}
-int RenderWindow::getFramebufferWidth()
-{
-	int width, height;
-	glfwGetFramebufferSize(window, &width, &height);
-	return width;
-}
-int RenderWindow::getFramebufferHeight()
-{
-	int width, height;
-	glfwGetFramebufferSize(window, &width, &height);
-	return height;
-}
 
 void RenderWindow::createWindow(std::string windowName, int x, int y, int windowWidth, int windowHeight, bool fullscreen)
 {

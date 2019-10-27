@@ -30,7 +30,7 @@ ImageMapper::~ImageMapper()
 		glDeleteBuffers(1, &iboID);
 }
 
-GLuint ImageMapper::getShaderProgramID() { return shaderProgram->getProgramID(); }
+GLuint ImageMapper::getShaderProgramID() const { return shaderProgram->getProgramID(); }
 
 void ImageMapper::setInput(ImageData* data)
 {
@@ -68,7 +68,7 @@ void ImageMapper::update()
 
 	// Transform the plane the image goes on to be in the XY plane and be the size of the image
 	double* bounds = imageData->getBounds();
-	glm::vec2 size = glm::vec2(static_cast<GLfloat>(bounds[1] - bounds[0]), static_cast<GLfloat>(bounds[3] - bounds[2]));
+	const glm::vec2 size = glm::vec2(static_cast<GLfloat>(bounds[1] - bounds[0]), static_cast<GLfloat>(bounds[3] - bounds[2]));
 	imageSizeMat = MathHelp::matrixScale(size.x, size.y, 1.0f) * MathHelp::matrixRotateX(HALFPI);
 
 	// If the vao and vbo haven't been created yet
@@ -94,7 +94,7 @@ void ImageMapper::update()
 		updateBuffer();
 
 	// Setup the texture if it hasn't already been created
-	GLuint* dim = imageData->getDimensions();
+	const GLuint* dim = imageData->getDimensions();
 	if (texID == -1)
 	{
 		glGenTextures(1, &texID);
@@ -132,17 +132,17 @@ void ImageMapper::updateBuffer()
 	glBindBuffer(GL_ARRAY_BUFFER, vboID);
 
 	// Load positional data
-	GLint size1 = sizeof(GLfloat) * 3 * numPts;
+	const GLint size1 = sizeof(GLfloat) * 3 * numPts;
 	glBufferSubData(GL_ARRAY_BUFFER, 0, size1, vertexData);
 	// Set it's location and access scheme in vao
-	GLuint posAttribLocation = 0;// glGetAttribLocation(shaderID, "inPos");
+	const GLuint posAttribLocation = 0;// glGetAttribLocation(shaderID, "inPos");
 	glEnableVertexAttribArray(posAttribLocation);
 	glVertexAttribPointer(posAttribLocation, 3, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 3, (void*)(uintptr_t)0);
 
-	GLint size2 = sizeof(GLfloat) * 2 * numPts;
+	const GLint size2 = sizeof(GLfloat) * 2 * numPts;
 	glBufferSubData(GL_ARRAY_BUFFER, size1, size2, texCoordData);
 	// Set it's location and access scheme in vao
-	GLuint texCoordAttribLocation = 2;// glGetAttribLocation(shaderID, "inTexCoord");
+	const GLuint texCoordAttribLocation = 2;// glGetAttribLocation(shaderID, "inTexCoord");
 	glEnableVertexAttribArray(texCoordAttribLocation);
 	glVertexAttribPointer(texCoordAttribLocation, 2, GL_FLOAT, GL_FALSE, sizeof(GLfloat) * 2, (void*)(uintptr_t)size1);
 
@@ -166,7 +166,7 @@ void ImageMapper::useShader(std::string shaderGroup)
 	glUseProgram(shaderProgram->getProgramID());
 }
 
-void ImageMapper::draw(Renderer* ren)
+void ImageMapper::draw(Renderer* ren) const
 {
 	if (imageData == nullptr || vaoID == -1)
 		return;
@@ -178,7 +178,7 @@ void ImageMapper::draw(Renderer* ren)
 
 	// Object uniforms
 	glUseProgram(shaderProgram->getProgramID());
-	glm::mat4 mvp = ren->getCamera()->proj * ren->getCamera()->view * model * imageSizeMat;
+	const glm::mat4 mvp = ren->getCamera()->proj * ren->getCamera()->view * model * imageSizeMat;
 	glUniformMatrix4fv(glGetUniformLocation(shaderProgram->getProgramID(), "mvp_matrix"), 1, GL_FALSE, &mvp[0][0]);
 
 	glActiveTexture(GL_TEXTURE0);

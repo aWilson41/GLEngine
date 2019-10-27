@@ -26,8 +26,6 @@ GlyphPolyDataMapper::~GlyphPolyDataMapper()
 		delete[] offsetData;
 }
 
-GLuint GlyphPolyDataMapper::getShaderProgramID() { return shaderProgram->getProgramID(); }
-
 void GlyphPolyDataMapper::update()
 {
 	const GLfloat* vertexData = polyData->getVertexData();
@@ -188,7 +186,7 @@ void GlyphPolyDataMapper::useShader(std::string shaderGroup)
 	glUseProgram(shaderProgram->getProgramID());
 }
 
-void GlyphPolyDataMapper::draw(Renderer* ren)
+void GlyphPolyDataMapper::draw(Renderer* ren) const
 {
 	if (polyData == nullptr || vaoID == -1)
 		return;
@@ -209,9 +207,9 @@ void GlyphPolyDataMapper::draw(Renderer* ren)
 	}
 
 	// Set the uniforms
-	GLuint programId = shaderProgram->getProgramID();
+	const GLuint programId = shaderProgram->getProgramID();
 	glm::mat4 mvp = ren->getCamera()->proj * ren->getCamera()->view * model;
-	GLuint mvpMatrixLocation = glGetUniformLocation(programId, "mvp_matrix");
+	const GLuint mvpMatrixLocation = glGetUniformLocation(programId, "mvp_matrix");
 	if (mvpMatrixLocation != -1)
 		glUniformMatrix4fv(mvpMatrixLocation, 1, GL_FALSE, &mvp[0][0]);
 	glm::vec3 diffuse = glm::vec3(0.7f, 0.7f, 0.7f);
@@ -221,15 +219,15 @@ void GlyphPolyDataMapper::draw(Renderer* ren)
 		diffuse = material->getDiffuse();
 		ambient = material->getAmbient();
 	}
-	GLuint diffuseColorLocation = glGetUniformLocation(programId, "mat.diffuseColor");
+	const GLuint diffuseColorLocation = glGetUniformLocation(programId, "mat.diffuseColor");
 	if (diffuseColorLocation != -1)
 		glUniform3fv(diffuseColorLocation, 1, &diffuse[0]);
-	GLuint ambientColorLocation = glGetUniformLocation(programId, "mat.ambientColor");
+	const GLuint ambientColorLocation = glGetUniformLocation(programId, "mat.ambientColor");
 	if (ambientColorLocation != -1)
 		glUniform3fv(ambientColorLocation, 1, &ambient[0]);
 
 	glBindVertexArray(vaoID);
-	CellType cellType = polyData->getCellType();
+	const CellType cellType = polyData->getCellType();
 	if (polyData->getIndexData() != nullptr && useIndex)
 		glDrawElementsInstanced(mode[cellType], polyData->getIndexCount(), GL_UNSIGNED_INT, (void*)(uintptr_t)0, instanceCount);
 	else

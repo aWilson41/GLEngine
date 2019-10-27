@@ -8,6 +8,23 @@ class TrackballCamera : public Camera
 public:
 	TrackballCamera() { reset(); }
 
+public:
+	GLfloat getPhi() const { return phi; }
+	GLfloat getTheta() const { return theta; }
+	GLfloat getRho() const { return rho; }
+	GLfloat getRotateSpeed() const { return rotateSpeed; }
+	GLfloat getShiftSpeed() const { return shiftSpeed; }
+
+	void setPhi(GLfloat phi) { TrackballCamera::phi = phi; }
+	void setTheta(GLfloat theta) { TrackballCamera::theta = theta; }
+	void setRho(GLfloat rho) { TrackballCamera::rho = rho; }
+	// Default is 4.0f
+	void setRotateSpeed(GLfloat speed) { rotateSpeed = speed; }
+	// Default is 0.025f
+	void setShiftSpeed(GLfloat speed) { shiftSpeed = speed; }
+	// Default is 0.5f
+	void setZoomSpeed(GLfloat speed) { zoomSpeed = speed; }
+
 	void initTrackballCamera(GLfloat phi, GLfloat theta, GLfloat rho,
 		GLfloat fov, GLfloat aspectRatio, GLfloat nearZ, GLfloat farZ)
 	{
@@ -94,22 +111,6 @@ public:
 		rho += diff * zoomSpeed;
 		updateCam();
 	}
-
-	void setPhi(GLfloat phi) { TrackballCamera::phi = phi; }
-	void setTheta(GLfloat theta) { TrackballCamera::theta = theta; }
-	void setRho(GLfloat rho) { TrackballCamera::rho = rho; }
-	// Default is 4.0f
-	void setRotateSpeed(GLfloat speed) { rotateSpeed = speed; }
-	// Default is 0.025f
-	void setShiftSpeed(GLfloat speed) { shiftSpeed = speed; }
-	// Default is 0.5f
-	void setZoomSpeed(GLfloat speed) { zoomSpeed = speed; }
-
-	GLfloat getPhi() { return phi; }
-	GLfloat getTheta() { return theta; }
-	GLfloat getRho() { return rho; }
-	GLfloat getRotateSpeed() { rotateSpeed; }
-	GLfloat getShiftSpeed() { shiftSpeed; }
 
 protected:
 	GLfloat phi = 1.4f;

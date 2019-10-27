@@ -11,15 +11,15 @@ public:
 	ShaderFile(std::string fileName, GLenum shaderType) { load(fileName, shaderType); }
 
 public:
-	void load(std::string fileName, GLenum shaderType);
-	void compile();
+	std::string getSrc() const { return srcStr; }
+	std::string getFileName() const { return fileName; }
+	GLuint getShaderID() const { return shaderID; }
+	GLenum getShaderType() const { return shaderType; }
 
 	void setID(GLuint id) { shaderID = id; }
 
-	std::string getSrc() { return srcStr; }
-	std::string getFileName() { return fileName; }
-	GLuint getShaderID() { return shaderID; }
-	GLenum getShaderType() { return shaderType; }
+	void load(std::string fileName, GLenum shaderType);
+	void compile();
 
 private:
 	std::string read();
@@ -39,19 +39,14 @@ public:
 	~ShaderProgram();
 
 public:
-	std::string getName() { return shaderName; }
+	GLuint getProgramID() const { return programID; }
+	std::string getName() const { return shaderName; }
 
 	std::string readShaderFile(std::string filePath);
-
-
 	void loadShader(std::string filePath, GLenum shaderType);
-
 	void compileShader(const char* src, GLuint shaderID, std::string filePath);
 	void compileProgram();
-
 	void release();
-
-	GLuint getProgramID() { return programID; }
 
 protected:
 	std::string shaderName = "unnamed";

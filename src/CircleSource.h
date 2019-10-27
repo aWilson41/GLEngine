@@ -11,19 +11,18 @@ public:
 	~CircleSource();
 
 public:
-	PolyData* getOutput() { return outputData; }
-	// Updates the output poly data to the circle specified by the parameters
-	void update();
-
-public:
-	glm::vec3 getOrigin() { return origin; }
-	GLfloat getRadius() { return radius; }
-	GLuint getDivisions() { return div; }
+	PolyData* getOutput() const { return outputData; }
+	glm::vec3 getOrigin() const { return origin; }
+	GLfloat getRadius() const { return radius; }
+	GLuint getDivisions() const { return div; }
 
 	void setOrigin(glm::vec3 origin) { CircleSource::origin = origin; }
 	void setOrigin(GLfloat x, GLfloat y, GLfloat z = 0.0f) { origin = glm::vec3(x, y, z); }
 	void setRadius(GLfloat radius) { CircleSource::radius = radius; }
 	void setDivisions(GLuint div) { CircleSource::div = div; }
+
+	// Updates the output poly data to the circle specified by the parameters
+	void update();
 
 protected:
 	PolyData* outputData = nullptr;

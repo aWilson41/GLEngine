@@ -9,36 +9,37 @@ public:
 	ImageData() { }
 	~ImageData();
 
-	void allocate2DImage(UINT* dim, double* spacing, double* origin, UINT numComps, ScalarType type);
-	void allocate3DImage(UINT* dim, double* spacing, double* origin, UINT numComps, ScalarType type);
+public:
+	UINT* getDimensions() { return dim; }
+	double* getBounds() { return bounds; }
+	double* getSpacing() { return spacing; }
+	double* getOrigin() { return origin; }
+	void* getData() { return data; }
+	UINT getNumComps() const { return numComps; }
+	ScalarType getScalarType() const { return type; }
 
 	void setSpacing(double x, double y, double z)
-	{ 
+	{
 		spacing[0] = x;
 		spacing[1] = y;
 		spacing[2] = z;
 	}
-	void setOrigin(double x, double y, double z)
+	void setOrigin(double x, const double y, double z)
 	{
 		origin[0] = x;
 		origin[1] = y;
 		origin[2] = z;
 	}
 
-	UINT* getDimensions() { return dim; }
-	double* getBounds() { return bounds; }
-	double* getSpacing() { return spacing; }
-	double* getOrigin() { return origin; }
-	void* getData() { return data; }
-	UINT getNumComps() { return numComps; }
-	ScalarType getScalarType() { return type; }
+	void allocate2DImage(UINT* dim, double* spacing, double* origin, UINT numComps, ScalarType type);
+	void allocate3DImage(UINT* dim, double* spacing, double* origin, UINT numComps, ScalarType type);
 
 	// Updates bounds given dimensions, spacing, & origin
 	void updateBounds();
 
 protected:
 	template<class T>
-	void allocateData(T, UINT count) { data = new T[count]; }
+	void allocateData(T, const UINT count) { data = new T[count]; }
 
 protected:
 	void* data = nullptr;

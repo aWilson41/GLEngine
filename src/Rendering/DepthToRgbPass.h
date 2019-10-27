@@ -11,10 +11,10 @@ public:
 	~DepthToRgbPass();
 
 public:
-	void setDepthInput(GLuint* depthInput) { setInput(0, depthInput); }
 	GLuint* getColorOutput() { return &colorTexID; }
 
-public:
+	void setDepthInput(GLuint* depthInput) { setInput(0, depthInput); }
+
 	void render(DeferredRenderer* ren) override;
 	void resizeFramebuffer(int width, int height) override;
 

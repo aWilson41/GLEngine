@@ -15,14 +15,15 @@ public:
 	~PolyDataMapper();
 
 public:
-	PolyData* getInput() { return polyData; }
-	ShaderProgram* getShaderProgram() { return shaderProgram; }
-	PhongMaterial* getMaterial() { return material; }
-	glm::mat4 getModelMatrix() { return model; }
-	CellType getPolyRepresentation() { return representation; }
-	GLfloat getPointSize() { return pointSize; }
-	GLfloat getLineWidth() { return lineWidth; }
-	GLuint getShaderProgramID() override;
+	PolyData* getInput() const { return polyData; }
+	ShaderProgram* getShaderProgram() const { return shaderProgram; }
+	PhongMaterial* getMaterial() const { return material; }
+	glm::mat4 getModelMatrix() const { return model; }
+	CellType getPolyRepresentation() const { return representation; }
+	GLfloat getPointSize() const { return pointSize; }
+	GLfloat getLineWidth() const { return lineWidth; }
+	GLuint getShaderProgramID() const override;
+	std::string getMapperName() const override { return "PolyDataMapper"; }
 
 	void setInput(PolyData* input) { polyData = input; }
 	void setShaderProgram(ShaderProgram* shaderProgram)
@@ -40,12 +41,10 @@ public:
 	void setUseScalars(bool val) { useScalars = val; }
 	void setUseIndex(bool val) { useIndex = val; }
 
-	std::string getMapperName() override { return "PolyDataMapper"; }
-
 	void update() override;
 
 	void useShader(std::string shaderGroup) override;
-	void draw(Renderer* ren) override;
+	void draw(Renderer* ren) const override;
 
 protected:
 	// Updates internal info about the data to be processed

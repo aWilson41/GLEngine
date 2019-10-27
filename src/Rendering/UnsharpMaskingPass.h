@@ -16,7 +16,6 @@ public:
 public:
 	void setColorInput(GLuint* colorInput) { setInput(0, colorInput); }
 	void setDepthInput(GLuint* depthInput) { setInput(1, depthInput); }
-
 	// Enhances the effect
 	void setDarknessFactor(GLfloat darknessFactor) { UnsharpMaskingPass::darknessFactor = darknessFactor; }
 	// Area of effect (radius for the gaussian blur)
@@ -26,7 +25,6 @@ public:
 	// Gaussian blur sigma, if not specified will use sigma = blurRadius
 	void setSigma(GLfloat sigma) { UnsharpMaskingPass::sigma = sigma; }
 
-public:
 	void render(DeferredRenderer* ren) override;
 	void resizeFramebuffer(int width, int height) override;
 

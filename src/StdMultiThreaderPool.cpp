@@ -25,12 +25,6 @@ StdMultiThreaderPool::~StdMultiThreaderPool()
 		delete[] threadInfo;
 }
 
-void StdMultiThreaderPool::setMethod(std::function<void(ThreadInfo*)> method, void* data)
-{
-	StdMultiThreaderPool::method = method;
-	StdMultiThreaderPool::data = data;
-}
-
 void StdMultiThreaderPool::start()
 {
 	// Spawn all the threads in waiting

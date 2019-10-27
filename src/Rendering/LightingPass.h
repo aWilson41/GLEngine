@@ -19,7 +19,6 @@ public:
 	void setDiffuseInput(GLuint* diffuseInput) { setInput(2, diffuseInput); }
 	void setAmbientInput(GLuint* ambientInput) { setInput(3, ambientInput); }
 
-public:
 	void render(DeferredRenderer* ren) override;
 	void resizeFramebuffer(int width, int height) override;
 

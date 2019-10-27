@@ -12,6 +12,9 @@ public:
 	~DeferredRenderer();
 
 public:
+	void setColorFboID(GLuint fboID) { colorFboID = fboID; }
+	void setDepthFboID(GLuint fboID) { depthFboID = fboID; }
+
 	void render() override;
 
 	void pass();
@@ -25,9 +28,6 @@ public:
 	void removePass(RenderPass* pass);
 
 	void resizeFramebuffer(int width, int height) override;
-
-	void setColorFboID(GLuint fboID) { colorFboID = fboID; }
-	void setDepthFboID(GLuint fboID) { depthFboID = fboID; }
 
 private:
 	GLuint emptyVaoID = -1;

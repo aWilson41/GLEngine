@@ -3,9 +3,7 @@
 #include "Types.h"
 
 // Does rendering and pre rendering operations (mapping input to visual representation)
-// Generalized class, makes no assumptions about data provided too it at the cost of some optimization
 // This class does instanced drawing with the input and offset data provided
-// Currently only supports normals
 class GlyphPolyDataMapper : public PolyDataMapper
 {
 public:
@@ -13,7 +11,10 @@ public:
 	~GlyphPolyDataMapper();
 
 public:
-	//void setInput(PolyData* input);
+	GLfloat* getOffsetData() const { return offsetData; }
+	GLfloat* getColorData() const { return colorData; }
+	UINT getInstanceCount() const { return instanceCount; }
+	std::string getMapperName() const override { return "GlyphPolyDataMapper"; }
 
 	void allocateOffsets(UINT count)
 	{
@@ -30,20 +31,11 @@ public:
 		colorData = new GLfloat[count * 3];
 	}
 
-	GLfloat* getOffsetData() { return offsetData; }
-	GLfloat* getColorData() { return colorData; }
-	UINT getInstanceCount() { return instanceCount; }
-
-	std::string getMapperName() override { return "GlyphPolyDataMapper"; }
-
 	// Updates the buffer based on the set poly data. If it's the first time it initializes the buffer
 	void update() override;
 
 	void useShader(std::string shaderGroup) override;
-
-	void draw(Renderer* ren) override;
-
-	GLuint getShaderProgramID() override;
+	void draw(Renderer* ren) const override;
 
 protected:
 	void updateInfo();

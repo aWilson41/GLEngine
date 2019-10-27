@@ -10,13 +10,11 @@ public:
 	~ComputeNormalsPass();
 
 public:
-	void setColorInput(GLuint* colorInput) { setInput(0, colorInput); }
-
 	GLuint* getNormalOutput() { return &normalTexID; }
 
+	void setColorInput(GLuint* colorInput) { setInput(0, colorInput); }
 	void setMaxDepth(GLfloat maxDepth) { ComputeNormalsPass::maxDepth = maxDepth; }
 
-public:
 	void render(DeferredRenderer* ren) override;
 	void resizeFramebuffer(int width, int height) override;
 

@@ -13,7 +13,7 @@ namespace geom2d
 		Shape::pos = pos;
 		type = POINT;
 	}
-	GLfloat Shape::area() { return 0.0f; }
+	GLfloat Shape::area() const { return 0.0f; }
 
 	// Circle
 	Circle::Circle()
@@ -33,7 +33,7 @@ namespace geom2d
 		Circle::radius = radius;
 		type = CIRCLE;
 	}
-	GLfloat Circle::area() { return PI * radius * radius; }
+	GLfloat Circle::area() const { return PI * radius * radius; }
 
 	// Rectangle
 	Rect::Rect()
@@ -47,12 +47,12 @@ namespace geom2d
 		extent = size * 0.5f;
 		type = RECT;
 	}
-	GLfloat Rect::area() { return extent.x * extent.y * 4.0f; }
-	glm::vec2 Rect::topLeft() { return pos - extent; }
-	glm::vec2 Rect::topRight() { return pos + glm::vec2(extent.x, -extent.y); }
-	glm::vec2 Rect::bottomRight() { return pos + extent; }
-	glm::vec2 Rect::bottomLeft() { return pos + glm::vec2(-extent.x, extent.y); }
-	glm::vec2 Rect::size() { return extent * 2.0f; }
+	GLfloat Rect::area() const { return extent.x * extent.y * 4.0f; }
+	glm::vec2 Rect::topLeft() const { return pos - extent; }
+	glm::vec2 Rect::topRight() const { return pos + glm::vec2(extent.x, -extent.y); }
+	glm::vec2 Rect::bottomRight() const { return pos + extent; }
+	glm::vec2 Rect::bottomLeft() const { return pos + glm::vec2(-extent.x, extent.y); }
+	glm::vec2 Rect::size() const { return extent * 2.0f; }
 
 	// Ray
 	Ray::Ray(glm::vec3 start, glm::vec3 direction)

@@ -7,19 +7,17 @@ class Camera
 public:
 	Camera() { reset(); }
 
-	// Maps all parameters of Camera
-	void initCamera(GLfloat fov, GLfloat aspectRatio, GLfloat nearZ, GLfloat farZ, glm::vec3 eyePos, glm::vec3 focalPt, glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f))
+public:
+	geom3d::Ray getEyeRay(glm::vec2 ndc) const
 	{
-		setEyePos(eyePos);
-		setFocalPt(focalPt);
-		Camera::up = up;
-		updateLookAt();
-
-		setPerspective(fov, aspectRatio, nearZ, farZ);
+		glm::vec4 worldPos = glm::inverse(proj * view) * glm::vec4(ndc, 0.0f, 1.0f);
+		return geom3d::Ray(eyePos, glm::normalize(glm::vec3(worldPos) / worldPos.w - eyePos));
 	}
-
-	// Resets the camera to defaults
-	virtual void reset() { initCamera(45.0f, 16.0f / 9.0f, 0.0001f, 1000.0f, glm::vec3(1.0f), glm::vec3(0.0f)); }
+	geom3d::Ray getEyeRay(GLfloat x, GLfloat y) const { return getEyeRay(glm::vec2(x, y)); }
+	glm::vec3 getEyePos() const { return eyePos; }
+	glm::vec3 getFocalPt() const { return focalPt; }
+	glm::vec3 getUp() const { return up; }
+	glm::vec3 getLookDir() const { return glm::normalize(focalPt - eyePos); }
 
 	void setPerspective(GLfloat fov, GLfloat aspectRatio, GLfloat nearZ, GLfloat farZ)
 	{
@@ -37,22 +35,22 @@ public:
 	}
 	void setEyePos(glm::vec3 pos) { eyePos = pos; }
 	void setEyePos(GLfloat x, GLfloat y, GLfloat z) { setEyePos(glm::vec3(x, y, z)); }
-
 	void setFocalPt(glm::vec3 pt) { focalPt = pt; }
 	void setFocalPt(GLfloat x, GLfloat y, GLfloat z) { setFocalPt(glm::vec3(x, y, z)); }
 	void updateLookAt() { view = glm::lookAt(eyePos, focalPt, up); }
 
-	geom3d::Ray getEyeRay(glm::vec2 ndc)
+	// Maps all parameters of Camera
+	void initCamera(GLfloat fov, GLfloat aspectRatio, GLfloat nearZ, GLfloat farZ, glm::vec3 eyePos, glm::vec3 focalPt, glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f))
 	{
-		glm::vec4 worldPos = glm::inverse(proj * view) * glm::vec4(ndc, 0.0f, 1.0f);
-		return geom3d::Ray(eyePos, glm::normalize(glm::vec3(worldPos) / worldPos.w - eyePos));
+		setEyePos(eyePos);
+		setFocalPt(focalPt);
+		Camera::up = up;
+		updateLookAt();
+		setPerspective(fov, aspectRatio, nearZ, farZ);
 	}
-	geom3d::Ray getEyeRay(GLfloat x, GLfloat y) { return getEyeRay(glm::vec2(x, y)); }
 
-	glm::vec3 getEyePos() { return eyePos; }
-	glm::vec3 getFocalPt() { return focalPt; }
-	glm::vec3 getUp() { return up; }
-	glm::vec3 getLookDir() { return glm::normalize(focalPt - eyePos); }
+	// Resets the camera to defaults
+	virtual void reset() { initCamera(45.0f, 16.0f / 9.0f, 0.0001f, 1000.0f, glm::vec3(1.0f), glm::vec3(0.0f)); }
 
 public:
 	// Camera view matrix

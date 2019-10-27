@@ -11,18 +11,17 @@ public:
 	~PlaneSource();
 
 public:
-	PolyData* getOutput() { return outputData; }
-	// Updates the output poly data to the plane specified by the parameters
-	void update();
-
-public:
-	glm::vec3 getOrigin() { return origin; }
-	glm::vec3 getP1() { return p1; }
-	glm::vec3 getP2() { return p2; }
+	PolyData* getOutput() const { return outputData; }
+	glm::vec3 getOrigin() const { return origin; }
+	glm::vec3 getP1() const { return p1; }
+	glm::vec3 getP2() const { return p2; }
 
 	void setOrigin(glm::vec3 origin) { PlaneSource::origin = origin; }
 	void setP1(glm::vec3 p1) { PlaneSource::p1 = p1; }
 	void setP2(glm::vec3 p2) { PlaneSource::p2 = p2; }
+
+	// Updates the output poly data to the plane specified by the parameters
+	void update();
 
 protected:
 	PolyData* outputData = nullptr;

@@ -14,7 +14,6 @@ public:
 	GLuint* getAmbientOutput() { return &gAmbientColorTexID; }
 	GLuint* getDepthOutput() { return &gDepthTexID; }
 
-public:
 	void render(DeferredRenderer* ren) override;
 	void resizeFramebuffer(int width, int height) override;
 

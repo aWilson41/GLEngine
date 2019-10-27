@@ -1,5 +1,4 @@
 #include "Geometry3D.h"
-#include "PolyData.h"
 
 namespace geom3d
 {
@@ -14,7 +13,7 @@ namespace geom3d
 		Shape::pos = pos;
 		type = POINT;
 	}
-	GLfloat Shape::volume() { return 0.0f; }
+	GLfloat Shape::volume() const { return 0.0f; }
 
 	// Sphere
 	Sphere::Sphere()
@@ -34,7 +33,7 @@ namespace geom3d
 		Sphere::radius = radius;
 		type = SPHERE;
 	}
-	GLfloat Sphere::volume() { return 4.0f * PI * radius * radius * radius / 3.0f; }
+	GLfloat Sphere::volume() const { return 4.0f * PI * radius * radius * radius / 3.0f; }
 
 	// Rect
 	Rect::Rect()
@@ -48,9 +47,9 @@ namespace geom3d
 		extent = size * 0.5f;
 		type = RECT;
 	}
-	GLfloat Rect::volume() { return extent.x * extent.y * extent.z * 8.0f; }
-	glm::vec3 Rect::size() { return extent * 2.0f; }
-	glm::vec3 Rect::origin() { return pos - extent; }
+	GLfloat Rect::volume() const { return extent.x * extent.y * extent.z * 8.0f; }
+	glm::vec3 Rect::size() const { return extent * 2.0f; }
+	glm::vec3 Rect::origin() const { return pos - extent; }
 
 	// Ray
 	Ray::Ray()

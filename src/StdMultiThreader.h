@@ -17,6 +17,16 @@ public:
 	StdMultiThreader();
 	~StdMultiThreader();
 
+public:
+	unsigned int getNumberOfThreads() const { return NumberOfThreads; }
+
+	void setMethod(std::function<void(ThreadInfo*)> method, void* data)
+	{
+		StdMultiThreader::method = method;
+		StdMultiThreader::data = data;
+	}
+	void setNumberOfThreads(unsigned int numThreads) { NumberOfThreads = numThreads; }
+
 	// Executes the function specified on the number of threads specified
 	// Waits for completion
 	void executeComplete();
@@ -24,11 +34,6 @@ public:
 	// Executes the function specified on the number of threads specified
 	// Does not wait for completion
 	void execute();
-
-	void setMethod(std::function<void(ThreadInfo*)> method, void* data);
-
-	void setNumberOfThreads(unsigned int numThreads) { NumberOfThreads = numThreads; }
-	unsigned int getNumberOfThreads() { return NumberOfThreads; }
 
 	// Waits for all the threads to finish
 	void synchronize();

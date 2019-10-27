@@ -21,6 +21,18 @@ public:
 	StdMultiThreaderPool();
 	~StdMultiThreaderPool();
 
+public:
+	unsigned int getNumberOfThreads() const { return NumberOfThreads; }
+	int getNumOfThreads() const { return NumberOfThreads; }
+
+	// Set the method to complete en-batch
+	void setMethod(std::function<void(ThreadInfo*)> method, void* data)
+	{
+		StdMultiThreaderPool::method = method;
+		StdMultiThreaderPool::data = data;
+	}
+	void setNumberOfThreads(unsigned int numThreads) { NumberOfThreads = numThreads; }
+
 	// Starts the threads
 	void start();
 
@@ -31,13 +43,6 @@ public:
 	void stop();
 
 	void threadWait(ThreadInfo* threadInfo);
-
-	// Set the method to complete en-batch
-	void setMethod(std::function<void(ThreadInfo*)> method, void* data);
-	void setNumberOfThreads(unsigned int numThreads) { NumberOfThreads = numThreads; }
-
-	unsigned int getNumberOfThreads() { return NumberOfThreads; }
-	int getNumOfThreads() { return NumberOfThreads; }
 
 protected:
 	// For threading

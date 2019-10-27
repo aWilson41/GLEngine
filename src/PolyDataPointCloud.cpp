@@ -1,7 +1,6 @@
 #include "PolyDataPointCloud.h"
 #include "PolyData.h"
 #include <Geometry2D.h>
-#include <Geometry3D.h>
 #include <random>
 #include <time.h>
 
@@ -56,7 +55,7 @@ void PolyDataPointCloud::update()
 	const UINT numInputPts = inputData->getPointCount();
 
 	// Assume line segments
-	geom3d::Rect rect = MathHelp::get3dBounds(inputVertexData, numInputPts);
+	const geom3d::Rect rect = MathHelp::get3dBounds(inputVertexData, numInputPts);
 	bounds[0] = rect.pos.x - rect.extent.x;
 	bounds[1] = rect.pos.x + rect.extent.x;
 	bounds[2] = rect.pos.y - rect.extent.y;
@@ -185,7 +184,7 @@ void PolyDataPointCloud::update()
 			return;
 
 		UINT* indices = inputData->getIndexData();
-		UINT numIndices = inputData->getIndexCount();
+		const UINT numIndices = inputData->getIndexCount();
 
 		const std::uniform_int_distribution<std::mt19937::result_type> random(0, UINT_MAX);
 		std::mt19937 rng = std::mt19937(static_cast<UINT>(time(NULL)));

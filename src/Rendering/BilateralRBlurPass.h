@@ -10,16 +10,14 @@ public:
 	~BilateralRBlurPass();
 
 public:
-	void setColorInput(GLuint* colorInput) { setInput(0, colorInput); }
-
 	GLuint* getColorOutput() { return &colorTexID; }
 
+	void setColorInput(GLuint* colorInput) { setInput(0, colorInput); }
 	// Area of effect (radius for the blur)
 	void setRadius(GLuint radius) { blurRadius = radius; }
 	void SetSigmaI(GLfloat sigma) { sigmaI = sigma; }
 	void SetSigmaS(GLfloat sigma) { sigmaS = sigma; }
 
-public:
 	void render(DeferredRenderer* ren) override;
 	void resizeFramebuffer(int width, int height) override;
 

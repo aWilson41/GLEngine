@@ -23,19 +23,19 @@
 class PolyData
 {
 public:
-	UINT getPointCount() { return points.count; }
-	UINT getCellCount() { return cells.cellCount; }
-	UINT getIndexCount() { return cells.indexCount; }
-	CellType getCellType() { return cells.type; }
+	UINT getPointCount() const { return points.count; }
+	UINT getCellCount() const { return cells.cellCount; }
+	UINT getIndexCount() const { return cells.indexCount; }
+	CellType getCellType() const { return cells.type; }
 
-	GLfloat* getVertexData() { return points.data; }
-	GLfloat* getNormalData() { return static_cast<GLfloat*>(points.attrib[0]); }
-	GLfloat* getTexCoordData() { return static_cast<GLfloat*>(points.attrib[1]); }
-	GLfloat* getScalarData() { return static_cast<GLfloat*>(points.attrib[2]); }
-	GLuint* getIndexData() { return cells.data; }
+	GLfloat* getVertexData() const { return points.data; }
+	GLfloat* getNormalData() const { return static_cast<GLfloat*>(points.attrib[0]); }
+	GLfloat* getTexCoordData() const { return static_cast<GLfloat*>(points.attrib[1]); }
+	GLfloat* getScalarData() const { return static_cast<GLfloat*>(points.attrib[2]); }
+	GLuint* getIndexData() const { return cells.data; }
 	
-	// Computes area of a 2d XY polygon
-	GLfloat getArea();
+	// Computes area of a 2d XY polygon, temporary
+	GLfloat getArea() const;
 
 	// Allocate vertices by cells. Resulting amount of vertices depend on cell type
 	void allocateVertexData(UINT cellCount, CellType type);
