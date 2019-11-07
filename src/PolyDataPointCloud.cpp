@@ -91,36 +91,6 @@ void PolyDataPointCloud::update()
 				if (isPointInPolygon2d(inputVertexData, numInputPts, glm::vec3(newPt, rect.pos.z)))
 					outputVertexData[count++] = glm::vec3(newPt, 0.0f);
 			}
-
-			// Iteratively move points out of each other
-			const GLfloat r2 = radius * radius;
-			for (UINT i = 0; i < numIterations; i++)
-			{
-				for (UINT j = 0; j < numPts; j++)
-				{
-					for (UINT k = j + 1; k < numPts; k++)
-					{
-						glm::vec3& p1 = outputVertexData[j];
-						glm::vec3& p2 = outputVertexData[k];
-						const glm::vec3 diff = p2 - p1;
-						const GLfloat sqrLength = glm::dot(diff, diff);
-
-						if (sqrLength < r2)
-						{
-							GLfloat dist = glm::sqrt(sqrLength);
-							glm::vec3 n = diff / dist;
-
-							glm::vec3 halfResolve = n * (dist - radius) * 0.5f;
-							glm::vec3 resolvedPt1 = p1 + halfResolve;
-							glm::vec3 resolvedPt2 = p2 - halfResolve;
-							if (isPointInPolygon2d(inputVertexData, numInputPts, resolvedPt1))
-								p1 = resolvedPt1;
-							if (isPointInPolygon2d(inputVertexData, numInputPts, resolvedPt2))
-								p2 = resolvedPt2;
-						}
-					}
-				}
-			}
 		}
 		else
 		{
@@ -187,7 +157,7 @@ void PolyDataPointCloud::update()
 		const UINT numIndices = inputData->getIndexCount();
 
 		const std::uniform_int_distribution<std::mt19937::result_type> random(0, UINT_MAX);
-		std::mt19937 rng = std::mt19937(static_cast<UINT>(time(NULL)));
+		std::mt19937 rng = std::mt19937(static_cast<UINT>(0));
 		UINT count = 0;
 		while (count < numPts)
 		{
@@ -201,6 +171,36 @@ void PolyDataPointCloud::update()
 			// Check if the point lies in the polygon
 			if (isPointInPolygon3d(inputVertexData, indices, numIndices, newPt))
 				outputVertexData[count++] = newPt;
+		}
+	}
+
+	// Iteratively move points out of each other
+	const GLfloat r2 = radius * radius;
+	for (UINT i = 0; i < numIterations; i++)
+	{
+		for (UINT j = 0; j < numPts; j++)
+		{
+			for (UINT k = j + 1; k < numPts; k++)
+			{
+				glm::vec3& p1 = outputVertexData[j];
+				glm::vec3& p2 = outputVertexData[k];
+				const glm::vec3 diff = p2 - p1;
+				const GLfloat sqrLength = glm::dot(diff, diff);
+
+				if (sqrLength < r2)
+				{
+					GLfloat dist = glm::sqrt(sqrLength);
+					glm::vec3 n = diff / dist;
+
+					glm::vec3 halfResolve = n * (dist - radius) * 0.5f;
+					glm::vec3 resolvedPt1 = p1 + halfResolve * stepRatio;
+					glm::vec3 resolvedPt2 = p2 - halfResolve * stepRatio;
+					if (isPointInPolygon2d(inputVertexData, numInputPts, resolvedPt1))
+						p1 = resolvedPt1;
+					if (isPointInPolygon2d(inputVertexData, numInputPts, resolvedPt2))
+						p2 = resolvedPt2;
+				}
+			}
 		}
 	}
 }

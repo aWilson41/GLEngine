@@ -4,64 +4,79 @@
 #include <tuple>
 //#include <chrono>
 
-using StackNode = std::tuple<KdTreeNode*, UINT, UINT>;
-
 void KdTree::update()
 {
 	//auto timeStart = std::chrono::steady_clock::now();
 
-	glm::vec3* pts = reinterpret_cast<glm::vec3*>(inputData->getVertexData());
+	std::vector<KdTreeNode*> ptrNodes;
+	ptrNodes.push_back(new KdTreeNode(0, 0, -1, -1, -1.0f, 0, numPts, -1));
 
-	// Sort the points in the x, y, and z
-	// Setup index arrays
-	std::vector<UINT> indices(inputData->getPointCount());
-	for (UINT i = 0; i < inputData->getPointCount(); i++)
+	// Setup index array
+	indices.resize(numPts);
+	for (UINT i = 0; i < numPts; i++)
 	{
 		indices[i] = i;
 	}
 
-	// Alternatively setup some sort of memory pool, maxsize
-	std::vector<KdTreeNode*> ptrNodes;
-	ptrNodes.push_back(new KdTreeNode(0, 0, -1, -1, -1.0f));
+	// Compute bounds whilst computing kdtree
+	// Within the first 3 cycles of dimension we can know the bounds
+	GLfloat bounds[6] = {
+		std::numeric_limits<GLfloat>::max(),
+		std::numeric_limits<GLfloat>::min(),
+		std::numeric_limits<GLfloat>::max(),
+		std::numeric_limits<GLfloat>::min(),
+		std::numeric_limits<GLfloat>::max(),
+		std::numeric_limits<GLfloat>::min() };
+	for (UINT i = 0; i < numPts; i++)
+	{
+		glm::vec3 pt = accessorFunc(i);
+		bounds[0] = std::min(pt.x, bounds[0]);
+		bounds[1] = std::max(pt.x, bounds[1]);
+		bounds[2] = std::min(pt.y, bounds[2]);
+		bounds[3] = std::max(pt.y, bounds[3]);
+		bounds[4] = std::min(pt.z, bounds[4]);
+		bounds[5] = std::max(pt.z, bounds[5]);
+	}
 
-	std::stack<StackNode> nodeStack;
-	nodeStack.push(StackNode(ptrNodes.back(), 0, static_cast<UINT>(indices.size())));
+	// Sort using accessor function pointer
+	std::stack<KdTreeNode*> nodeStack;
+	nodeStack.push(ptrNodes.back());
 	while (true)
 	{
 		if (nodeStack.empty())
 			break;
-		const StackNode stackNode = nodeStack.top();
-		KdTreeNode* node = std::get<0>(stackNode);
-		const UINT start = std::get<1>(stackNode);
-		const UINT end = std::get<2>(stackNode);
+		KdTreeNode* node = nodeStack.top();
 		nodeStack.pop();
 
-		// Split
-		const std::vector<UINT>::iterator begin = indices.begin() + start;
-		const std::vector<UINT>::iterator last = indices.begin() + end;
-		std::sort(begin, last, [indices, pts, node](UINT a, UINT b) { return pts[a][node->dim] > pts[b][node->dim]; });
-		const UINT numVals = end - start;
-		const UINT medianLocation = start + numVals / 2;
-		const UINT medianIndex = indices[medianLocation];
-		node->splitplane = pts[medianIndex][node->dim];
-
-		// Address cast to int gets divided by size
+		const UINT numVals = node->end - node->start;
 		if (numVals < leafSize)
 			continue;
 
+		// Split
+		const std::vector<UINT>::iterator start = indices.begin() + node->start;
+		const std::vector<UINT>::iterator end = indices.begin() + node->end;
+
+		std::sort(start, end, [&](UINT a, UINT b) { return accessorFunc(a)[node->dim] < accessorFunc(b)[node->dim]; });
+
+		const UINT medianLocation = node->start + numVals / 2;
+		const UINT medianIndex = indices[medianLocation];
+		node->splitplane = accessorFunc(medianIndex)[node->dim];
+		const int childDim = (node->dim + 1) % 3;
+
+		// Stop processing if sphere doesn't fit in bounds
+
 		// Left
 		node->leftId = static_cast<GLuint>(ptrNodes.size());
-		const int childDim = (node->dim + 1) % 3;
-		ptrNodes.push_back(new KdTreeNode(node->leftId, childDim, -1, -1, -1.0f));
-		nodeStack.push({ ptrNodes.back(), start, medianLocation });
+		ptrNodes.push_back(new KdTreeNode(node->leftId, childDim, -1, -1, -1.0f, node->start, medianLocation, node->id));
+		nodeStack.push(ptrNodes.back());
 
 		// Right
 		node->rightId = static_cast<GLuint>(ptrNodes.size());
-		ptrNodes.push_back(new KdTreeNode(node->rightId, childDim, -1, -1, -1.0f));
-		nodeStack.push({ ptrNodes.back(), medianLocation + 1, end });
+		ptrNodes.push_back(new KdTreeNode(node->rightId, childDim, -1, -1, -1.0f, medianLocation + 1, node->end, node->id));
+		nodeStack.push(ptrNodes.back());
 	}
 
-	// Copy it to stack/contingous spot in memory
+	// Copy it to stack/contingous spot in memory (Alternatively we could setup some sort of memory pool, maxsize)
 	nodes = std::vector<KdTreeNode>(ptrNodes.size());
 	for (size_t i = 0; i < ptrNodes.size(); i++)
 	{

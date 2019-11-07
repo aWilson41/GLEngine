@@ -21,17 +21,19 @@ public:
 	GLfloat getRadius() const { return radius; }
 	UINT getNumberOfIterations() const { return numIterations; }
 
-	void setInput(PolyData* inputData) { PolyDataPointCloud::inputData = inputData; }
+	void setInput(PolyData* inputData) { this->inputData = inputData; }
 	// Projects polydata onto a plane to do the calculation easier, Default: false
-	void setUse2d(bool use2d) { PolyDataPointCloud::use2d = use2d; }
+	void setUse2d(bool use2d) { this->use2d = use2d; }
 	// Iteratively moves points away from each other for better distribution, Default: false
-	void setOptimizeByRadius(bool optimizeByRadius) { PolyDataPointCloud::optimizeByRadius = optimizeByRadius; }
+	void setOptimizeByRadius(bool optimizeByRadius) { this->optimizeByRadius = optimizeByRadius; }
 	// Number of points to generate, Default: 1000
-	void setNumberOfPoints(UINT numPts) { PolyDataPointCloud::numPts = numPts; }
+	void setNumberOfPoints(UINT numPts) { this->numPts = numPts; }
 	// Radius for iterative optimization, Default: 0.05
-	void setRadius(GLfloat radius) { PolyDataPointCloud::radius = radius; }
+	void setRadius(GLfloat radius) { this->radius = radius; }
 	// Radius for iterative optimization, Default: 0.05
-	void setNumberOfIterations(UINT numIterations) { PolyDataPointCloud::numIterations = numIterations; }
+	void setNumberOfIterations(UINT numIterations) { this->numIterations = numIterations; }
+	// Multiplied by the step made to separate two spheres during optimization
+	void setStepRatio(GLfloat stepRatio) { this->stepRatio = stepRatio; }
 
 	void update();
 
@@ -45,4 +47,5 @@ private:
 	UINT numPts = 1000;
 	GLfloat radius = 0.05f;
 	UINT numIterations = 20;
+	GLfloat stepRatio = 0.2f;
 };

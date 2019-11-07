@@ -10,7 +10,7 @@ StdMultiThreaderPool::StdMultiThreaderPool()
 #ifdef __APPLE__
 	NumberOfThreads = 4;
 #else
-	NumberOfThreads = std::thread::hardware_concurrency();
+	NumberOfThreads = 1;//std::thread::hardware_concurrency();
 #endif
 
 	threadInfo = new ThreadInfo[NumberOfThreads];
