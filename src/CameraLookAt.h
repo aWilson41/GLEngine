@@ -41,7 +41,11 @@ public:
 		initCamera(left, right, top, bottom, nearZ, farZ);
 	}
 
-	void updateView() override { view = glm::lookAt(eyePos, focalPt, up); }
+	void updateView() override
+	{
+		view = glm::lookAt(eyePos, focalPt, up);
+		invView = glm::inverse(view);
+	}
 
 	void reset() override { initCameraLookAt(45.0f, 16.0f / 9.0f, 0.0001f, 1000.0f, glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f)); }
 

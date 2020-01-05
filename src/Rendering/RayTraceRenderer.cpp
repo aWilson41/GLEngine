@@ -109,6 +109,7 @@ void RayTraceRenderer::bindCameraUniforms(GLuint shaderID)
 		printf("Failed to find a camera uniform\n");
 		return;
 	}
+
 	glm::vec3 eyePos = cam->getViewPos();
 	glUniform3f(eyePosLocation, eyePos.x, eyePos.y, eyePos.z);
 	geom3d::Ray eyeRay = cam->getEyeRay(-1.0f, -1.0f);

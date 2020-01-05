@@ -29,9 +29,13 @@ public:
 	}
 
 	// Updates only the view
-	void updateView() override { view = MathHelp::translate(shift) * MathHelp::scale(scale); }
+	void updateView() override
+	{
+		view = MathHelp::translate(shift) * MathHelp::scale(scale);
+		invView = glm::inverse(view);
+	}
 
-	// Maps 2d mouse coordinates to shifts
+	// Differential transform for panning
 	void pan(glm::vec2 diff)
 	{
 		// Flip screen coord y
@@ -39,7 +43,7 @@ public:
 		shift += glm::vec3(diff, 0.0f);
 		updateView();
 	}
-
+	// Differential transform for zooming
 	void zoom(GLfloat diff)
 	{
 		scale += diff * zoomSpeed;

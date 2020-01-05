@@ -64,7 +64,7 @@ public:
 	{
 		// Exponentially scale rho
 		GLfloat r = std::pow(1.2f, rho) * 0.01f;
-		// Calc eye position on sphere
+		// Calc eye position on unit sphere at origin
 		glm::vec3 eyePos = glm::vec3(
 			r * sin(phi) * cos(theta),
 			r * cos(phi),
