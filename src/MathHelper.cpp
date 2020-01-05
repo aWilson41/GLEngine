@@ -41,6 +41,10 @@ glm::mat4 MathHelp::translate(GLfloat x, GLfloat y, GLfloat z)
 	return results;
 }
 glm::mat4 MathHelp::translate(glm::vec3 t) { return translate(t.x, t.y, t.z); }
+glm::mat4 MathHelp::scale(GLfloat s)
+{
+	return scale(s, s, s);
+}
 glm::mat4 MathHelp::scale(GLfloat x, GLfloat y, GLfloat z)
 {
 	glm::mat4 results = glm::mat4(1.0f);

@@ -11,6 +11,10 @@ class TrackballCamera : public CameraLookAt
 public:
 	// Makes sure to update with default on creation
 	TrackballCamera() { reset(); }
+	TrackballCamera(GLfloat phi, GLfloat theta, GLfloat rho)
+	{
+		initTrackballCamera(phi, theta, rho);
+	}
 
 public:
 	GLfloat getPhi() const { return phi; }

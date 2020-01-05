@@ -38,6 +38,7 @@ public:
 	static glm::mat4 rotateZ(GLfloat radians);
 	static glm::mat4 translate(GLfloat x, GLfloat y, GLfloat z);
 	static glm::mat4 translate(glm::vec3 t);
+	static glm::mat4 scale(GLfloat s);
 	static glm::mat4 scale(GLfloat x, GLfloat y, GLfloat z);
 	static glm::mat4 scale(glm::vec3 s);
 

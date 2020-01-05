@@ -40,7 +40,7 @@ class KdTree
 public:
 	KdTreeNode* getNodes() { return nodes.data(); }
 	UINT* getIndices() { return indices.data(); }
-	UINT getNumNodes() const { return nodes.size(); }
+	UINT getNumNodes() const { return static_cast<UINT>(nodes.size()); }
 	glm::vec3 getPoint(UINT i) const { return accessorFunc(i); }
 
 	// If on outputs points in order of the sorted indices
