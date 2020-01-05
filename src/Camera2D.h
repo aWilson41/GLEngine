@@ -9,11 +9,18 @@ public:
 
 public:
 	GLfloat getShiftSpeed() const { return shiftSpeed; }
+	glm::vec2 getPos() const { return shift; }
+	glm::vec2 getScale() const { return scale; }
 
 	// Default is 0.025f
 	void setShiftSpeed(GLfloat speed) { shiftSpeed = speed; }
 	// Default is 0.5f
 	void setZoomSpeed(GLfloat speed) { zoomSpeed = speed; }
+	void setPos(glm::vec2 shift) { setPos(shift.x, shift.y); }
+	void setPos(GLfloat x, GLfloat y) { shift = glm::vec3(x, y, 0.0f); }
+	void setScale(GLfloat s) { setScale(s, s); }
+	void setScale(glm::vec2 scale) { setScale(scale.x, scale.y); }
+	void setScale(GLfloat x, GLfloat y) { scale = glm::vec3(x, y, 1.0f); }
 
 	void initCamera2D(GLfloat focusX, GLfloat focusY)
 	{
@@ -31,7 +38,7 @@ public:
 	// Updates only the view
 	void updateView() override
 	{
-		view = MathHelp::translate(shift) * MathHelp::scale(scale);
+		view = MathHelp::scale(1.0f / (scale * scale)) * MathHelp::translate(shift);
 		invView = glm::inverse(view);
 	}
 
@@ -46,7 +53,10 @@ public:
 	// Differential transform for zooming
 	void zoom(GLfloat diff)
 	{
-		scale += diff * zoomSpeed;
+		GLfloat s = diff;
+		if (diff < 0.0f)
+			s = -diff;
+		scale += s * zoomSpeed;
 		updateView();
 	}
 
@@ -55,7 +65,7 @@ public:
 
 protected:
 	GLfloat shiftSpeed = 0.025f;
-	GLfloat zoomSpeed = 0.5f;
+	GLfloat zoomSpeed = 0.05f;
 	glm::vec3 scale = glm::vec3(1.0f);
-	glm::vec3 shift = glm::vec3(); // Focal pt
+	glm::vec3 shift = glm::vec3(0.0f); // Focal pt
 };
