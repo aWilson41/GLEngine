@@ -33,12 +33,13 @@ namespace geom3d
 class MathHelp
 {
 public:
-	static glm::mat4 matrixRotateX(GLfloat radians);
-	static glm::mat4 matrixRotateY(GLfloat radians);
-	static glm::mat4 matrixRotateZ(GLfloat radians);
-	static glm::mat4 matrixTranslate(GLfloat x, GLfloat y, GLfloat z);
-	static glm::mat4 matrixScale(GLfloat x, GLfloat y, GLfloat z);
-	static glm::mat4 matrixScale(GLfloat s);
+	static glm::mat4 rotateX(GLfloat radians);
+	static glm::mat4 rotateY(GLfloat radians);
+	static glm::mat4 rotateZ(GLfloat radians);
+	static glm::mat4 translate(GLfloat x, GLfloat y, GLfloat z);
+	static glm::mat4 translate(glm::vec3 t);
+	static glm::mat4 scale(GLfloat x, GLfloat y, GLfloat z);
+	static glm::mat4 scale(glm::vec3 s);
 
 	static glm::mat3 MathHelp::skewSym(glm::vec3 a);
 	static glm::mat3 rotateVectorToVector(glm::vec3 a, glm::vec3 b);

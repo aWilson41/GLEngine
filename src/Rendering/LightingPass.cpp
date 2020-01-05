@@ -55,7 +55,7 @@ void LightingPass::render(DeferredRenderer* ren)
 	}
 	GLuint eyePosLocation = glGetUniformLocation(shaderID, "eyePos");
 	if (eyePosLocation != -1)
-		glUniform3fv(eyePosLocation, 1, &ren->getCamera()->getEyePos()[0]);
+		glUniform3fv(eyePosLocation, 1, &ren->getCamera()->getViewPos()[0]);
 
 	// Bind the textures from the last pass
 	glActiveTexture(GL_TEXTURE0);

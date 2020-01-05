@@ -39,10 +39,10 @@ void DepthToRPass::render(DeferredRenderer* ren)
 
 	GLuint nearZLocation = glGetUniformLocation(shaderID, "nearZ");
 	if (nearZLocation != -1)
-		glUniform1f(nearZLocation, ren->getCamera()->nearZ);
+		glUniform1f(nearZLocation, ren->getCamera()->getNearZ());
 	GLuint farZLocation = glGetUniformLocation(shaderID, "farZ");
 	if (farZLocation != -1)
-		glUniform1f(farZLocation, ren->getCamera()->farZ);
+		glUniform1f(farZLocation, ren->getCamera()->getFarZ());
 
 	// Bind the color and depth buffer
 	glActiveTexture(GL_TEXTURE0);

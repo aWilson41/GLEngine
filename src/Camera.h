@@ -2,71 +2,94 @@
 #include "MathHelper.h"
 #include "Geometry3D.h"
 
+// Supports perspective and ortho cameras
+// Offers no control over view, subclass for that
 class Camera
 {
 public:
+	// Makes sure to update with default on creation
 	Camera() { reset(); }
 
 public:
+	GLfloat getFov() { return fov; }
+	GLfloat getAspectRatio() { return aspectRatio; }
+	GLfloat getNearZ() { return nearZ; }
+	GLfloat getFarZ() { return farZ; }
+	glm::vec3 getLookDir() const { return glm::vec3(view[2][0], view[2][1], view[2][2]); }
+	glm::vec3 getViewPos() const { return glm::vec3(view[3][0], view[3][1], view[3][2]); }
 	geom3d::Ray getEyeRay(glm::vec2 ndc) const
 	{
 		glm::vec4 worldPos = glm::inverse(proj * view) * glm::vec4(ndc, 0.0f, 1.0f);
-		return geom3d::Ray(eyePos, glm::normalize(glm::vec3(worldPos) / worldPos.w - eyePos));
+		glm::vec3 viewPos = getViewPos(); // Eye Position
+		return geom3d::Ray(viewPos, glm::normalize(glm::vec3(worldPos) / worldPos.w - viewPos));
 	}
 	geom3d::Ray getEyeRay(GLfloat x, GLfloat y) const { return getEyeRay(glm::vec2(x, y)); }
-	glm::vec3 getEyePos() const { return eyePos; }
-	glm::vec3 getFocalPt() const { return focalPt; }
-	glm::vec3 getUp() const { return up; }
-	glm::vec3 getLookDir() const { return glm::normalize(focalPt - eyePos); }
 
 	void setPerspective(GLfloat fov, GLfloat aspectRatio, GLfloat nearZ, GLfloat farZ)
 	{
-		Camera::fov = fov;
-		Camera::aspectRatio = aspectRatio;
-		Camera::nearZ = nearZ;
-		Camera::farZ = farZ;
-		proj = glm::perspective(fov, aspectRatio, nearZ, farZ);
+		this->fov = fov;
+		this->aspectRatio = aspectRatio;
+		this->nearZ = nearZ;
+		this->farZ = farZ;
+		this->ortho = false;
 	}
 	void setOrtho(GLfloat left, GLfloat right, GLfloat top, GLfloat bottom, GLfloat nearZ, GLfloat farZ)
 	{
-		Camera::nearZ = nearZ;
-		Camera::farZ = farZ;
-		proj = glm::ortho(left, right, top, bottom, nearZ, farZ);
+		orthoBounds[0] = left;
+		orthoBounds[1] = right;
+		orthoBounds[2] = bottom;
+		orthoBounds[3] = top;
+		this->nearZ = nearZ;
+		this->farZ = farZ;
+		this->ortho = true;
 	}
-	void setEyePos(glm::vec3 pos) { eyePos = pos; }
-	void setEyePos(GLfloat x, GLfloat y, GLfloat z) { setEyePos(glm::vec3(x, y, z)); }
-	void setFocalPt(glm::vec3 pt) { focalPt = pt; }
-	void setFocalPt(GLfloat x, GLfloat y, GLfloat z) { setFocalPt(glm::vec3(x, y, z)); }
-	void updateLookAt() { view = glm::lookAt(eyePos, focalPt, up); }
 
 	// Maps all parameters of Camera
-	void initCamera(GLfloat fov, GLfloat aspectRatio, GLfloat nearZ, GLfloat farZ, glm::vec3 eyePos, glm::vec3 focalPt, glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f))
+	void initCamera(GLfloat fov, GLfloat aspectRatio, GLfloat nearZ, GLfloat farZ)
 	{
-		setEyePos(eyePos);
-		setFocalPt(focalPt);
-		Camera::up = up;
-		updateLookAt();
 		setPerspective(fov, aspectRatio, nearZ, farZ);
+		view = I4;
+		update();
+	}
+	void initCamera(GLfloat left, GLfloat right, GLfloat top, GLfloat bottom, GLfloat nearZ, GLfloat farZ)
+	{
+		setOrtho(left, right, top, bottom, nearZ, farZ);
+		view = I4;
+		update();
 	}
 
-	// Resets the camera to defaults
-	virtual void reset() { initCamera(45.0f, 16.0f / 9.0f, 0.0001f, 1000.0f, glm::vec3(1.0f), glm::vec3(0.0f)); }
+	// Updates projection then updates view
+	virtual void update()
+	{
+		updateProj();
+		updateView();
+	}
+	virtual void updateProj()
+	{
+		if (ortho)
+			proj = glm::ortho(orthoBounds[0], orthoBounds[1], orthoBounds[3], orthoBounds[2], nearZ, farZ);
+		else
+			proj = glm::perspective(fov, aspectRatio, nearZ, farZ);
+	}
+	virtual void updateView() { view = I4; }
+
+	// Resets the camera to perspective defaults
+	virtual void reset() { initCamera(45.0f, 16.0f / 9.0f, 0.0001f, 1000.0f); }
 
 public:
 	// Camera view matrix
 	glm::mat4 view = glm::mat4(1.0f);
 	// Camera projection matrix
 	glm::mat4 proj = glm::mat4(1.0f);
-	// Eye position
-	glm::vec3 eyePos = glm::vec3(1.0f);
-	// Focal point
-	glm::vec3 focalPt = glm::vec3(0.0f);
-	// Up
-	glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
 
-	// Camera specs
+protected:
+	// Persp camera specs
 	GLfloat fov = 45.0f;
 	GLfloat aspectRatio = 16.0f / 9.0f;
 	GLfloat nearZ = 0.0001f;
 	GLfloat farZ = 1000.0f;
+
+	// Ortho camera specs
+	GLfloat orthoBounds[4] = { -1.0f, 1.0f, -1.0f, 1.0f };
+	bool ortho = false;
 };

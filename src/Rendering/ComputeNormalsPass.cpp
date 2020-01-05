@@ -58,10 +58,10 @@ void ComputeNormalsPass::render(DeferredRenderer* ren)
 		glUniform2f(texelSizeLocation, 1.0f / fboWidth, 1.0f / fboHeight);
 	GLuint nearZLocation = glGetUniformLocation(shaderID, "nearZ");
 	if (nearZLocation != -1)
-		glUniform1f(nearZLocation, ren->getCamera()->nearZ);
+		glUniform1f(nearZLocation, ren->getCamera()->getNearZ());
 	GLuint farZLocation = glGetUniformLocation(shaderID, "farZ");
 	if (farZLocation != -1)
-		glUniform1f(farZLocation, ren->getCamera()->farZ);
+		glUniform1f(farZLocation, ren->getCamera()->getFarZ());
 
 	// Bind the color and depth buffer
 	glActiveTexture(GL_TEXTURE0);

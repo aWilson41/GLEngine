@@ -154,6 +154,11 @@ void RenderWindow::glfwWindowResize(GLFWwindow* window, int width, int height)
 }
 void RenderWindow::glfwWindowResize(int width, int height)
 {
+	if (interactor == nullptr)
+	{
+		printf("Error: Render Window missing Interactor\n");
+		return;
+	}
 	interactor->windowResize(width, height);
 	// Get the default framebuffers new size
 	int frameBufferWidth, frameBufferHeight;
@@ -165,12 +170,22 @@ void RenderWindow::glfwWindowResize(int width, int height)
 void RenderWindow::glfwMouseMove(GLFWwindow* window, double posX, double posY)
 {
 	RenderWindow* renWin = static_cast<RenderWindow*>(glfwGetWindowUserPointer(window));
+	if (renWin->getInteractor() == nullptr)
+	{
+		printf("Error: Render Window missing Interactor\n");
+		return;
+	}
 	renWin->getInteractor()->mouseMove(glm::vec2(posX, posY));
 }
 
 void RenderWindow::glfwMouseButton(GLFWwindow* window, int button, int action, int mods)
 {
 	RenderWindow* renWin = static_cast<RenderWindow*>(glfwGetWindowUserPointer(window));
+	if (renWin->getInteractor() == nullptr)
+	{
+		printf("Error: Render Window missing Interactor\n");
+		return;
+	}
 	if (action == GLFW_PRESS)
 		renWin->getInteractor()->mouseDown(button);
 	else if (action == GLFW_RELEASE)
@@ -180,12 +195,22 @@ void RenderWindow::glfwMouseButton(GLFWwindow* window, int button, int action, i
 void RenderWindow::glfwScroll(GLFWwindow* window, double xoffset, double yoffset)
 {
 	RenderWindow* renWin = static_cast<RenderWindow*>(glfwGetWindowUserPointer(window));
+	if (renWin->getInteractor() == nullptr)
+	{
+		printf("Error: Render Window missing Interactor\n");
+		return;
+	}
 	renWin->getInteractor()->mouseScroll(static_cast<GLfloat>(yoffset));
 }
 
 void RenderWindow::glfwKeyEvent(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
 	RenderWindow* renWin = static_cast<RenderWindow*>(glfwGetWindowUserPointer(window));
+	if (renWin->getInteractor() == nullptr)
+	{
+		printf("Error: Render Window missing Interactor\n");
+		return;
+	}
 	if (action == GLFW_PRESS)
 		renWin->getInteractor()->keyDown(key);
 	else if (action == GLFW_RELEASE)

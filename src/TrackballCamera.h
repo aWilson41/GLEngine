@@ -1,11 +1,15 @@
 #pragma once
-#include "Camera.h"
+#include "CameraLookAt.h"
 
-// A camera on a sphere with focal point in middle
-// Supports zoom and pan as well
-class TrackballCamera : public Camera
+// A camera whose eye position is fixed on a sphere around
+// a focal point (phi, theta, rho/radius)
+// Also supports panning
+// TODO: Fix panning so pixelwise shift is consistent with on screen shift when shiftSpeed=1
+// TODO: Initialization methods for ortho camera
+class TrackballCamera : public CameraLookAt
 {
 public:
+	// Makes sure to update with default on creation
 	TrackballCamera() { reset(); }
 
 public:
@@ -31,42 +35,28 @@ public:
 		TrackballCamera::phi = phi;
 		TrackballCamera::theta = theta;
 		TrackballCamera::rho = rho;
-		setPerspective(fov, aspectRatio, nearZ, farZ);
-		updateCam();
+		initCameraLookAt(fov, aspectRatio, nearZ, farZ, eyePos, focalPt);
 	}
 	void initTrackballCamera(GLfloat phi, GLfloat theta, GLfloat rho)
 	{
 		TrackballCamera::phi = phi;
 		TrackballCamera::theta = theta;
 		TrackballCamera::rho = rho;
-		updateCam();
+		initCameraLookAt(fov, aspectRatio, nearZ, farZ, eyePos, focalPt);
 	}
 	void initTrackballCamera(GLfloat phi, GLfloat theta, GLfloat rho, GLfloat fov, GLfloat nearZ, GLfloat farZ)
 	{
 		TrackballCamera::phi = phi;
 		TrackballCamera::theta = theta;
 		TrackballCamera::rho = rho;
-		TrackballCamera::fov = fov;
-		TrackballCamera::nearZ = nearZ;
-		TrackballCamera::farZ = farZ;
-		setPerspective(fov, aspectRatio, nearZ, farZ);
-		updateCam();
+		initCameraLookAt(fov, aspectRatio, nearZ, farZ, eyePos, focalPt);
 	}
 	void initTrackballCamera(GLfloat fov, GLfloat aspectRatio, GLfloat nearZ, GLfloat farZ)
 	{
-		setPerspective(fov, aspectRatio, nearZ, farZ);
-		updateCam();
+		initCameraLookAt(fov, aspectRatio, nearZ, farZ, eyePos, focalPt);
 	}
 
-	// Resets to defaults
-	void reset() override
-	{
-		initTrackballCamera(1.4f, 1.57f, 35.0f,
-			45.0f, 16.0f / 9.0f, 0.0001f, 1000.0f);
-	}
-
-	// Maps 2d mouse coordinates to spherical coordinates
-	void updateCam()
+	void updateView() override
 	{
 		// Exponentially scale rho
 		GLfloat r = std::pow(1.2f, rho) * 0.01f;
@@ -78,7 +68,7 @@ public:
 
 		setEyePos(eyePos + focalPt);
 		setFocalPt(focalPt);
-		updateLookAt();
+		CameraLookAt::updateView();
 	}
 
 	// Input is a change in position like (prevMousePos - currentPos)
@@ -88,9 +78,8 @@ public:
 		phi -= diff.y * rotateSpeed;
 
 		phi = MathHelp::clamp(phi, 0.01f, 3.14f);
-		updateCam();
+		update();
 	}
-
 	// Maps 2d mouse coordinates to shifts
 	void pan(glm::vec2 diff)
 	{
@@ -103,16 +92,22 @@ public:
 		// Scale shift with scale so shift is relative to how far you are zoomed out
 		GLfloat r = std::pow(1.2f, rho);
 		focalPt += (dy * diff.y - dx * diff.x) * r * shiftSpeed;
-		updateCam();
+		update();
 	}
-
 	void zoom(GLfloat diff)
 	{
 		rho += diff * zoomSpeed;
-		updateCam();
+		update();
+	}
+
+	// Resets to defaults
+	void reset() override
+	{
+		initTrackballCamera(1.4f, 1.57f, 35.0f, 45.0f, 16.0f / 9.0f, 0.0001f, 1000.0f);
 	}
 
 protected:
+	// Sphere parameters
 	GLfloat phi = 1.4f;
 	GLfloat theta = 1.57f;
 	GLfloat rho = 35.0f;

@@ -5,7 +5,7 @@
 #include <Eigen/SVD>
 #endif
 
-glm::mat4 MathHelp::matrixRotateX(GLfloat radians)
+glm::mat4 MathHelp::rotateX(GLfloat radians)
 {
 	glm::mat4 results = glm::mat4(1.0f);
 	results[1][1] = cos(radians);
@@ -14,7 +14,7 @@ glm::mat4 MathHelp::matrixRotateX(GLfloat radians)
 	results[2][2] = cos(radians);
 	return results;
 }
-glm::mat4 MathHelp::matrixRotateY(GLfloat radians)
+glm::mat4 MathHelp::rotateY(GLfloat radians)
 {
 	glm::mat4 results = glm::mat4(1.0f);
 	results[0][0] = cos(radians);
@@ -23,7 +23,7 @@ glm::mat4 MathHelp::matrixRotateY(GLfloat radians)
 	results[2][2] = cos(radians);
 	return results;
 }
-glm::mat4 MathHelp::matrixRotateZ(GLfloat radians)
+glm::mat4 MathHelp::rotateZ(GLfloat radians)
 {
 	glm::mat4 results = glm::mat4(1.0f);
 	results[0][0] = cos(radians);
@@ -32,7 +32,7 @@ glm::mat4 MathHelp::matrixRotateZ(GLfloat radians)
 	results[1][1] = cos(radians);
 	return results;
 }
-glm::mat4 MathHelp::matrixTranslate(GLfloat x, GLfloat y, GLfloat z)
+glm::mat4 MathHelp::translate(GLfloat x, GLfloat y, GLfloat z)
 {
 	glm::mat4 results = glm::mat4(1.0f);
 	results[3][0] = x;
@@ -40,7 +40,8 @@ glm::mat4 MathHelp::matrixTranslate(GLfloat x, GLfloat y, GLfloat z)
 	results[3][2] = z;
 	return results;
 }
-glm::mat4 MathHelp::matrixScale(GLfloat x, GLfloat y, GLfloat z)
+glm::mat4 MathHelp::translate(glm::vec3 t) { return translate(t.x, t.y, t.z); }
+glm::mat4 MathHelp::scale(GLfloat x, GLfloat y, GLfloat z)
 {
 	glm::mat4 results = glm::mat4(1.0f);
 	results[0][0] = x;
@@ -48,7 +49,7 @@ glm::mat4 MathHelp::matrixScale(GLfloat x, GLfloat y, GLfloat z)
 	results[2][2] = z;
 	return results;
 }
-glm::mat4 MathHelp::matrixScale(GLfloat s) { return matrixScale(s, s, s); }
+glm::mat4 MathHelp::scale(glm::vec3 s) { return scale(s.x, s.y, s.z); }
 
 glm::mat3 MathHelp::skewSym(glm::vec3 a) // ?
 {
