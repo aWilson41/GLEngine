@@ -38,7 +38,7 @@ public:
 	// Updates only the view
 	void updateView() override
 	{
-		view = MathHelp::scale(1.0f / (scale * scale)) * MathHelp::translate(shift);
+		view = MathHelp::scale(scale) * MathHelp::translate(shift);
 		invView = glm::inverse(view);
 	}
 
@@ -53,10 +53,8 @@ public:
 	// Differential transform for zooming
 	void zoom(GLfloat diff)
 	{
-		GLfloat s = diff;
-		if (diff < 0.0f)
-			s = -diff;
-		scale += s * zoomSpeed;
+		// Clamp and normalize scroll wheel
+		scale *= (1.0f + glm::clamp(diff, -5.0f, 5.0f) / 5.0f);
 		updateView();
 	}
 
