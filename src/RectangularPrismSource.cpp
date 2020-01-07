@@ -12,6 +12,7 @@ void RectangularPrismSource::update()
 	if (outputData == nullptr)
 		return;
 
+	// Points in the local coordinate system around origin
 	glm::vec3 localPts[3] = { points[0] - origin, points[1] - origin, points[2] - origin };
 
 	// Cube is is not indexed as it uses face normals

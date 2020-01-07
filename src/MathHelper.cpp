@@ -344,3 +344,28 @@ void MathHelp::pd(glm::mat2x2 source, glm::mat2* r)
 	(*r)[1][1] = tmp[1][1];
 }
 #endif
+
+bool MathHelp::intersectTrianglePoint(glm::vec2 a, glm::vec2 b, glm::vec2 c, glm::vec2 pt)
+{
+	// Compute barycentric coordinates
+	GLfloat u = 0.0f;
+	GLfloat v = 0.0f;
+	GLfloat w = 0.0f;
+	glm::vec2 v0 = b - a;
+	glm::vec2 v1 = c - a;
+	glm::vec2 v2 = pt - a;
+	GLfloat d00 = glm::dot(v0, v0);
+	GLfloat d01 = glm::dot(v0, v1);
+	GLfloat d11 = glm::dot(v1, v1);
+	GLfloat d20 = glm::dot(v2, v0);
+	GLfloat d21 = glm::dot(v2, v1);
+	GLfloat denom = d00 * d11 - d01 * d01;
+	v = (d11 * d20 - d01 * d21) / denom;
+	w = (d00 * d21 - d01 * d20) / denom;
+	u = 1.0f - v - w;
+	if (u < 0.0f || u > 1.0f)
+		return false;
+	if (v < 0.0f || u + v > 1.0f)
+		return false;
+	return true;
+}

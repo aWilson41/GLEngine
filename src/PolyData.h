@@ -37,6 +37,10 @@ public:
 	// Computes area of a 2d XY polygon, temporary
 	GLfloat getArea() const;
 
+	void setPoints(PointData points) { this->points = points; }
+	void setCells(CellData cells) { this->cells = cells; }
+
+public:
 	// Allocate vertices by cells. Resulting amount of vertices depend on cell type
 	void allocateVertexData(UINT cellCount, CellType type);
 	// Allocate vertices by vertex count (usually for indexing later)
