@@ -184,4 +184,8 @@ public:
 
 	// Triangle vs Point
 	static bool intersectTrianglePoint(glm::vec2 a, glm::vec2 b, glm::vec2 c, glm::vec2 pt);
+	// Segment vs Segment
+	static bool intersectSegmentSegment(glm::vec2 a1, glm::vec2 a2, glm::vec2 b1, glm::vec2 b2, glm::vec2& intersectionPt, bool inclusive = true);
+	// Segment vs Line (give two points on line)
+	//static bool intersectSegmentLine(glm::vec2 a1, glm::vec2 a2, glm::vec2 b1, glm::vec2 b2, glm::vec2& intersectionPt, bool inclusive = true);
 };

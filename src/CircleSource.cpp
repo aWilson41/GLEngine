@@ -11,6 +11,7 @@ void CircleSource::update()
 {
 	if (outputData == nullptr)
 		return;
+	outputData->clear();
 
 	// Vertices
 	const UINT vertexCount = div;

@@ -1,5 +1,17 @@
 #include "PolyData.h"
 
+GLfloat PolyData::getArea() const
+{
+	GLfloat area = 0.0f;
+	glm::vec3* vertices = reinterpret_cast<glm::vec3*>(getVertexData());
+	for (UINT i = 0; i < points.count - 1; i++)
+	{
+		area += MathHelp::cross(glm::vec2(vertices[i]), glm::vec2(vertices[i + 1]));
+	}
+	area += MathHelp::cross(glm::vec2(vertices[points.count - 1]), glm::vec2(vertices[0]));
+	return area * 0.5f;
+}
+
 void PolyData::allocateVertexData(UINT cellCount, CellType type)
 {
 	cells.cellCount = cellCount;
@@ -85,14 +97,8 @@ void PolyData::allocateScalarData(UINT numComps)
 	memset(points.attrib[2], 0, sizeof(GLfloat) * points.count * numComps);
 }
 
-GLfloat PolyData::getArea() const
+void PolyData::clear()
 {
-	GLfloat area = 0.0f;
-	glm::vec3* vertices = reinterpret_cast<glm::vec3*>(getVertexData());
-	for (UINT i = 0; i < points.count - 1; i++)
-	{
-		area += MathHelp::cross(glm::vec2(vertices[i]), glm::vec2(vertices[i + 1]));
-	}
-	area += MathHelp::cross(glm::vec2(vertices[points.count - 1]), glm::vec2(vertices[0]));
-	return area * 0.5f;
+	points = PointData();
+	cells = CellData();
 }

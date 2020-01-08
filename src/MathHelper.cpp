@@ -369,3 +369,39 @@ bool MathHelp::intersectTrianglePoint(glm::vec2 a, glm::vec2 b, glm::vec2 c, glm
 		return false;
 	return true;
 }
+bool MathHelp::intersectSegmentSegment(glm::vec2 a1, glm::vec2 a2, glm::vec2 b1, glm::vec2 b2, glm::vec2& intersectionPt, bool inclusive)
+{
+	glm::vec2 a = a2 - a1;
+	glm::vec2 b = b1 - b2;
+	glm::vec2 d = b1 - a1;
+
+	GLfloat det = MathHelp::cross(a, b);
+	if (det == 0.0f)
+		return false;
+
+	GLfloat r = MathHelp::cross(d, b) / det;
+	GLfloat s = MathHelp::cross(a, d) / det;
+
+	if (inclusive)
+	{
+		if (r >= 0.0f && r <= 1.0f && s >= 0.0f && s <= 1.0f)
+		{
+			glm::vec2 pos = a * r;
+			intersectionPt = a1 + pos;
+			return true;
+		}
+		else
+			return false;
+	}
+	else
+	{
+		if (r > 0.0f && r < 1.0f && s > 0.0f && s < 1.0f)
+		{
+			glm::vec2 pos = a * r;
+			intersectionPt = a1 + pos;
+			return true;
+		}
+		else
+			return false;
+	}
+}

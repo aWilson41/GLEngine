@@ -49,6 +49,8 @@ public:
 	void allocateNormalData();
 	void allocateTexCoords();
 	void allocateScalarData(UINT numComps);
+	// Deletes all point and cell data
+	void clear();
 
 protected:
 	PointData points;
