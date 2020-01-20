@@ -1,19 +1,20 @@
 #pragma once
 #include <string>
+#include <memory>
 
 class ImageData;
 
 class RawImageWriter
 {
 public:
-	void setInput(ImageData* data) { imageData = data; }
-	std::string getFileName() { return fileName; }
+	std::string getFileName() const { return fileName; }
 
+	void setInput(std::shared_ptr<ImageData> data) { imageData = data; }
 	void setFileName(std::string fileName) { RawImageWriter::fileName = fileName; }
 
 	void update();
 
 protected:
-	ImageData* imageData = nullptr;
+	std::shared_ptr<ImageData> imageData = nullptr;
 	std::string fileName = "";
 };

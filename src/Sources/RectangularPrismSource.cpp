@@ -1,16 +1,11 @@
 #include "RectangularPrismSource.h"
 #include "PolyData.h"
 
-RectangularPrismSource::RectangularPrismSource() { outputData = new PolyData(); }
-RectangularPrismSource::~RectangularPrismSource()
-{
-	if (outputData != nullptr)
-		delete outputData;
-}
+RectangularPrismSource::RectangularPrismSource() { outputData = std::make_shared<PolyData>(); }
+
 void RectangularPrismSource::update()
 {
-	if (outputData == nullptr)
-		return;
+	outputData->clear();
 
 	// Points in the local coordinate system around origin
 	glm::vec3 localPts[3] = { points[0] - origin, points[1] - origin, points[2] - origin };

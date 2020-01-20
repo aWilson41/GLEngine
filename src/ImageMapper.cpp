@@ -8,7 +8,7 @@
 
 ImageMapper::ImageMapper()
 {
-	planeSource = new PlaneSource();
+	planeSource = std::make_shared<PlaneSource>();
 	planeSource->update();
 
 	objectProperties->clear();
@@ -18,9 +18,6 @@ ImageMapper::ImageMapper()
 
 ImageMapper::~ImageMapper()
 {
-	if (planeSource != nullptr)
-		delete planeSource;
-
 	glUseProgram(0);
 	if (vaoID != -1)
 		glDeleteVertexArrays(1, &vaoID);
@@ -32,25 +29,11 @@ ImageMapper::~ImageMapper()
 
 GLuint ImageMapper::getShaderProgramID() const { return shaderProgram->getProgramID(); }
 
-void ImageMapper::setInput(ImageData* data)
-{
-	if (imageData != nullptr)
-		delete imageData;
-	imageData = data;
-}
-
 void ImageMapper::update()
 {
 	// Has no input
 	if (imageData == nullptr)
 		return;
-
-	// Create the plane if it doesn't exist
-	if (planeSource == nullptr)
-	{
-		planeSource = new PlaneSource();
-		planeSource->update();
-	}
 
 	const GLuint numComps = imageData->getNumComps();
 	if (numComps == 1)

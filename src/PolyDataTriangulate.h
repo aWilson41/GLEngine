@@ -1,4 +1,5 @@
 #pragma once
+#include <memory>
 
 class PolyData;
 
@@ -16,20 +17,19 @@ class PolyDataTriangulate
 {
 public:
 	PolyDataTriangulate();
-	~PolyDataTriangulate();
 
 public:
-	PolyData* getOutput() const { return outputData; }
-	PolyData* getInput() const { return inputData; }
+	std::shared_ptr<PolyData> getOutput() const { return outputData; }
+	std::shared_ptr<PolyData> getInput() const { return inputData; }
 	TriangulateType getType() const { return type; }
 
-	void setInput(PolyData* inputData) { this->inputData = inputData; }
+	void setInput(std::shared_ptr<PolyData> inputData) { this->inputData = inputData; }
 	void setType(TriangulateType type) { this->type = type; }
 
 	void update();
 
 private:
-	PolyData* inputData = nullptr;
-	PolyData* outputData = nullptr;
+	std::shared_ptr<PolyData> inputData = nullptr;
+	std::shared_ptr<PolyData> outputData = nullptr;
 	TriangulateType type = TriangulateType::EARCLIP;
 };

@@ -3,7 +3,7 @@
 #include <fstream>
 
 template<class T>
-static void readImage(std::ifstream* file, ImageData* imageData, T)
+static void readImage(std::ifstream* file, std::shared_ptr<ImageData> imageData, T)
 {
 	T* imagePtr = static_cast<T*>(imageData->getData());
 	UINT* dim = imageData->getDimensions();
@@ -14,12 +14,6 @@ static void readImage(std::ifstream* file, ImageData* imageData, T)
 	{
 		(*file) >> imagePtr[i];
 	}
-}
-
-RawImageReader::~RawImageReader()
-{
-	if (imageData != nullptr)
-		delete imageData;
 }
 
 void RawImageReader::update()
@@ -38,7 +32,7 @@ void RawImageReader::update()
 		return;
 	}
 
-	imageData = new ImageData();
+	imageData = std::make_shared<ImageData>();
 	static UINT dim[3] = { 0, 0, 0 };
 	static double spacing[3] = { 1.0, 1.0, 1.0 };
 	static double origin[3] = { 0.0, 0.0, 0.0 };

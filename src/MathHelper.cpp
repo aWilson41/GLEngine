@@ -375,6 +375,7 @@ bool MathHelp::intersectSegmentSegment(glm::vec2 a1, glm::vec2 a2, glm::vec2 b1,
 	glm::vec2 d = b1 - a1;
 
 	GLfloat det = MathHelp::cross(a, b);
+	// Then lines are congruent (never intersect, may be colinear though)
 	if (det == 0.0f)
 		return false;
 

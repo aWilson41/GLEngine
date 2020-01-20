@@ -37,6 +37,8 @@ public:
 	// Updates bounds given dimensions, spacing, & origin
 	void updateBounds();
 
+	void clear();
+
 protected:
 	template<class T>
 	void allocateData(T, const UINT count) { data = new T[count]; }

@@ -17,6 +17,7 @@ static bool isPointInPolygon2d(glm::vec3* vertices, UINT numVerts, glm::vec3 pt)
 	}
 	return result;
 }
+// Only works for convex polygons
 static bool isPointInPolygon3d(glm::vec3* vertices, UINT* indices, UINT numIndices, glm::vec3 pt)
 {
 	// For every face
@@ -42,11 +43,12 @@ static bool isPointInPolygon3d(glm::vec3* vertices, UINT* indices, UINT numIndic
 	return true;
 }
 
-PolyDataPointCloud::PolyDataPointCloud() { outputData = new PolyData(); }
-PolyDataPointCloud::~PolyDataPointCloud() { delete outputData; }
+PolyDataPointCloud::PolyDataPointCloud() { outputData = std::make_shared<PolyData>(); }
 
 void PolyDataPointCloud::update()
 {
+	outputData->clear();
+
 	// Vertices
 	outputData->allocateSharedVertexData(numPts, CellType::POINT);
 	glm::vec3* outputVertexData = reinterpret_cast<glm::vec3*>(outputData->getVertexData());

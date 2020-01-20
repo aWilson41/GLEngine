@@ -1,5 +1,6 @@
 #pragma once
 #include "AbstractMapper.h"
+#include <memory>
 
 class ImageData;
 class PlaneSource;
@@ -13,12 +14,12 @@ public:
 	~ImageMapper();
 
 public:
-	ImageData* getInput() const { return imageData; }
+	std::shared_ptr<ImageData> getInput() const { return imageData; }
 	glm::mat4 getModelMatrix() const { return model; }
 	GLuint getShaderProgramID() const override;
 	std::string getMapperName() const override { return "ImageMapper"; }
 
-	void setInput(ImageData* data);
+	void setInput(std::shared_ptr<ImageData> data) { imageData = data; }
 	void setModelMatrix(glm::mat4 model) { ImageMapper::model = model; }
 
 	// Updates the buffers to match the input data
@@ -31,8 +32,8 @@ protected:
 	void updateBuffer();
 
 protected:
-	ImageData* imageData = nullptr;
-	PlaneSource* planeSource = nullptr;
+	std::shared_ptr<ImageData> imageData = nullptr;
+	std::shared_ptr<PlaneSource> planeSource = nullptr;
 	glm::mat4 model = glm::mat4(1.0f);
 	glm::mat4 imageSizeMat = glm::mat4(1.0f);
 

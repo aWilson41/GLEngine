@@ -2,7 +2,7 @@
 #include "Camera2D.h"
 
 // Lerped version of Camera2D
-class SmoothCamera2D : public Camera2D
+class Camera2DSmooth : public Camera2D
 {
 public:
 	void setT(GLfloat t) { this->t = t; }
@@ -17,7 +17,7 @@ public:
 	void updateView() override
 	{
 		desiredView = MathHelp::scale(-scale) * MathHelp::translate(-shift);
-		view = MathHelp::lerp(view, desiredView, 0.0005f);
+		view = MathHelp::lerp(view, desiredView, t);
 		invView = glm::inverse(view);
 	}
 

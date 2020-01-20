@@ -1,5 +1,6 @@
 #pragma once
 #include "MathHelper.h"
+#include <memory>
 
 class PolyData;
 
@@ -9,10 +10,9 @@ class RectangularPrismSource
 {
 public:
 	RectangularPrismSource();
-	~RectangularPrismSource();
 
 public:
-	PolyData* getOutput() const { return outputData; }
+	std::shared_ptr<PolyData> getOutput() const { return outputData; }
 	glm::vec3 getOrigin() const { return origin; }
 	glm::vec3 getP1() const { return points[0]; }
 	glm::vec3 getP2() const { return points[1]; }
@@ -39,7 +39,7 @@ public:
 	void update();
 
 protected:
-	PolyData* outputData = nullptr;
+	std::shared_ptr<PolyData> outputData = nullptr;
 
 	glm::vec3 origin = glm::vec3(-0.5f, -0.5f, -0.5f);
 	glm::vec3 points[3] = { glm::vec3(0.5f, -0.5f, -0.5f), glm::vec3(-0.5f, 0.5f, -0.5f), glm::vec3(-0.5f, -0.5f, 0.5f) };

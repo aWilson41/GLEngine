@@ -1,16 +1,11 @@
 #include "PlaneSource.h"
 #include "PolyData.h"
 
-PlaneSource::PlaneSource() { outputData = new PolyData(); }
-PlaneSource::~PlaneSource()
-{
-	if (outputData != nullptr)
-		delete outputData;
-}
+PlaneSource::PlaneSource() { outputData = std::make_shared<PolyData>(); }
+
 void PlaneSource::update()
 {
-	if (outputData == nullptr)
-		return;
+	outputData->clear();
 
 	outputData->allocateSharedVertexData(4, CellType::TRIANGLE);
 	glm::vec3* vertexData = reinterpret_cast<glm::vec3*>(outputData->getVertexData());

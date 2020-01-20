@@ -1,6 +1,10 @@
 #include "ImageData.h"
 
-ImageData::~ImageData() { delete[] data; }
+ImageData::~ImageData()
+{
+	if (data != nullptr)
+		delete[] data;
+}
 
 void ImageData::allocate2DImage(UINT* dim, double* spacing, double* origin, UINT numComps, ScalarType type)
 {
@@ -56,3 +60,5 @@ void ImageData::updateBounds()
 	bounds[4] = origin[2];
 	bounds[5] = origin[2] + dim[2] * spacing[2];
 }
+
+void ImageData::clear() { delete[] data; }

@@ -1,16 +1,11 @@
 #include "RectangleSource.h"
 #include "PolyData.h"
 
-RectangleSource::RectangleSource() { outputData = new PolyData(); }
-RectangleSource::~RectangleSource()
-{
-	if (outputData != nullptr)
-		delete outputData;
-}
+RectangleSource::RectangleSource() { outputData = std::make_shared<PolyData>(); }
+
 void RectangleSource::update()
 {
-	if (outputData == nullptr)
-		return;
+	outputData->clear();
 
 	// Points in the local coordinate system around origin
 	glm::vec3 localPts[2] = { points[0] - origin, points[1] - origin };

@@ -1,15 +1,13 @@
 #pragma once
 #include <string>
+#include <memory>
 
 class ImageData;
 
 class RawImageReader
 {
 public:
-	~RawImageReader();
-
-public:
-	ImageData* getOutput() const { return imageData; }
+	std::shared_ptr<ImageData> getOutput() const { return imageData; }
 	std::string getFileName() const { return fileName; }
 
 	void setFileName(std::string fileName) { RawImageReader::fileName = fileName; }
@@ -17,6 +15,6 @@ public:
 	void update();
 
 protected:
-	ImageData* imageData = nullptr;
+	std::shared_ptr<ImageData> imageData = nullptr;
 	std::string fileName = "";
 };

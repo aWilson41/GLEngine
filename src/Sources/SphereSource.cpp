@@ -1,16 +1,11 @@
 #include "SphereSource.h"
 #include "PolyData.h"
 
-SphereSource::SphereSource() { outputData = new PolyData(); }
-SphereSource::~SphereSource()
-{
-	if (outputData != nullptr)
-		delete outputData;
-}
+SphereSource::SphereSource() { outputData = std::make_shared<PolyData>(); }
+
 void SphereSource::update()
 {
-	if (outputData == nullptr)
-		return;
+	outputData->clear();
 
 	// Vertices
 	UINT vertexCount = (divTheta - 1) * divPhi + 2;

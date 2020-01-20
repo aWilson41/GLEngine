@@ -1,6 +1,7 @@
 #pragma once
 #include "MathHelper.h"
 #include "Geometry3D.h"
+#include <memory>
 
 class PolyData;
 
@@ -12,8 +13,8 @@ public:
 	~PolyDataPointCloud();
 
 public:
-	PolyData* getOutput() const { return outputData; }
-	PolyData* getInput() const { return inputData; }
+	std::shared_ptr<PolyData> getOutput() const { return outputData; }
+	std::shared_ptr<PolyData> getInput() const { return inputData; }
 	bool getUse2d() const { return use2d; }
 	bool getOptimizeByRadius() const { return optimizeByRadius; }
 	GLfloat* getBounds() { return bounds; }
@@ -21,7 +22,7 @@ public:
 	GLfloat getRadius() const { return radius; }
 	UINT getNumberOfIterations() const { return numIterations; }
 
-	void setInput(PolyData* inputData) { this->inputData = inputData; }
+	void setInput(std::shared_ptr<PolyData> inputData) { this->inputData = inputData; }
 	// Projects polydata onto a plane to do the calculation easier, Default: false
 	void setUse2d(bool use2d) { this->use2d = use2d; }
 	// Iteratively moves points away from each other for better distribution, Default: false
@@ -38,8 +39,8 @@ public:
 	void update();
 
 private:
-	PolyData* inputData = nullptr;
-	PolyData* outputData = nullptr;
+	std::shared_ptr<PolyData> inputData = nullptr;
+	std::shared_ptr<PolyData> outputData = nullptr;
 
 	bool use2d = false;
 	bool optimizeByRadius = false;

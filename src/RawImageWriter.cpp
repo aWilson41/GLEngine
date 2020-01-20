@@ -11,7 +11,7 @@ std::map<ScalarType, UINT> typeMap = {
 	{ ScalarType::DOUBLE_T, 3 } };
 
 template<class T>
-static void writeImage(ImageData* imageData, std::string fileName, T)
+static void writeImage(std::shared_ptr<ImageData> imageData, std::string fileName, T)
 {
 	T* imagePtr = static_cast<T*>(imageData->getData());
 	UINT* dim = imageData->getDimensions();

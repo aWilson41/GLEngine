@@ -2,12 +2,6 @@
 #include "ImageData.h"
 #include "LodePNG/lodepng.h"
 
-PNGReader::~PNGReader()
-{
-	if (imageData != nullptr)
-		delete imageData;
-}
-
 void PNGReader::update()
 {
 	if (fileName == "")
@@ -16,8 +10,7 @@ void PNGReader::update()
 		return;
 	}
 
-	if (imageData != nullptr)
-		delete imageData;
+	imageData->clear();
 
 	std::vector<unsigned char> png;
 	std::vector<unsigned char> image;
@@ -34,7 +27,7 @@ void PNGReader::update()
 		return;
 	}
 
-	imageData = new ImageData();
+	imageData = std::make_shared<ImageData>();
 	UINT dim[] = { width, height, 1 };
 	double spacing[] = { 1.0, 1.0, 1.0 };
 	double origin[] = { 0.0, 0.0, 0.0 };

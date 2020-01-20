@@ -1,6 +1,7 @@
 #pragma once
 #include "AbstractMapper.h"
 #include "Types.h"
+#include <memory>
 
 class PhongMaterial;
 class PolyData;
@@ -15,7 +16,7 @@ public:
 	~PolyDataMapper();
 
 public:
-	PolyData* getInput() const { return polyData; }
+	std::shared_ptr<PolyData> getInput() const { return polyData; }
 	ShaderProgram* getShaderProgram() const { return shaderProgram; }
 	PhongMaterial* getMaterial() const { return material; }
 	glm::mat4 getModelMatrix() const { return model; }
@@ -25,7 +26,7 @@ public:
 	GLuint getShaderProgramID() const override;
 	std::string getMapperName() const override { return "PolyDataMapper"; }
 
-	void setInput(PolyData* input) { polyData = input; }
+	void setInput(std::shared_ptr<PolyData> input) { polyData = input; }
 	void setShaderProgram(ShaderProgram* shaderProgram)
 	{
 		PolyDataMapper::shaderProgram = shaderProgram;
@@ -52,7 +53,7 @@ protected:
 	void updateBuffer();
 
 protected:
-	PolyData* polyData = nullptr;
+	std::shared_ptr<PolyData> polyData = nullptr;
 	PhongMaterial* material = nullptr;
 	glm::mat4 model = glm::mat4(1.0f);
 

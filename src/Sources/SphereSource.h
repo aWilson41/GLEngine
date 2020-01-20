@@ -1,5 +1,6 @@
 #pragma once
 #include "MathHelper.h"
+#include <memory>
 
 class PolyData;
 
@@ -9,10 +10,9 @@ class SphereSource
 {
 public:
 	SphereSource();
-	~SphereSource();
 
 public:
-	PolyData* getOutput() const { return outputData; }
+	std::shared_ptr<PolyData> getOutput() const { return outputData; }
 	glm::vec3 getOrigin() const { return origin; }
 	GLfloat getRadius() const { return radius; }
 	GLuint getThetaDivisions() const { return divTheta; }
@@ -31,7 +31,7 @@ public:
 	void update();
 
 protected:
-	PolyData* outputData = nullptr;
+	std::shared_ptr<PolyData> outputData = nullptr;
 
 	glm::vec3 origin = glm::vec3(0.0f, 0.0f, 0.0f);
 	GLfloat radius = 0.5f;

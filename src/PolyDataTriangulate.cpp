@@ -6,7 +6,7 @@
 // We test if its convex/concave and clip if convex. IE: If the center point of the 3 points along the surface lies
 // beneath the angle between 1 and 2. (negative area, wrong winding). Do this over and over again until we are left
 // with a single triangle
-static void earClipTriangulate(PolyData* inputData, PolyData* outputData)
+static void earClipTriangulate(std::shared_ptr<PolyData> inputData, std::shared_ptr<PolyData> outputData)
 {
 	glm::vec3* inputVertexData = reinterpret_cast<glm::vec3*>(inputData->getVertexData());
 	const UINT numInputPts = inputData->getPointCount();
@@ -25,12 +25,12 @@ static void earClipTriangulate(PolyData* inputData, PolyData* outputData)
 	// Iterate sets of 3 points
 	while (numPts != 3)
 	{
-		UINT i1 = indices[i % numPts];
-		UINT i2 = indices[(i + 1) % numPts];
-		UINT i3 = indices[(i + 2) % numPts];
-		glm::vec3 p1 = inputVertexData[i1];
-		glm::vec3 pt = inputVertexData[i2];
-		glm::vec3 p3 = inputVertexData[i3];
+		const UINT i1 = indices[i % numPts];
+		const UINT i2 = indices[(i + 1) % numPts];
+		const UINT i3 = indices[(i + 2) % numPts];
+		const glm::vec3 p1 = inputVertexData[i1];
+		const glm::vec3 pt = inputVertexData[i2];
+		const glm::vec3 p3 = inputVertexData[i3];
 
 		// Figure out if p2 is concave
 		GLfloat signedArea = MathHelp::triangleAreaSigned(p1, pt, p3);
@@ -40,7 +40,7 @@ static void earClipTriangulate(PolyData* inputData, PolyData* outputData)
 			bool containsPt = false;
 			for (unsigned int j = 0; j < numPts; j++)
 			{
-				UINT i4 = indices[j];
+				const UINT i4 = indices[j];
 				if (i4 != i1 && i4 != i2 && i4 != i3 && MathHelp::intersectTrianglePoint(p1, pt, p3, inputVertexData[i4]))
 				{
 					containsPt = true;
@@ -70,7 +70,7 @@ static void earClipTriangulate(PolyData* inputData, PolyData* outputData)
 
 // With monotone triangulation we line sweep the polygon cutting them to partition into a set of monotone polygons
 // which are then trivial to triangulate separately. It is faster than ear clipping
-static void monotoneTriangulate(PolyData* inputData, PolyData* outputData)
+static void monotoneTriangulate(std::shared_ptr<PolyData> inputData, std::shared_ptr<PolyData> outputData)
 {
 	glm::vec3* inputVertexData = reinterpret_cast<glm::vec3*>(inputData->getVertexData());
 	const UINT numInputPts = inputData->getPointCount();
@@ -99,20 +99,17 @@ static void monotoneTriangulate(PolyData* inputData, PolyData* outputData)
 	//}
 }
 
-static void delaunayTriangulate(PolyData* inputData, PolyData* outputData)
+static void delaunayTriangulate(std::shared_ptr<PolyData> inputData, std::shared_ptr<PolyData> outputData)
 {
 	glm::vec3* inputVertexData = reinterpret_cast<glm::vec3*>(inputData->getVertexData());
 	const UINT numInputPts = inputData->getPointCount();
 }
 
-PolyDataTriangulate::PolyDataTriangulate() { outputData = new PolyData(); }
-PolyDataTriangulate::~PolyDataTriangulate() { delete outputData; }
+PolyDataTriangulate::PolyDataTriangulate() { outputData = std::make_shared<PolyData>(); }
 
 void PolyDataTriangulate::update()
 {
-	if (outputData != nullptr)
-		delete outputData;
-	outputData = new PolyData();
+	outputData->clear();
 
 	if (type == TriangulateType::EARCLIP)
 		earClipTriangulate(inputData, outputData);
