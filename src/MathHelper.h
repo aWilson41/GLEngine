@@ -75,8 +75,10 @@ public:
 	//static glm::vec4 triangleRayIntersection(geom::Ray ray, glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, glm::vec3 n);
 
 	// Simple lerp between start and end given t [0, 1]
-	static glm::vec3 lerp(glm::vec3 start, glm::vec3 end, GLfloat t);
-	static glm::vec3 lerp(std::vector<std::tuple<GLfloat, glm::vec3>> colorFunc, GLfloat val);
+	template<typename T>
+	static T lerp(T start, T end, GLfloat t) { return start + t * (end - start); }
+	// Samples a function of vectors with linear interpolation
+	static glm::vec3 lerp(std::vector<std::tuple<GLfloat, glm::vec3>> func, GLfloat val);
 
 	// Catmull rom interpolation between p1 and p2 given t [0, 1]
 	static glm::vec3 catmullRom(glm::vec3 p0, glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, GLfloat t);

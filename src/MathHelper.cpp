@@ -163,7 +163,6 @@ glm::vec3 MathHelp::baryCentric(glm::vec3 p, glm::vec3 a, glm::vec3 b, glm::vec3
 //	return geom::Ray(start, glm::normalize(start));
 //}
 
-glm::vec3 MathHelp::lerp(glm::vec3 start, glm::vec3 end, GLfloat t) { return start + t * (end - start); }
 glm::vec3 MathHelp::lerp(std::vector<std::tuple<GLfloat, glm::vec3>> colorFunc, GLfloat val)
 {
 	// Assumes colorFunc ordered by val1 in the tuple
