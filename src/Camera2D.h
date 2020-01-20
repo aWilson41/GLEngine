@@ -38,7 +38,7 @@ public:
 	// Updates only the view
 	void updateView() override
 	{
-		view = MathHelp::scale(scale) * MathHelp::translate(shift);
+		view = MathHelp::scale(-scale) * MathHelp::translate(-shift);
 		invView = glm::inverse(view);
 	}
 

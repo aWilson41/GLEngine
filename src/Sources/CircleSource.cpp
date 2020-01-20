@@ -1,16 +1,10 @@
 #include "CircleSource.h"
 #include "PolyData.h"
 
-CircleSource::CircleSource() { outputData = new PolyData(); }
-CircleSource::~CircleSource()
-{
-	if (outputData != nullptr)
-		delete outputData;
-}
+CircleSource::CircleSource() { outputData = std::make_shared<PolyData>(); }
+
 void CircleSource::update()
 {
-	if (outputData == nullptr)
-		return;
 	outputData->clear();
 
 	// Vertices

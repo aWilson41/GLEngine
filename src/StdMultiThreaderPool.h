@@ -15,6 +15,7 @@ public:
 
 // Simple thread pool implementation. Waits for all threads to finish but does not
 // close the workers
+// Currently has a bug with stopping
 class StdMultiThreaderPool
 {
 public:

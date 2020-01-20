@@ -13,6 +13,8 @@ public:
 	T* get() const { return object.get(); }
 	T& operator*() const { return *static_cast<T*>(object); }
 
+	operator std::shared_ptr<T>() const { return object; }
+
 private:
 	stdNew(stdNew<T> const&) = delete;
 	void operator=(stdNew<T> const&) = delete;
