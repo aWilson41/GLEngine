@@ -27,6 +27,9 @@ protected:
 	std::chrono::time_point<std::chrono::steady_clock> end;
 };
 
+// Moving average timer causes drift over long intervals
+// Try to recover over longer low variance intervals
+// First we keep track of the amount of drift = (actual accumulated time - moving average accumulated time)
 template<unsigned int N = 5, class Period = Time::S>
 class MovingAverageTimer : public Timer<Period>
 {
@@ -55,6 +58,15 @@ public:
 		// Advance the moving average
 		avgDt = (avgDt * N - oldestDt + newDt) / N;
 
+		// The averaging causes a loss from true time when timer is inconsistent
+		// ie: If all 5 past values are the same there is no loss
+		double dLoss = newDt - avgDt;
+		loss += dLoss;
+
+		// We plan to make this up over shorter payments. So when we have consistency loss -> 0
+		avgDt += loss * 0.1;
+		loss -= loss * 0.1;
+
 		// If oldest dt is 0
 		if (oldestDt == 0.0)
 			return newDt;
@@ -62,7 +74,10 @@ public:
 			return avgDt;
 	}
 
+	double getLoss() const { return loss; }
+
 private:
 	std::queue<double> dtQueue;
 	double avgDt = 0.0;
+	double loss = 0.0;
 };
