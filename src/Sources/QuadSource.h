@@ -4,11 +4,11 @@
 
 class PolyData;
 
-// Defines a plane (defaults 1x1 with origin [-0.5, 0, -0.5])
-class PlaneSource
+// Defines a quad (1x1 on XY plane, center at 0.0)
+class QuadSource
 {
 public:
-	PlaneSource();
+	QuadSource();
 
 public:
 	std::shared_ptr<PolyData> getOutput() const { return outputData; }
@@ -29,7 +29,7 @@ public:
 protected:
 	std::shared_ptr<PolyData> outputData = nullptr;
 
-	glm::vec3 origin = glm::vec3(-0.5f, 0.0f, -0.5f);
-	glm::vec3 p1 = glm::vec3(0.5f, 0.0f, -0.5f);
-	glm::vec3 p2 = glm::vec3(-0.5f, 0.0f, 0.5f);
+	glm::vec3 origin = glm::vec3(-0.5f, -0.5f, 0.0f);
+	glm::vec3 p1 = glm::vec3(0.5f, -0.5f, 0.0f);
+	glm::vec3 p2 = glm::vec3(-0.5f, 0.5f, 0.0f);
 };
