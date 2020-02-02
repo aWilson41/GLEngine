@@ -47,8 +47,8 @@ public:
 	virtual void update() = 0;
 
 	// Binds the shader program
-	void use(Renderer* ren);
-	virtual void useShader(std::string shaderGroup) = 0;
+	bool use(Renderer* ren);
+	virtual bool useShader(std::string shaderGroup) = 0;
 	virtual void draw(Renderer* ren) const = 0;
 
 protected:

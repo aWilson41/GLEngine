@@ -11,6 +11,7 @@ public:
 public:
 	T* operator->() const { return object.get(); }
 	T* get() const { return object.get(); }
+	std::shared_ptr<T> getSharedPtr() const { return object; }
 	T& operator*() const { return *static_cast<T*>(object); }
 
 	operator std::shared_ptr<T>() const { return object; }

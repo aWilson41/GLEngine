@@ -34,7 +34,7 @@ public:
 	// Updates the buffer based on the set poly data. If it's the first time it initializes the buffer
 	void update() override;
 
-	void useShader(std::string shaderGroup) override;
+	bool useShader(std::string shaderGroup) override;
 	void draw(Renderer* ren) const override;
 
 protected:

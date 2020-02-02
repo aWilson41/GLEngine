@@ -63,7 +63,7 @@ void ImageMapper::update()
 		// Gen and allocate space for vbo
 		glGenBuffers(1, &vboID);
 		glBindBuffer(GL_ARRAY_BUFFER, vboID);
-		const GLuint numPts = planeSource->getOutput()->getPointCount(); // 3coords 2texcoords
+		const GLuint numPts = planeSource->getOutput()->getVertexCount(); // 3coords 2texcoords
 		glBufferData(GL_ARRAY_BUFFER, numPts * sizeof(GLfloat) * 5, NULL, GL_DYNAMIC_DRAW);
 
 		glGenBuffers(1, &iboID);
@@ -110,7 +110,7 @@ void ImageMapper::updateBuffer()
 	const GLfloat* vertexData = planeSource->getOutput()->getVertexData();
 	const GLfloat* texCoordData = planeSource->getOutput()->getTexCoordData();
 	const UINT* indexData = planeSource->getOutput()->getIndexData();
-	const GLint numPts = planeSource->getOutput()->getPointCount();
+	const GLint numPts = planeSource->getOutput()->getVertexCount();
 
 	glBindBuffer(GL_ARRAY_BUFFER, vboID);
 
@@ -138,15 +138,19 @@ void ImageMapper::updateBuffer()
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
-void ImageMapper::useShader(std::string shaderGroup)
+bool ImageMapper::useShader(std::string shaderGroup)
 {
 	if (imageData == nullptr || vaoID == -1)
-		return;
+		return false;
 
 	if (objectProperties->isOutOfDate())
 		shaderProgram = Shaders::getShader(shaderGroup, "ImageMapper", &properties);
 
+	if (shaderProgram == nullptr)
+		return false;
+
 	glUseProgram(shaderProgram->getProgramID());
+	return true;
 }
 
 void ImageMapper::draw(Renderer* ren) const

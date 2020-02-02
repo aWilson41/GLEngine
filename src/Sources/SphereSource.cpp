@@ -9,7 +9,7 @@ void SphereSource::update()
 
 	// Vertices
 	UINT vertexCount = (divTheta - 1) * divPhi + 2;
-	outputData->allocateSharedVertexData(vertexCount, CellType::TRIANGLE);
+	outputData->allocateVertexData(vertexCount);
 	glm::vec3* vData = reinterpret_cast<glm::vec3*>(outputData->getVertexData());
 	vData[0] = glm::vec3(0.0f, radius, 0.0f) + origin;
 
@@ -41,7 +41,7 @@ void SphereSource::update()
 	}
 
 	// Indices
-	outputData->allocateIndexData(divPhi * 6 * (divTheta - 1));
+	outputData->allocateIndexData(divPhi * 6 * (divTheta - 1), CellType::TRIANGLE);
 	GLuint* iData = outputData->getIndexData();
 
 	iter = 0;

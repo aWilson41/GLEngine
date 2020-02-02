@@ -10,7 +10,6 @@ class PolyDataPointCloud
 {
 public:
 	PolyDataPointCloud();
-	~PolyDataPointCloud();
 
 public:
 	std::shared_ptr<PolyData> getOutput() const { return outputData; }

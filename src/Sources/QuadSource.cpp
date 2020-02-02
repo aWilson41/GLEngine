@@ -7,7 +7,7 @@ void QuadSource::update()
 {
 	outputData->clear();
 
-	outputData->allocateSharedVertexData(4, CellType::TRIANGLE);
+	outputData->allocateVertexData(4);
 	glm::vec3* vertexData = reinterpret_cast<glm::vec3*>(outputData->getVertexData());
 	// Defines a 1x1x1 plane
 	vertexData[0] = origin;
@@ -15,7 +15,7 @@ void QuadSource::update()
 	vertexData[2] = p1 + p2 - origin;
 	vertexData[3] = p2; // default along x
 
-	outputData->allocateIndexData(8);
+	outputData->allocateIndexData(8, CellType::TRIANGLE);
 	GLuint* iData = outputData->getIndexData();
 	iData[0] = 0; iData[1] = 1;
 	iData[2] = 1; iData[3] = 2;

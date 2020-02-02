@@ -2,10 +2,33 @@
 #include "AbstractMapper.h"
 #include "Renderer.h"
 #include <fstream>
+#include <sstream>
 #include <string>
 
 namespace Shaders
 {
+	static std::vector<std::string> splitStr(std::string str, std::string delimiter)
+	{
+		std::vector<std::string> results;
+		size_t pos = 0;
+		while ((pos = str.find(delimiter)) != std::string::npos)
+		{
+			results.push_back(str.substr(0, pos));
+			//std::cout << token << std::endl;
+			str.erase(0, pos + delimiter.length());
+		}
+		results.push_back(str);
+		return results;
+	}
+
+	static std::string readFile(std::string fileName)
+	{
+		std::ifstream t(fileName);
+		std::stringstream buffer;
+		buffer << t.rdbuf();
+		return buffer.str();
+	}
+
 	std::vector<ShaderProgram*> shaderCache;
 
 	// Load shader program from source
@@ -14,6 +37,17 @@ namespace Shaders
 		ShaderProgram* shader = new ShaderProgram(shaderName);
 		shader->loadShader(vsPath, GL_VERTEX_SHADER);
 		shader->loadShader(fsPath, GL_FRAGMENT_SHADER);
+		shader->compileProgram();
+		shaderCache.push_back(shader);
+		return shader;
+	}
+
+	ShaderProgram* loadVSFSGSShader(std::string shaderName, std::string vsPath, std::string fsPath, std::string gsPath)
+	{
+		ShaderProgram* shader = new ShaderProgram(shaderName);
+		shader->loadShader(vsPath, GL_VERTEX_SHADER);
+		shader->loadShader(fsPath, GL_FRAGMENT_SHADER);
+		shader->loadShader(gsPath, GL_GEOMETRY_SHADER);
 		shader->compileProgram();
 		shaderCache.push_back(shader);
 		return shader;
@@ -46,30 +80,23 @@ namespace Shaders
 
 		properties->update();
 
-		std::string shaderPath = "Shaders/" + shaderGroup + '/' + mapperName + '/';
+		const std::string shaderPath = "Shaders/" + shaderGroup + '/' + mapperName + '/';
 		// Read the mapping file to find the correct shader
-		unsigned long long lineNum = properties->getKey();
-		std::ifstream file;
-		file.open(shaderPath + "mappings.csv");
-		if (file.fail())
-		{
-			printf("Failed to read shader mappings file.\n");
+		const unsigned long long lineNum = properties->getKey();
+		const std::string fileStr = readFile(shaderPath + "mappings.csv");
+		const std::vector<std::string> lineStrs = splitStr(fileStr, "\n");
+		const std::vector<std::string> shaderFileStrs = splitStr(lineStrs[lineNum], ",");
+		if (shaderFileStrs.size() == 2)
+			return loadVSFSShader("unnamed",
+				shaderPath + shaderFileStrs[0],
+				shaderPath + shaderFileStrs[1]);
+		else if (shaderFileStrs.size() == 3)
+			return loadVSFSGSShader("unnamed",
+				shaderPath + shaderFileStrs[0],
+				shaderPath + shaderFileStrs[1],
+				shaderPath + shaderFileStrs[2]);
+		else
 			return nullptr;
-		}
-		file.seekg(std::ios::beg); // Start from beginning of the file
-		for (unsigned long i = 0; i < lineNum; i++)
-		{
-			file.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-		}
-		std::string vsShaderFileStr, fsShaderFileStr;
-		vsShaderFileStr = fsShaderFileStr = "";
-		std::getline(file, vsShaderFileStr, ',');
-		std::getline(file, fsShaderFileStr, '\n');
-		file.close();
-
-		// Eventually this will be replaced with a replaceable shader system that maps the keys directly to the construction of the shader
-		// so there is no required shader database
-		return loadVSFSShader("unnamed", shaderPath + vsShaderFileStr, shaderPath + fsShaderFileStr);
 	}
 
 	void deleteShaders()

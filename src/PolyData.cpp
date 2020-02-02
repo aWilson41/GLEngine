@@ -12,45 +12,41 @@ GLfloat PolyData::getArea() const
 	return area * 0.5f;
 }
 
-void PolyData::allocateVertexData(UINT cellCount, CellType type)
+void PolyData::setCellType(CellType type)
 {
-	cells.cellCount = cellCount;
-	if (points.data != nullptr)
-		delete[] points.data;
-
-	switch (type)
+	cells.type = type;
+	switch (cells.type)
 	{
 	case CellType::POINT:
-		points.count = cellCount;
+		cells.cellCount = cells.indexCount;
 		break;
 	case CellType::LINE:
-		points.count = cellCount * 2;
+		cells.cellCount = cells.indexCount / 2;
 		break;
 	case CellType::TRIANGLE:
-		points.count = cellCount * 3;
+		cells.cellCount = cells.indexCount / 3;
 		break;
 	case CellType::QUAD:
-		points.count = cellCount * 4;
+		cells.cellCount = cells.indexCount / 4;
 		break;
 	default:
 		break;
 	}
-
-	points.data = new GLfloat[points.count * 3];
-	memset(points.data, 0, sizeof(GLfloat) * points.count * 3);
 }
-void PolyData::allocateSharedVertexData(UINT vertexCount, CellType type)
+
+void PolyData::allocateVertexData(UINT vertexCount)
 {
 	points.count = vertexCount;
-	cells.type = type;
+	
 	if (points.data != nullptr)
 		delete[] points.data;
 	points.data = new GLfloat[points.count * 3];
-	memset(points.data, 0, sizeof(GLfloat) * points.count * 3);
+	std::fill_n(points.data, points.count * 3, 0.0f);
 }
-void PolyData::allocateIndexData(UINT indexCount)
+void PolyData::allocateIndexData(UINT indexCount, CellType type)
 {
 	cells.indexCount = indexCount;
+	cells.type = type;
 
 	switch (cells.type)
 	{
@@ -73,32 +69,43 @@ void PolyData::allocateIndexData(UINT indexCount)
 	if (cells.data != nullptr)
 		delete[] cells.data;
 	cells.data = new GLuint[indexCount];
-	memset(cells.data, 0, sizeof(GLuint) * cells.indexCount);
+	std::fill_n(cells.data, indexCount, 0);
 }
 void PolyData::allocateNormalData()
 {
 	if (points.attrib[0] != nullptr)
 		delete[] points.attrib[0];
 	points.attrib[0] = new GLfloat[points.count * 3];
-	memset(points.attrib[0], 0, sizeof(GLfloat) * points.count * 3);
+	std::fill_n(static_cast<GLfloat*>(points.attrib[0]), points.count * 3, 0.0f);
 }
 void PolyData::allocateTexCoords()
 {
 	if (points.attrib[1] != nullptr)
 		delete[] points.attrib[1];
 	points.attrib[1] = new GLfloat[points.count * 2];
-	memset(points.attrib[1], 0, sizeof(GLfloat) * points.count * 2);
+	std::fill_n(static_cast<GLfloat*>(points.attrib[1]), points.count * 2, 0.0f);
 }
 void PolyData::allocateScalarData(UINT numComps)
 {
 	if (points.attrib[2] != nullptr)
 		delete[] points.attrib[2];
 	points.attrib[2] = new GLfloat[points.count * numComps];
-	memset(points.attrib[2], 0, sizeof(GLfloat) * points.count * numComps);
+	std::fill_n(static_cast<GLfloat*>(points.attrib[2]), points.count * numComps, 0.0f);
 }
 
 void PolyData::clear()
 {
 	points = PointData();
 	cells = CellData();
+}
+
+void PolyData::copy(std::shared_ptr<PolyData> sourcePolyData)
+{
+	clear();
+	cells.indexCount = sourcePolyData->cells.indexCount;
+	cells.cellCount = sourcePolyData->cells.cellCount;
+	cells.type = sourcePolyData->cells.type;
+	std::copy_n(sourcePolyData->cells.data, cells.indexCount, cells.data);
+	points.count = sourcePolyData->points.count;
+	std::copy_n(sourcePolyData->points.data, points.count * 3, points.data);
 }

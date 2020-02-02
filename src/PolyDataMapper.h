@@ -18,7 +18,7 @@ public:
 public:
 	std::shared_ptr<PolyData> getInput() const { return polyData; }
 	ShaderProgram* getShaderProgram() const { return shaderProgram; }
-	PhongMaterial* getMaterial() const { return material; }
+	std::shared_ptr<PhongMaterial> getMaterial() const { return material; }
 	glm::mat4 getModelMatrix() const { return model; }
 	CellType getPolyRepresentation() const { return representation; }
 	GLfloat getPointSize() const { return pointSize; }
@@ -29,14 +29,14 @@ public:
 	void setInput(std::shared_ptr<PolyData> input) { polyData = input; }
 	void setShaderProgram(ShaderProgram* shaderProgram)
 	{
-		PolyDataMapper::shaderProgram = shaderProgram;
+		this->shaderProgram = shaderProgram;
 		useCustomShader = true;
 	}
-	void setMaterial(PhongMaterial* material) { PolyDataMapper::material = material; }
-	void setModelMatrix(glm::mat4 model) { PolyDataMapper::model = model; }
-	void setPolyRepresentation(CellType representation) { PolyDataMapper::representation = representation; }
-	void setPointSize(GLfloat pointSize) { PolyDataMapper::pointSize = pointSize; }
-	void setLineWidth(GLfloat lineWidth) { PolyDataMapper::lineWidth = lineWidth; }
+	void setMaterial(std::shared_ptr<PhongMaterial> material) { this->material = material; }
+	void setModelMatrix(glm::mat4 model) { this->model = model; }
+	void setPolyRepresentation(CellType representation) { this->representation = representation; }
+	void setPointSize(GLfloat pointSize) { this->pointSize = pointSize; }
+	void setLineWidth(GLfloat lineWidth) { this->lineWidth = lineWidth; }
 	void setUseNormals(bool val) { useNormals = val; }
 	void setUseTexCoords(bool val) { useTexCoords = val; }
 	void setUseScalars(bool val) { useScalars = val; }
@@ -44,7 +44,7 @@ public:
 
 	void update() override;
 
-	void useShader(std::string shaderGroup) override;
+	bool useShader(std::string shaderGroup) override;
 	void draw(Renderer* ren) const override;
 
 protected:
@@ -54,7 +54,7 @@ protected:
 
 protected:
 	std::shared_ptr<PolyData> polyData = nullptr;
-	PhongMaterial* material = nullptr;
+	std::shared_ptr<PhongMaterial> material = nullptr;
 	glm::mat4 model = glm::mat4(1.0f);
 
 	GLuint vboID = -1;

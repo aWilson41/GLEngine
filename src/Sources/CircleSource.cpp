@@ -9,12 +9,12 @@ void CircleSource::update()
 
 	// Vertices
 	const UINT vertexCount = div;
-	outputData->allocateSharedVertexData(vertexCount, CellType::LINE);
+	outputData->allocateVertexData(vertexCount);
 	glm::vec3* vData = reinterpret_cast<glm::vec3*>(outputData->getVertexData());
 
 	// Indices
 	const UINT indexCount = div * 2;
-	outputData->allocateIndexData(indexCount);
+	outputData->allocateIndexData(indexCount, CellType::LINE);
 	GLuint* iData = outputData->getIndexData();
 
 	const GLfloat stepSize = TWOPI / div;

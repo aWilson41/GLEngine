@@ -73,6 +73,15 @@ glm::mat3 MathHelp::rotateVectorToVector(glm::vec3 a, glm::vec3 b)
 	return glm::mat3(1.0f) + ss + ss * ss * (1 - c) / (s * s);
 }
 
+glm::quat MathHelp::Vec4ToQuat(glm::vec4 q)
+{
+	return glm::quat(q.w, q.x, q.y, q.z);
+}
+glm::vec4 MathHelp::QuatToVec4(glm::quat q)
+{
+	return glm::vec4(q.x, q.y, q.z, q.w);
+}
+
 // We define the 2d cross product as the length of the 3d ax * by - ay * bx
 GLfloat MathHelp::cross(glm::vec2 a, glm::vec2 b) { return a.x * b.y - a.y * b.x; }
 

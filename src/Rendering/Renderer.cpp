@@ -1,7 +1,6 @@
 #include "Renderer.h"
 #include "AbstractMapper.h"
 #include "ImageData.h"
-#include "PhongMaterial.h"
 #include "Shaders.h"
 
 Renderer::Renderer()
@@ -13,11 +12,6 @@ Renderer::Renderer()
 Renderer::~Renderer()
 {
 	Shaders::deleteShaders();
-
-	for (UINT i = 0; i < materials.size(); i++)
-	{
-		delete materials[i];
-	}
 }
 
 ImageData* Renderer::getOutputImage() const
@@ -30,7 +24,7 @@ ImageData* Renderer::getOutputImage() const
 	double origin[2] = { 0.0, 0.0 };
 	results->allocate2DImage(dim, spacing, origin, 4, ScalarType::UCHAR_T);
 
-	unsigned char* buffer = new unsigned char[dim[0] * dim[1] * 4u];
+	unsigned char* buffer = new unsigned char[dim[0] * dim[1] * 4];
 	glReadPixels(0, 0, defaultFboWidth, defaultFboHeight, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
 	unsigned char* imgPtr = static_cast<unsigned char*>(results->getData());
 	// Flip the image
@@ -50,7 +44,7 @@ ImageData* Renderer::getOutputImage() const
 	return results;
 }
 
-bool Renderer::containsRenderItem(AbstractMapper* mapper) const
+bool Renderer::containsRenderItem(std::shared_ptr<AbstractMapper> mapper) const
 {
 	for (UINT i = 0; i < mappers.size(); i++)
 	{
@@ -69,8 +63,6 @@ void Renderer::setClearColor(float r, float g, float b, float a)
 	glClearColor(r, g, b, a);
 }
 
-void Renderer::addMaterial(PhongMaterial material) { materials.push_back(new PhongMaterial(material)); }
-
 void Renderer::render()
 {
 	if (cam == nullptr)
@@ -81,15 +73,16 @@ void Renderer::render()
 
 	for (UINT i = 0; i < mappers.size(); i++)
 	{
-		AbstractMapper* mapper = mappers[i];
-		mapper->use(this);
+		std::shared_ptr<AbstractMapper> mapper = mappers[i];
+		if (mapper->use(this))
+		{
+			// Set the scene uniforms
+			GLuint lightDirLocation = glGetUniformLocation(mapper->getShaderProgramID(), "lightDir");
+			if (lightDirLocation != -1)
+				glUniform3fv(lightDirLocation, 1, &lightDir[0]);
 
-		// Set the scene uniforms
-		GLuint lightDirLocation = glGetUniformLocation(mapper->getShaderProgramID(), "lightDir");
-		if (lightDirLocation != -1)
-			glUniform3fv(lightDirLocation, 1, &lightDir[0]);
-
-		mapper->draw(this);
+			mapper->draw(this);
+		}
 	}
 }
 

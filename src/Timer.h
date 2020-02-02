@@ -43,17 +43,25 @@ public:
 	}
 
 public:
+	double* getRange() const { return range; }
 	double getElapsedAvg()
 	{
 		// Sample the dt
 		end = std::chrono::steady_clock::now();
-		const double newDt = std::chrono::duration<double, Period>(end - begin).count();
+		double newDt = std::chrono::duration<double, Period>(end - begin).count();
 		// Put the new one at the back
 		dtQueue.push(newDt);
 
 		// Remove the oldest one from the front
 		const double oldestDt = dtQueue.front();
 		dtQueue.pop();
+
+		// Clamp to max, add to loss if we have to clamp
+		if (newDt > maxDt)
+		{
+			loss -= maxDt - newDt;
+			newDt = maxDt;
+		}
 
 		// Advance the moving average
 		avgDt = (avgDt * N - oldestDt + newDt) / N;
@@ -73,11 +81,15 @@ public:
 		else
 			return avgDt;
 	}
-
 	double getLoss() const { return loss; }
+
+	// Anything above this will be clamped to dt and added to loss
+	// Loss is payed back linearly
+	void setMaxDt(const double maxDt) { this->maxDt = maxDt; }
 
 private:
 	std::queue<double> dtQueue;
 	double avgDt = 0.0;
 	double loss = 0.0;
+	double maxDt = 100.0;
 };

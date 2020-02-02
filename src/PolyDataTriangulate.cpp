@@ -9,7 +9,7 @@
 static void earClipTriangulate(std::shared_ptr<PolyData> inputData, std::shared_ptr<PolyData> outputData)
 {
 	glm::vec3* inputVertexData = reinterpret_cast<glm::vec3*>(inputData->getVertexData());
-	const UINT numInputPts = inputData->getPointCount();
+	const UINT numInputPts = inputData->getVertexCount();
 
 	// Output polygon vertices
 	std::vector<glm::vec3> outputVertices;
@@ -64,8 +64,11 @@ static void earClipTriangulate(std::shared_ptr<PolyData> inputData, std::shared_
 	outputVertices.push_back(inputVertexData[indices[1]]);
 	outputVertices.push_back(inputVertexData[indices[2]]);
 
-	outputData->allocateVertexData(static_cast<UINT>(outputVertices.size()) / 3, CellType::TRIANGLE);
+	// Allocate output data for it
+	outputData->allocateVertexData(static_cast<UINT>(outputVertices.size()));
 	std::copy_n(reinterpret_cast<GLfloat*>(outputVertices.data()), outputVertices.size() * 3, outputData->getVertexData());
+	// This is split triangle data so make sure to tell it what type of polydata it is
+	outputData->setCellType(CellType::TRIANGLE);
 }
 
 // With monotone triangulation we line sweep the polygon cutting them to partition into a set of monotone polygons
@@ -73,7 +76,7 @@ static void earClipTriangulate(std::shared_ptr<PolyData> inputData, std::shared_
 static void monotoneTriangulate(std::shared_ptr<PolyData> inputData, std::shared_ptr<PolyData> outputData)
 {
 	glm::vec3* inputVertexData = reinterpret_cast<glm::vec3*>(inputData->getVertexData());
-	const UINT numInputPts = inputData->getPointCount();
+	const UINT numInputPts = inputData->getVertexCount();
 
 	// Line sweep along y
 	std::vector<UINT> indices;
@@ -102,7 +105,7 @@ static void monotoneTriangulate(std::shared_ptr<PolyData> inputData, std::shared
 static void delaunayTriangulate(std::shared_ptr<PolyData> inputData, std::shared_ptr<PolyData> outputData)
 {
 	glm::vec3* inputVertexData = reinterpret_cast<glm::vec3*>(inputData->getVertexData());
-	const UINT numInputPts = inputData->getPointCount();
+	const UINT numInputPts = inputData->getVertexCount();
 }
 
 PolyDataTriangulate::PolyDataTriangulate() { outputData = std::make_shared<PolyData>(); }

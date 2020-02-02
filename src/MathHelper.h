@@ -5,6 +5,8 @@
 #include <math.h>
 #include <vector>
 #include <algorithm>
+#define GLM_ENABLE_EXPERIMENTAL
+#include <gtx/quaternion.hpp>
 
 using UINT = unsigned int;
 
@@ -44,6 +46,9 @@ public:
 
 	static glm::mat3 MathHelp::skewSym(glm::vec3 a);
 	static glm::mat3 rotateVectorToVector(glm::vec3 a, glm::vec3 b);
+
+	static glm::quat Vec4ToQuat(glm::vec4 q);
+	static glm::vec4 QuatToVec4(glm::quat q);
 
 	// We define the 2d cross product as the length of the 3d
 	static GLfloat cross(glm::vec2 a, glm::vec2 b);

@@ -4,10 +4,7 @@
 #include "PointData.h"
 #include "Types.h"
 #include <vector>
-// Plans:
-//    - Add unlimited attributes but specific slots. So an attribute could be set as scalars or normals rather than relying
-//   on attribute position to tell.
-//    - Inherit DataSet base class
+#include <memory>
 
 // Data = structure + attributes
 // structure = topology + geometry
@@ -23,7 +20,7 @@
 class PolyData
 {
 public:
-	UINT getPointCount() const { return points.count; }
+	UINT getVertexCount() const { return points.count; }
 	UINT getCellCount() const { return cells.cellCount; }
 	UINT getIndexCount() const { return cells.indexCount; }
 	CellType getCellType() const { return cells.type; }
@@ -39,18 +36,19 @@ public:
 
 	void setPoints(PointData points) { this->points = points; }
 	void setCells(CellData cells) { this->cells = cells; }
+	void setCellType(CellType type);
 
 public:
-	// Allocate vertices by cells. Resulting amount of vertices depend on cell type
-	void allocateVertexData(UINT cellCount, CellType type);
-	// Allocate vertices by vertex count (usually for indexing later)
-	void allocateSharedVertexData(UINT vertexCount, CellType type);
-	void allocateIndexData(UINT indexCount);
+	// Allocate vertices and sets type
+	void allocateVertexData(UINT vertexCount);
+	void allocateIndexData(UINT indexCount, CellType type);
 	void allocateNormalData();
 	void allocateTexCoords();
 	void allocateScalarData(UINT numComps);
 	// Deletes all point and cell data
 	void clear();
+	// Doesn't copy attributes
+	void copy(std::shared_ptr<PolyData> sourcePolyData);
 
 protected:
 	PointData points;

@@ -50,11 +50,11 @@ void PolyDataPointCloud::update()
 	outputData->clear();
 
 	// Vertices
-	outputData->allocateSharedVertexData(numPts, CellType::POINT);
+	outputData->allocateVertexData(numPts);
 	glm::vec3* outputVertexData = reinterpret_cast<glm::vec3*>(outputData->getVertexData());
 
 	glm::vec3* inputVertexData = reinterpret_cast<glm::vec3*>(inputData->getVertexData());
-	const UINT numInputPts = inputData->getPointCount();
+	const UINT numInputPts = inputData->getVertexCount();
 
 	// Assume line segments
 	const geom3d::Rect rect = MathHelp::get3dBounds(inputVertexData, numInputPts);

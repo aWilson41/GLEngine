@@ -109,7 +109,7 @@ void PolyDataMapper::updateInfo()
 	objectProperties->setProperty("Use_Indices", hasIndices);
 
 	// Determine size of gpu mem to allocate
-	const GLuint numPts = polyData->getPointCount();
+	const GLuint numPts = polyData->getVertexCount();
 	vboSize = sizeof(GLfloat) * 3 * numPts; // Position
 	if (hasNormals)
 		vboSize += sizeof(GLfloat) * 3 * numPts; // Normals
@@ -126,7 +126,7 @@ void PolyDataMapper::updateBuffer()
 	const GLfloat* normalData = polyData->getNormalData();
 	const GLfloat* texCoordData = polyData->getTexCoordData();
 	const GLfloat* scalarData = polyData->getScalarData();
-	const GLint numPts = polyData->getPointCount();
+	const GLint numPts = polyData->getVertexCount();
 
 	if (vboID != -1)
 	{
@@ -190,15 +190,19 @@ void PolyDataMapper::updateBuffer()
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
-void PolyDataMapper::useShader(std::string shaderGroup)
+bool PolyDataMapper::useShader(std::string shaderGroup)
 {
 	if (polyData == nullptr || vaoID == -1)
-		return;
+		return false;
 
 	if (objectProperties->isOutOfDate())
 		shaderProgram = Shaders::getShader(shaderGroup, "PolyDataMapper", &properties);
 
+	if (shaderProgram == nullptr)
+		return false;
+
 	glUseProgram(shaderProgram->getProgramID());
+	return true;
 }
 
 void PolyDataMapper::draw(Renderer* ren) const
@@ -254,7 +258,7 @@ void PolyDataMapper::draw(Renderer* ren) const
 	if (polyData->getIndexData() != nullptr && useIndex)
 		glDrawElements(mode[cellType], polyData->getIndexCount(), GL_UNSIGNED_INT, (void*)(uintptr_t)0);
 	else
-		glDrawArrays(mode[cellType], 0, static_cast<GLsizei>(polyData->getPointCount()));
+		glDrawArrays(mode[cellType], 0, static_cast<GLsizei>(polyData->getVertexCount()));
 	glBindVertexArray(0);
 
 	// Restore poly mode

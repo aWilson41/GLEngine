@@ -9,6 +9,7 @@ PROJECT(GLEngine)
 file(GLOB ENGINE_FILES src/*.h src/*.cpp)
 file(GLOB ENGINE_RENDERING_FILES src/Rendering/*.h src/Rendering/*.cpp)
 file(GLOB ENGINE_DATASOURCES_FILES src/Sources/*.h src/Sources/*.cpp)
+file(GLOB ENGINE_IO_FILES src/IO/*.h src/IO/*.cpp)
 
 file(GLOB_RECURSE SHADER_DIRECT_FILES src/Shaders/DirectRasterize/*glsl)
 file(GLOB_RECURSE SHADER_DEFERRED_FILES src/Shaders/DeferredRasterize/*glsl)
@@ -40,7 +41,17 @@ else()
 endif()
 
 #Set the includes and libraries
-set(GLENGINE_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_SOURCE_DIR}/src/Rendering ${CMAKE_CURRENT_SOURCE_DIR}/src/Sources ${CMAKE_CURRENT_BINARY_DIR} ${GLM}/glm ${GLEW}/include ${GLFW}/include ${OPENGL_INCLUDE_DIRS})
+set(GLENGINE_INCLUDE_DIRS
+	${CMAKE_CURRENT_SOURCE_DIR}
+	${CMAKE_CURRENT_SOURCE_DIR}/src
+	${CMAKE_CURRENT_SOURCE_DIR}/src/Rendering
+	${CMAKE_CURRENT_SOURCE_DIR}/src/Sources
+	${CMAKE_CURRENT_SOURCE_DIR}/src/IO
+	${CMAKE_CURRENT_BINARY_DIR}
+	${GLM}/glm
+	${GLEW}/include
+	${GLFW}/include
+	${OPENGL_INCLUDE_DIRS})
 
 set(GLENGINE_LIBRARIES
 	debug ${GLEW}/lib/Release/x64/glew32.lib optimized ${GLEW}/lib/Release/x64/glew32.lib
@@ -52,7 +63,13 @@ if (USE_EIGEN)
 	add_definitions(-DUSEEIGEN)
 endif()
 
-add_library(GLEngine STATIC ${ENGINE_FILES} ${ENGINE_RENDERING_FILES} ${ENGINE_DATASOURCES_FILES} ${SHADER_FILES} ${LODEPNG_FILES})
+add_library(GLEngine STATIC
+	${ENGINE_FILES}
+	${ENGINE_RENDERING_FILES}
+	${ENGINE_DATASOURCES_FILES}
+	${ENGINE_IO_FILES}
+	${SHADER_FILES}
+	${LODEPNG_FILES})
 target_include_directories(GLEngine PUBLIC ${GLENGINE_INCLUDE_DIRS})
 target_link_libraries(GLEngine ${GLENGINE_LIBRARIES})
 
@@ -84,6 +101,7 @@ add_custom_command(
 source_group("Main" FILES ${ENGINE_FILES})
 source_group("Rendering" FILES ${ENGINE_RENDERING_FILES})
 source_group("Sources" FILES ${ENGINE_DATASOURCES_FILES})
+source_group("IO" FILES ${ENGINE_IO_FILES})
 source_group("Resources" FILES ${IMAGERSC})
 source_group("Shaders\\Direct" FILES ${SHADER_DIRECT_FILES})
 source_group("Shaders\\Deferred" FILES ${SHADER_DEFERRED_FILES})

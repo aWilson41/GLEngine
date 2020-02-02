@@ -11,14 +11,14 @@ void RectangleSource::update()
 	glm::vec3 localPts[2] = { points[0] - origin, points[1] - origin };
 
 	// No duplicate points
-	outputData->allocateSharedVertexData(4, CellType::LINE);
+	outputData->allocateVertexData(4);
 	glm::vec3* vData = reinterpret_cast<glm::vec3*>(outputData->getVertexData());
 	vData[0] = origin;
 	vData[1] = origin + localPts[0];
 	vData[2] = origin + localPts[0] + localPts[1];
 	vData[3] = origin + localPts[1];
 
-	outputData->allocateIndexData(8);
+	outputData->allocateIndexData(8, CellType::LINE);
 	UINT* indices = outputData->getIndexData();
 	indices[0] = 0;
 	indices[1] = 1;

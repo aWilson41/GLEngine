@@ -2,11 +2,11 @@
 #include "MathHelper.h"
 #include "PropertyMap.h"
 #include <string>
+#include <memory>
 
 class AbstractMapper;
 class Camera;
 class ImageData;
-class PhongMaterial;
 
 // Does the rendering, mostly just managing the scene (there is no scene object)
 class Renderer
@@ -16,9 +16,8 @@ public:
 	~Renderer();
 
 public:
-	PhongMaterial* getMaterial(UINT i) const { return materials[i]; }
-	AbstractMapper* getRenderItem(UINT i) const { return mappers[i]; }
-	Camera* getCamera() const { return cam; }
+	std::shared_ptr<AbstractMapper> getRenderItem(UINT i) const { return mappers[i]; }
+	std::shared_ptr<Camera> getCamera() const { return cam; }
 	ImageData* getOutputImage() const;
 	float* getClearColor() { return clearColor; }
 	glm::vec3 getLightDir() const { return lightDir; }
@@ -26,14 +25,13 @@ public:
 	int getFramebufferHeight() const { return defaultFboHeight; }
 	std::string getShaderGroup() const { return shaderGroup; };
 	// Returns if renderer contains the mapper
-	bool containsRenderItem(AbstractMapper* mapper) const;
+	bool containsRenderItem(std::shared_ptr<AbstractMapper> mapper) const;
 
-	void setCamera(Camera* cam) { Renderer::cam = cam; }
+	void setCamera(std::shared_ptr<Camera> cam) { Renderer::cam = cam; }
 	void setClearColor(float r, float g, float b, float a);
 	void setShaderGroup(std::string shaderGroup) { Renderer::shaderGroup = shaderGroup; }
 	// Might split mapper into actor where this becomes addActor
-	void addRenderItem(AbstractMapper* mapper) { mappers.push_back(mapper); }
-	void addMaterial(PhongMaterial material);
+	void addRenderItem(std::shared_ptr<AbstractMapper> mapper) { mappers.push_back(mapper); }
 
 	virtual void render();
 	// The direct renderer uses the default framebuffer
@@ -41,9 +39,8 @@ public:
 
 protected:
 	// Will eventually hold actors instead of mappers
-	std::vector<AbstractMapper*> mappers;
-	std::vector<PhongMaterial*> materials;
-	Camera* cam = nullptr;
+	std::vector<std::shared_ptr<AbstractMapper>> mappers;
+	std::shared_ptr<Camera> cam = nullptr;
 	bool initialized = false;
 
 	PropertyMap<32> sceneProperties;

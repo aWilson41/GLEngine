@@ -72,7 +72,7 @@ void DeferredRenderer::pass()
 	// Render the geometry
 	for (UINT i = 0; i < mappers.size(); i++)
 	{
-		AbstractMapper* mapper = mappers[i];
+		std::shared_ptr<AbstractMapper> mapper = mappers[i];
 		mapper->use(this);
 		mapper->draw(this);
 	}

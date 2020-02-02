@@ -13,8 +13,6 @@ void RectangularPrismSource::update()
 	// Cube is is not indexed as it uses face normals
 
 	// Vertices
-	outputData->allocateVertexData(12, CellType::TRIANGLE);
-	glm::vec3* vData = reinterpret_cast<glm::vec3*>(outputData->getVertexData());
 	glm::vec3 pts[8];
 	pts[0] = origin;
 	pts[1] = origin + localPts[0];
@@ -25,6 +23,8 @@ void RectangularPrismSource::update()
 	pts[6] = origin + localPts[2] + localPts[0] + localPts[1];
 	pts[7] = origin + localPts[2] + localPts[1];
 
+	outputData->allocateVertexData(36);
+	glm::vec3* vData = reinterpret_cast<glm::vec3*>(outputData->getVertexData());
 	// Face 1
 	// Triangle 1
 	vData[0] = pts[0];

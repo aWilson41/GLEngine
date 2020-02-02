@@ -101,7 +101,7 @@ void GlyphPolyDataMapper::updateInfo()
 	objectProperties->setProperty("Use_Indices", hasIndices);
 
 	// Determine size of gpu mem to allocate we assume it has normals and offsets
-	const GLuint numPts = polyData->getPointCount();
+	const GLuint numPts = polyData->getVertexCount();
 	vboSize = sizeof(GLfloat) * (6 * numPts + instanceCount * 3); // Position and normals + offsets
 	if (hasScalars)
 		vboSize += sizeof(GLfloat) * 3 * instanceCount;
@@ -113,7 +113,7 @@ void GlyphPolyDataMapper::updateBuffer()
 	const GLfloat* vertexData = polyData->getVertexData();
 	const GLfloat* normalData = polyData->getNormalData();
 	const GLfloat* scalarData = colorData;
-	const GLint numPts = polyData->getPointCount();
+	const GLint numPts = polyData->getVertexCount();
 
 	if (vboID != -1)
 	{
@@ -175,15 +175,19 @@ void GlyphPolyDataMapper::updateBuffer()
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
-void GlyphPolyDataMapper::useShader(std::string shaderGroup)
+bool GlyphPolyDataMapper::useShader(std::string shaderGroup)
 {
 	if (polyData == nullptr || vaoID == -1)
-		return;
+		return false;
 
 	if (objectProperties->isOutOfDate())
 		shaderProgram = Shaders::getShader(shaderGroup, "GlyphPolyDataMapper", &properties);
 
+	if (shaderProgram == nullptr)
+		return false;
+
 	glUseProgram(shaderProgram->getProgramID());
+	return true;
 }
 
 void GlyphPolyDataMapper::draw(Renderer* ren) const
@@ -231,7 +235,7 @@ void GlyphPolyDataMapper::draw(Renderer* ren) const
 	if (polyData->getIndexData() != nullptr && useIndex)
 		glDrawElementsInstanced(mode[cellType], polyData->getIndexCount(), GL_UNSIGNED_INT, (void*)(uintptr_t)0, instanceCount);
 	else
-		glDrawArraysInstanced(mode[cellType], 0, static_cast<GLsizei>(polyData->getPointCount()), instanceCount);
+		glDrawArraysInstanced(mode[cellType], 0, static_cast<GLsizei>(polyData->getVertexCount()), instanceCount);
 	glBindVertexArray(0);
 
 	// Set the poly mode back to what it was

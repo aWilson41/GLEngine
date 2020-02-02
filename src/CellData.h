@@ -17,5 +17,5 @@ public:
 	GLuint* data = nullptr;
 	UINT cellCount = 0;
 	UINT indexCount = 0;
-	CellType type = CellType::TRIANGLE;
+	CellType type = CellType::POINT;
 };
