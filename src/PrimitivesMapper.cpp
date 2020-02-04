@@ -10,9 +10,14 @@
 
 std::shared_ptr<PrimitivesMapper> Primitives2d::mapper = std::make_shared<PrimitivesMapper>();
 
+void Primitives2d::setColor(glm::vec3 color) { mapper->getMaterial()->setDiffuse(color); }
+void Primitives2d::setColor(GLfloat r, GLfloat g, GLfloat b) { mapper->getMaterial()->setDiffuse(r, g, b); }
+
 PrimitivesMapper::PrimitivesMapper()
 {
 	inputPolyData = std::make_shared<PolyData>();
+	material = std::make_shared<PhongMaterial>();
+	material->setDiffuse(1.0f, 1.0f, 1.0f);
 }
 
 PrimitivesMapper::~PrimitivesMapper()
@@ -59,7 +64,7 @@ void PrimitivesMapper::addLine(glm::vec2 p1, glm::vec2 p2)
 	inputPolyData = appender->getOutput();
 	update();
 }
-void PrimitivesMapper::addArrow(glm::vec2 p1, glm::vec2 p2, GLfloat headSize)
+void PrimitivesMapper::addArrow(glm::vec2 p1, glm::vec2 p2, GLfloat headSize, GLfloat headRatio)
 {
 	stdNew<PolyData> polyData;
 	polyData->allocateVertexData(4);
@@ -71,8 +76,8 @@ void PrimitivesMapper::addArrow(glm::vec2 p1, glm::vec2 p2, GLfloat headSize)
 	const glm::vec2 diff = p2 - p1;
 	const GLfloat length = glm::length(diff);
 	const glm::vec2 tan = MathHelp::perp(diff / length) * headSize;
-	vertexData[2] = glm::vec3(MathHelp::lerp(p1, p2, 0.9f) + tan, z);
-	vertexData[3] = glm::vec3(MathHelp::lerp(p1, p2, 0.9f) - tan, z);
+	vertexData[2] = glm::vec3(MathHelp::lerp(p1, p2, headRatio) + tan, z);
+	vertexData[3] = glm::vec3(MathHelp::lerp(p1, p2, headRatio) - tan, z);
 
 	UINT* indexData = polyData->getIndexData();
 	indexData[0] = 0;

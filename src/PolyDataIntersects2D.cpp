@@ -5,7 +5,9 @@ static void computeContacts(
 	glm::vec3* ptsA, glm::vec3* ptsB,
 	UINT* indicesA, UINT* indicesB,
 	UINT indexCountA, UINT indexCountB,
-	std::shared_ptr<ContactList> contacts)
+	std::shared_ptr<ContactList> contacts,
+	std::shared_ptr<ContactList> contacts1,
+	std::shared_ptr<ContactList> contacts2)
 {
 	// Test every edge 1 of polygon A(1) with B(2)
 	for (UINT a1 = 0; a1 < indexCountA; a1 += 2)
@@ -21,9 +23,15 @@ static void computeContacts(
 			glm::vec2 iPt;
 			if (MathHelp::intersectSegmentSegment(ptA1, ptA2, ptB1, ptB2, iPt, false))
 			{
-				contacts->push_back(std::make_shared<Contact2D>(iPt, glm::normalize(MathHelp::perp(ptA1 - ptA2))));
-				//contact.segmentIndex[0] = a1;
-				//contact.segmentIndex[1] = b1;
+				const glm::vec2 nA = glm::normalize(MathHelp::perp(ptA1 - ptA2));
+				const glm::vec2 nB = -glm::normalize(MathHelp::perp(ptB1 - ptB2));
+				std::shared_ptr<Contact2D> contact1 = std::make_shared<Contact2D>(iPt, nA);
+				std::shared_ptr<Contact2D> contact2 = std::make_shared<Contact2D>(iPt, nB);
+
+				contacts->push_back(contact1);
+				contacts1->push_back(contact1);
+				contacts->push_back(contact2);
+				contacts2->push_back(contact2);
 			}
 		}
 	}
@@ -33,13 +41,15 @@ std::shared_ptr<Contact2D> PolyDataIntersects2D::getMinContact() const
 {
 	GLfloat minDepth = FLOAT_MAX;
 	std::shared_ptr<Contact2D> minContact = nullptr;
+	glm::vec2 pt = glm::vec2(0.0f);
 	for (ContactList::iterator iter = contacts->begin(); iter != contacts->end(); iter++)
 	{
 		std::shared_ptr<Contact2D> contact = *iter;
-		if (contact->depth < minDepth)
+		pt += contact->pt;
+		if (std::abs(contact->depth) < minDepth)
 		{
 			minContact = contact;
-			minDepth = contact->depth;
+			minDepth = std::abs(contact->depth);
 		}
 	}
 	return minContact;
@@ -58,7 +68,9 @@ void PolyDataIntersects2D::update()
 	const UINT indexCount2 = inputData2->getIndexCount();
 
 	contacts = std::make_shared<ContactList>();
-	computeContacts(pts1, pts2, indices1, indices2, indexCount1, indexCount2, contacts);
+	contacts1 = std::make_shared<ContactList>();
+	contacts2 = std::make_shared<ContactList>();
+	computeContacts(pts1, pts2, indices1, indices2, indexCount1, indexCount2, contacts, contacts1, contacts2);
 	
 	// If no contacts were found then the objects aren't intersecting
 	if (contacts->size() == 0)
@@ -108,21 +120,43 @@ void PolyDataIntersects2D::update()
 		//		currVertexIndex = 0;
 		//}
 
-		// Project all of input 2 vertices onto the contact normals
-		std::vector<GLfloat> iPtProjs = std::vector<GLfloat>();
-		iPtProjs.reserve(contacts->size());
-		for (ContactList::iterator iter = contacts->begin(); iter != contacts->end(); iter++)
+
+		// Project all of the intersection points onto the contact normals
+		std::vector<GLfloat> iPtProjs1 = std::vector<GLfloat>();
+		iPtProjs1.reserve(contacts1->size());
+		for (ContactList::iterator iter = contacts1->begin(); iter != contacts1->end(); iter++)
 		{
 			std::shared_ptr<Contact2D> contact = *iter;
-			iPtProjs.push_back(glm::dot(contact->pt, contact->n));
+			iPtProjs1.push_back(glm::dot(contact->pt, contact->n));
 		}
+
+		// Find the "deepest point" along the contact normal
 		for (UINT i = 0; i < inputData2->getVertexCount(); i++)
 		{
 			UINT j = 0;
-			for (ContactList::iterator iter = contacts->begin(); iter != contacts->end(); iter++)
+			for (ContactList::iterator iter = contacts1->begin(); iter != contacts1->end(); iter++)
 			{
 				std::shared_ptr<Contact2D> contact = *iter;
-				contact->depth = std::max(iPtProjs[j] - glm::dot(contact->n, glm::vec2(pts2[i])), contact->depth);
+				contact->depth = std::max(iPtProjs1[j] - glm::dot(contact->n, glm::vec2(pts2[i])), contact->depth);
+				j++;
+			}
+		}
+
+		std::vector<GLfloat> iPtProjs2 = std::vector<GLfloat>();
+		iPtProjs2.reserve(contacts2->size());
+		for (ContactList::iterator iter = contacts2->begin(); iter != contacts2->end(); iter++)
+		{
+			std::shared_ptr<Contact2D> contact = *iter;
+			iPtProjs2.push_back(glm::dot(contact->pt, contact->n));
+		}
+
+		for (UINT i = 0; i < inputData1->getVertexCount(); i++)
+		{
+			UINT j = 0;
+			for (ContactList::iterator iter = contacts2->begin(); iter != contacts2->end(); iter++)
+			{
+				std::shared_ptr<Contact2D> contact = *iter;
+				contact->depth = std::max(glm::dot(contact->n, glm::vec2(pts1[i])) - iPtProjs2[j], contact->depth);
 				j++;
 			}
 		}

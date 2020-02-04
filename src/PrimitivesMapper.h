@@ -28,7 +28,7 @@ public:
 
 	void addCircle(glm::vec2 pos, GLfloat r, UINT div);
 	void addLine(glm::vec2 p1, glm::vec2 p2);
-	void addArrow(glm::vec2 p1, glm::vec2 p2, GLfloat headSize = 1.0f);
+	void addArrow(glm::vec2 p1, glm::vec2 p2, GLfloat headSize = 1.0f, GLfloat headRatio = 0.9f);
 
 	// Removes all geometry
 	void clear();
@@ -64,10 +64,15 @@ public:
 	static std::shared_ptr<PrimitivesMapper> getMapper() { return mapper; }
 
 	static void setZ(GLfloat z) { mapper->setZ(z); }
+	static void setColor(glm::vec3 color);
+	static void setColor(GLfloat r, GLfloat g, GLfloat b);
 
 	static void addCircle(glm::vec2 pos, GLfloat r, UINT div) { mapper->addCircle(pos, r, div); }
 	static void addLine(glm::vec2 p1, glm::vec2 p2) { mapper->addLine(p1, p2); }
-	static void addArrow(glm::vec2 p1, glm::vec2 p2, GLfloat headSize = 1.0f) { mapper->addArrow(p1, p2, headSize); }
+	static void addArrow(glm::vec2 p1, glm::vec2 p2, GLfloat headSize = 1.0f, GLfloat headRatio = 0.9f)
+	{
+		mapper->addArrow(p1, p2, headSize, headRatio);
+	}
 
 	static void clear() { mapper->clear(); }
 

@@ -26,6 +26,13 @@ public:
 
 using ContactList = std::vector<std::shared_ptr<Contact2D>>;
 
+enum class IntersectType
+{
+	EDGE = 0,
+	GJK = 1,
+	SAT = 2
+};
+
 // PolyData filter for computing 2d polygon intersections
 // This is an edge based intersection test, it does not handle total overlap
 // Resolution direction is direction to move 1 to leave 2
@@ -48,5 +55,7 @@ private:
 	std::shared_ptr<PolyData> inputData1 = nullptr;
 	std::shared_ptr<PolyData> inputData2 = nullptr;
 
+	std::shared_ptr<ContactList> contacts1 = nullptr;
+	std::shared_ptr<ContactList> contacts2 = nullptr;
 	std::shared_ptr<ContactList> contacts = nullptr;
 };
