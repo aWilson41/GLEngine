@@ -51,7 +51,7 @@ protected:
 	GLint iboSize = -1;
 	GLuint vaoID = -1;
 
-	GLfloat lineWidth = 2.0f;
+	GLfloat lineWidth = 0.1f;
 	GLfloat z = -1.0f;
 
 	ShaderProgram* shaderProgram = nullptr;
