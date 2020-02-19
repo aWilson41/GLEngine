@@ -1,128 +1,87 @@
 cmake_minimum_required(VERSION 3.0.2)
  
-PROJECT(GLEngine)
+project(GLEngineSuperbuild)
 
-#set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/CMakeFiles")
-#message(WARNING "${CMAKE_SOURCE_DIR}/CMakeFiles/")
+include(ExternalProject)
 
-# Glob all the files together for use
-file(GLOB ENGINE_HEADER_FILES src/*.h)
-file(GLOB ENGINE_SOURCE_FILES src/*.cpp)
-set(ENGINE_FILES ${ENGINE_HEADER_FILES} ${ENGINE_SOURCE_FILES})
+set(GLEngine_CMAKE_DIR "${CMAKE_SOURCE_DIR}/CMake")
+set(3RDPARTY_SRC_DIR "${CMAKE_SOURCE_DIR}/3rdparty")
+set(3RDPARTY_BINARY_DIR "${CMAKE_BINARY_DIR}/3rdparty")
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${GLEngine_CMAKE_DIR})
+set(CMAKE_INSTALL_PREFIX ${CMAKE_BINARY_DIR}/install CACHE PATH "Install location" FORCE)
+set(CMAKE_PREFIX_PATH ${CMAKE_INSTALL_PREFIX})
 
-file(GLOB ENGINE_RENDERING_HEADER_FILES src/Rendering/*.h)
-file(GLOB ENGINE_RENDERING_SOURCE_FILES src/Rendering/*.cpp)
-set(ENGINE_RENDERING_FILES ${ENGINE_RENDERING_HEADER_FILES} ${ENGINE_RENDERING_SOURCE_FILES})
+# Add submodules
+ExternalProject_Add(GLEW
+	PREFIX           "${3RDPARTY_BINARY_DIR}/GLEW"
+	SOURCE_DIR       "3rdparty/GLEW/src"
+	BINARY_DIR       "3rdparty/GLEW/build"
+	INSTALL_DIR      "install"
+	DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E copy_directory "${3RDPARTY_SRC_DIR}/GLEW" "${3RDPARTY_BINARY_DIR}/GLEW/src"
+	CMAKE_ARGS
+		-DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_PREFIX_PATH}
+		-Dglew-cmake_BUILD_STATIC:BOOL=FALSE
+		-Dglew-cmake_BUILD_SHARED:BOOL=TRUE
+		-DONLY_LIBS:BOOL=TRUE)
+	
+ExternalProject_Add(GLFW
+	PREFIX           "${3RDPARTY_BINARY_DIR}/GLFW"
+	SOURCE_DIR       "3rdparty/GLFW/src"
+	BINARY_DIR       "3rdparty/GLFW/build"
+	INSTALL_DIR      "install"
+	DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E copy_directory "${3RDPARTY_SRC_DIR}/GLFW" "${3RDPARTY_BINARY_DIR}/GLFW/src"
+	CMAKE_ARGS
+		-DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_PREFIX_PATH}
+		-DBUILD_SHARED_LIBS:BOOL=TRUE
+		-DGLFW_BUILD_DOCS:BOOL=FALSE
+		-DGLFW_BUILD_EXAMPLES:BOOL=FALSE
+		-DGLFW_BUILD_TESTS:BOOL=FALSE)
+		
+ExternalProject_Add(GLM
+	PREFIX           "${3RDPARTY_BINARY_DIR}/GLM"
+	SOURCE_DIR       "3rdparty/GLM/src"
+	BINARY_DIR       "3rdparty/GLM/build"
+	INSTALL_DIR      "install"
+	DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E copy_directory "${3RDPARTY_SRC_DIR}/GLM" "${3RDPARTY_BINARY_DIR}/GLM/src"
+	INSTALL_COMMAND
+		COMMAND ${CMAKE_COMMAND} -E copy_directory "${3RDPARTY_BINARY_DIR}/GLM/build/glm/Debug" "${CMAKE_INSTALL_PREFIX}/bin"
+		COMMAND ${CMAKE_COMMAND} -E copy_directory "${3RDPARTY_BINARY_DIR}/GLM/build/glm/Release" "${CMAKE_INSTALL_PREFIX}/bin"
+		COMMAND ${CMAKE_COMMAND} -E copy_directory "${3RDPARTY_BINARY_DIR}/GLM/src/glm" "${CMAKE_INSTALL_PREFIX}/include"
+	CMAKE_ARGS
+		-DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_PREFIX_PATH}
+		-DBUILD_SHARED_LIBS:BOOL=TRUE
+		-DBUILD_STATIC_LIBS:BOOL=FALSE
+		-DGLM_TEST_ENABLE:BOOL=FALSE)
+	
+ExternalProject_Add(assimp
+	PREFIX           "${3RDPARTY_BINARY_DIR}/assimp"
+	SOURCE_DIR       "3rdparty/assimp/src"
+	BINARY_DIR       "3rdparty/assimp/build"
+	INSTALL_DIR      "install"
+	DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E copy_directory "${3RDPARTY_SRC_DIR}/assimp" "${3RDPARTY_BINARY_DIR}/assimp/src"
+	CMAKE_ARGS
+		-DTBB_BUILD_TESTS:BOOL=FALSE
+		-DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_PREFIX_PATH}
+		-DASSIMP_BUILD_ASSIMP_TOOLS:BOOL=FALSE
+		-DASSIMP_BUILD_TESTS:BOOL=FALSE)
 
-file(GLOB ENGINE_DATASOURCE_HEADER_FILES src/Sources/*.h)
-file(GLOB ENGINE_DATASOURCE_SOURCE_FILES src/Sources/*.cpp)
-set(ENGINE_DATASOURCES_FILES ${ENGINE_DATASOURCE_HEADER_FILES} ${ENGINE_DATASOURCE_SOURCE_FILES})
+ExternalProject_Add(Eigen
+	PREFIX           "${3RDPARTY_BINARY_DIR}/Eigen"
+	SOURCE_DIR       "3rdparty/Eigen/src"
+	BINARY_DIR       "3rdparty/Eigen/build"
+	INSTALL_DIR      "install"
+	DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E copy_directory "${3RDPARTY_SRC_DIR}/Eigen" "${3RDPARTY_BINARY_DIR}/Eigen/src"
+	CMAKE_ARGS
+		-DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_PREFIX_PATH}
+		-DBUILD_TESTING:BOOL=FALSE)
 
-file(GLOB ENGINE_IO_HEADER_FILES src/IO/*.h)
-file(GLOB ENGINE_IO_SOURCE_FILES src/IO/*cpp)
-set(ENGINE_IO_FILES ${ENGINE_IO_HEADER_FILES} ${ENGINE_IO_SOURCE_FILES})
-
-set(ENGINE_INCLUDES ${ENGINE_HEADER_FILES} ${ENGINE_RENDERING_HEADER_FILES} ${ENGINE_DATASOURCE_HEADER_FILES} ${ENGINE_IO_HEADER_FILES})
-
-file(GLOB_RECURSE SHADER_DIRECT_FILES src/Shaders/DirectRasterize/*glsl)
-file(GLOB_RECURSE SHADER_DEFERRED_FILES src/Shaders/DeferredRasterize/*glsl)
-file(GLOB_RECURSE SHADER_RAYCAST_FILES src/Shaders/Raycast/*glsl)
-file(GLOB_RECURSE SHADER_RAYTRACE_FILES src/Shaders/Raytrace/*glsl)
-file(GLOB_RECURSE SHADER_PATHTRACE_FILES src/Shaders/Pathtrace/*glsl)
-set(SHADER_FILES ${SHADER_DIRECT_FILES} ${SHADER_DEFERRED_FILES} ${SHADER_RAYCAST_FILES} ${SHADER_RAYTRACE_FILES} ${SHADER_PATHTRACE_FILES})
-
-file(GLOB LODEPNG_FILES src/LodePNG/lodepng.h src/LodePNG/lodepng.cpp)
-
-# Find all the packages and stuff
-find_package(OpenGL REQUIRED)
-find_path(GLM 
-	NAMES "/glm" 
-	PATHS ENV PATH)
-find_path(GLEW 
-	NAMES "/include/GL/glew.h"
-	PATHS ENV PATH)
-find_path(GLFW
-	NAMES "/include/GLFW"
-	PATHS ENV PATH)
-# Find quiet/optional packages (don't complain when they aren't found)
-find_package(Eigen3 3.3 QUIET)
-
-if(USE_EIGEN OR (TARGET Eigen3::Eigen))
-	option(USE_EIGEN "Toggle for Eigen usage." ON)
-else()
-	option(USE_EIGEN "Toggle for Eigen usage." OFF)
-endif()
-
-#Set the includes and libraries
-set(GLENGINE_INCLUDE_DIRS
-	${CMAKE_CURRENT_SOURCE_DIR}
-	${CMAKE_CURRENT_SOURCE_DIR}/src
-	${CMAKE_CURRENT_SOURCE_DIR}/src/Rendering
-	${CMAKE_CURRENT_SOURCE_DIR}/src/Sources
-	${CMAKE_CURRENT_SOURCE_DIR}/src/IO
-	${CMAKE_CURRENT_BINARY_DIR}
-	${GLM}/glm
-	${GLEW}/include
-	${GLFW}/include
-	${OPENGL_INCLUDE_DIRS})
-
-set(GLENGINE_LIBRARIES
-	debug ${GLEW}/lib/Release/x64/glew32.lib optimized ${GLEW}/lib/Release/x64/glew32.lib
-	debug ${GLFW}/lib/glfw3d.lib optimized ${GLFW}/lib/glfw3.lib
-	debug ${OPENGL_LIBRARIES} optimized ${OPENGL_LIBRARIES})
-
-if (USE_EIGEN)
-	set(GLENGINE_LIBRARIES ${GLENGINE_LIBRARIES} Eigen3::Eigen)
-	add_definitions(-DUSEEIGEN)
-endif()
-
-add_library(GLEngine STATIC
-	${ENGINE_FILES}
-	${ENGINE_RENDERING_FILES}
-	${ENGINE_DATASOURCES_FILES}
-	${ENGINE_IO_FILES}
-	${SHADER_FILES}
-	${LODEPNG_FILES})
-target_include_directories(GLEngine PUBLIC ${GLENGINE_INCLUDE_DIRS})
-target_link_libraries(GLEngine ${GLENGINE_LIBRARIES})
-
-if(WIN32) # Check if we are on Windows
-  if(MSVC) # Check if we are using the Visual Studio compiler
-	# Enable parallel build for msvc
-	add_definitions(/MP)
-  endif()
-endif()
-
-# Add a build command to copy the shaders to the build directory post build
-add_custom_command(
-	TARGET GLEngine POST_BUILD
-	COMMAND ${CMAKE_COMMAND} -E copy_directory
-			${CMAKE_CURRENT_SOURCE_DIR}/src/Shaders
-			${CMAKE_BINARY_DIR}/Shaders)
-add_custom_command(
-	TARGET GLEngine POST_BUILD
-	COMMAND ${CMAKE_COMMAND} -E copy_directory
-			${CMAKE_CURRENT_SOURCE_DIR}/src/Shaders
-			${CMAKE_BINARY_DIR}/Release/Shaders)
-add_custom_command(
-	TARGET GLEngine POST_BUILD
-	COMMAND ${CMAKE_COMMAND} -E copy_directory
-			${CMAKE_CURRENT_SOURCE_DIR}/src/Shaders
-			${CMAKE_BINARY_DIR}/Debug/Shaders)
-			
-# Sort these into folders/filters
-source_group("Main" FILES ${ENGINE_FILES})
-source_group("Rendering" FILES ${ENGINE_RENDERING_FILES})
-source_group("Sources" FILES ${ENGINE_DATASOURCES_FILES})
-source_group("IO" FILES ${ENGINE_IO_FILES})
-source_group("Resources" FILES ${IMAGERSC})
-source_group("Shaders\\Direct" FILES ${SHADER_DIRECT_FILES})
-source_group("Shaders\\Deferred" FILES ${SHADER_DEFERRED_FILES})
-source_group("Shaders\\Raycast" FILES ${SHADER_RAYCAST_FILES})
-source_group("Shaders\\Raytrace" FILES ${SHADER_RAYTRACE_FILES})
-source_group("Shaders\\Pathtrace" FILES ${SHADER_PATHTRACE_FILES})
-source_group("LodePNG" FILES ${LODEPNG_FILES})
-
-install(TARGETS GLEngine DESTINATION lib)
-install(FILES ${ENGINE_INCLUDES} DESTINATION include/GLEngine)
-install(FILES ${SHADER_FILES} DESTINATION shaders/GLEngine)
+ExternalProject_Add(GLEngine
+	DEPENDS          GLEW GLFW assimp Eigen
+	PREFIX           "${CMAKE_BINARY_DIR}/GLEngine"
+	SOURCE_DIR       "GLEngine/src"
+	BINARY_DIR       "GLEngine/build"
+	INSTALL_DIR      "install"
+	DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_SOURCE_DIR}/src" "${CMAKE_BINARY_DIR}/GLEngine/src"
+	CMAKE_ARGS
+		-DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_PREFIX_PATH}
+		-DCMAKE_MODULE_PATH:PATH=${CMAKE_MODULE_PATH})

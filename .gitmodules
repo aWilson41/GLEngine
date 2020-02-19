@@ -1,0 +1,15 @@
+[submodule "3rdparty/GLEW"]
+	path = 3rdparty/GLEW
+	url = https://github.com/Perlmint/glew-cmake.git
+[submodule "3rdparty/GLFW"]
+	path = 3rdparty/GLFW
+	url = https://github.com/glfw/glfw.git
+[submodule "3rdparty/Eigen"]
+	path = 3rdparty/Eigen
+	url = https://gitlab.com/libeigen/eigen.git
+[submodule "3rdparty/assimp"]
+	path = 3rdparty/assimp
+	url = https://github.com/assimp/assimp.git
+[submodule "3rdparty/GLM"]
+	path = 3rdparty/GLM
+	url = https://github.com/g-truc/glm.git
