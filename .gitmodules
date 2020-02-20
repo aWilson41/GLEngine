@@ -10,6 +10,3 @@
 [submodule "3rdparty/assimp"]
 	path = 3rdparty/assimp
 	url = https://github.com/assimp/assimp.git
-[submodule "3rdparty/GLM"]
-	path = 3rdparty/GLM
-	url = https://github.com/aWilson41/glm.git

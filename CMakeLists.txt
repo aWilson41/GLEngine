@@ -36,7 +36,8 @@ ExternalProject_Add(GLFW
 		-DGLFW_BUILD_DOCS:BOOL=FALSE
 		-DGLFW_BUILD_EXAMPLES:BOOL=FALSE
 		-DGLFW_BUILD_TESTS:BOOL=FALSE)
-		
+
+include(CopyIfExists)
 ExternalProject_Add(GLM
 	PREFIX           "${3RDPARTY_BINARY_DIR}/GLM"
 	SOURCE_DIR       "3rdparty/GLM/src"
