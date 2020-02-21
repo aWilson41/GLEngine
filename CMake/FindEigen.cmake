@@ -10,7 +10,7 @@ find_path(EIGEN_INCLUDE_DIR
   PATHS
 	${INCLUDE_SEARCH_DIR}
   NO_DEFAULT_PATH)
-set(EIGEN_INCLUDE_DIR ${EIGEN_INCLUDE_DIR}/Eigen/eigen3)
+set(EIGEN_INCLUDE_DIR ${EIGEN_INCLUDE_DIR}/eigen3)
 
 # Complete
 include(FindPackageHandleStandardArgs)

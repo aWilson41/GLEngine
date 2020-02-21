@@ -36,8 +36,7 @@ ExternalProject_Add(GLFW
 		-DGLFW_BUILD_DOCS:BOOL=FALSE
 		-DGLFW_BUILD_EXAMPLES:BOOL=FALSE
 		-DGLFW_BUILD_TESTS:BOOL=FALSE)
-
-include(CopyIfExists)
+		
 ExternalProject_Add(GLM
 	PREFIX           "${3RDPARTY_BINARY_DIR}/GLM"
 	SOURCE_DIR       "3rdparty/GLM/src"
@@ -74,11 +73,10 @@ ExternalProject_Add(Eigen
 
 ExternalProject_Add(GLEngine
 	DEPENDS          GLEW GLFW assimp Eigen
-	PREFIX           "${CMAKE_BINARY_DIR}/GLEngine"
-	SOURCE_DIR       "GLEngine/src"
-	BINARY_DIR       "GLEngine/build"
+	SOURCE_DIR       ${CMAKE_SOURCE_DIR}/src
+	BINARY_DIR       "Innerbuild"
 	INSTALL_DIR      "install"
-	DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_SOURCE_DIR}/src" "${CMAKE_BINARY_DIR}/GLEngine/src"
+	DOWNLOAD_COMMAND ""
 	CMAKE_ARGS
 		-DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_PREFIX_PATH}
 		-DCMAKE_MODULE_PATH:PATH=${CMAKE_MODULE_PATH})

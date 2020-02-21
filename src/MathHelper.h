@@ -1,12 +1,12 @@
 #pragma once
+#include <algorithm>
 #include <GL/glew.h>
-#include <glm.hpp>
-#include <gtc/matrix_transform.hpp>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/quaternion.hpp>
 #include <math.h>
 #include <vector>
-#include <algorithm>
-#define GLM_ENABLE_EXPERIMENTAL
-#include <gtx/quaternion.hpp>
 
 using UINT = unsigned int;
 

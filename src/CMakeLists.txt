@@ -80,17 +80,17 @@ endif()
 add_custom_command(
 	TARGET GLEngine POST_BUILD
 	COMMAND ${CMAKE_COMMAND} -E copy_directory
-			${CMAKE_CURRENT_SOURCE_DIR}/src/Shaders
+			${CMAKE_CURRENT_SOURCE_DIR}/Shaders
 			${CMAKE_BINARY_DIR}/Shaders)
 add_custom_command(
 	TARGET GLEngine POST_BUILD
 	COMMAND ${CMAKE_COMMAND} -E copy_directory
-			${CMAKE_CURRENT_SOURCE_DIR}/src/Shaders
+			${CMAKE_CURRENT_SOURCE_DIR}/Shaders
 			${CMAKE_BINARY_DIR}/Release/Shaders)
 add_custom_command(
 	TARGET GLEngine POST_BUILD
 	COMMAND ${CMAKE_COMMAND} -E copy_directory
-			${CMAKE_CURRENT_SOURCE_DIR}/src/Shaders
+			${CMAKE_CURRENT_SOURCE_DIR}/Shaders
 			${CMAKE_BINARY_DIR}/Debug/Shaders)
 			
 # Sort these into folders/filters
