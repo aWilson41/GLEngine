@@ -8,7 +8,9 @@ set(GLEngine_CMAKE_DIR "${CMAKE_SOURCE_DIR}/CMake")
 set(3RDPARTY_SRC_DIR "${CMAKE_SOURCE_DIR}/3rdparty")
 set(3RDPARTY_BINARY_DIR "${CMAKE_BINARY_DIR}/3rdparty")
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${GLEngine_CMAKE_DIR})
-set(CMAKE_INSTALL_PREFIX ${CMAKE_BINARY_DIR}/install CACHE PATH "Install location" FORCE)
+if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+  set(CMAKE_INSTALL_PREFIX ${CMAKE_BINARY_DIR}/install CACHE PATH "Install location" FORCE)
+endif()
 set(CMAKE_PREFIX_PATH ${CMAKE_INSTALL_PREFIX})
 
 # Add submodules
@@ -72,7 +74,7 @@ ExternalProject_Add(Eigen
 		-DBUILD_TESTING:BOOL=FALSE)
 
 ExternalProject_Add(GLEngine
-	DEPENDS          GLEW GLFW assimp Eigen
+	DEPENDS          GLEW GLFW assimp Eigen GLM
 	SOURCE_DIR       ${CMAKE_SOURCE_DIR}/src
 	BINARY_DIR       "Innerbuild"
 	INSTALL_DIR      "install"
