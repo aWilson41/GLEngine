@@ -3,7 +3,6 @@
 # Find includes
 set(header GLFW/glfw3.h)
 set(INCLUDE_SEARCH_DIR ${CMAKE_INSTALL_PREFIX}/include)
-
 find_path(GLFW_INCLUDE_DIR
   NAMES
 	${header}
@@ -13,34 +12,34 @@ find_path(GLFW_INCLUDE_DIR
 
 
 # Find libraries
-set(debug_postfix .lib)
-set(release_postfix .lib)
 set(LIB_SEARCH_DIR ${CMAKE_INSTALL_PREFIX}/lib)
-
 find_library(GLFW_LIBRARY-RELEASE
 	NAMES
-		glfw3${release_postfix}
-		libglfw3${release_postfix}
+		glfw3.lib
+		libglfw3.lib
 	PATHS
 		${LIB_SEARCH_DIR}
 		${LIB_SEARCH_DIR}/Release
 	NO_DEFAULT_PATH)
-
 find_library(GLFW_LIBRARY-DEBUG
 	NAMES
-		glfw3${debug_postfix}
-		libglfw3${debug_postfix}
+		glfw3dll.lib
+		libglfw3dll.lib
 	PATHS
 		${LIB_SEARCH_DIR}
-		${LIB_SEARCH_DIR}/Release
+		${LIB_SEARCH_DIR}/Debug
 	NO_DEFAULT_PATH)
-		
-list(APPEND GLFW_LIBRARIES optimized ${GLFW_LIBRARY-RELEASE})
-list(APPEND GLFW_RELEASE_LIBRARIES ${GLFW_LIBRARY-RELEASE})
+
+if (EXISTS ${GLFW_LIBRARY-RELEASE})
+	list(APPEND GLFW_LIBRARIES optimized ${GLFW_LIBRARY-RELEASE})
+	list(APPEND GLFW_RELEASE_LIBRARIES ${GLFW_LIBRARY-RELEASE})
+endif()
 mark_as_advanced(GLFW_LIBRARY-RELEASE)
 
-list(APPEND GLFW_LIBRARIES debug ${GLFW_LIBRARY-DEBUG})
-list(APPEND GLFW_DEBUG_LIBRARIES ${GLFW_LIBRARY-DEBUG})
+if (EXISTS ${GLFW_LIBRARY-DEBUG})
+	list(APPEND GLFW_LIBRARIES debug ${GLFW_LIBRARY-DEBUG})
+	list(APPEND GLFW_DEBUG_LIBRARIES ${GLFW_LIBRARY-DEBUG})
+endif()
 mark_as_advanced(GLFW_LIBRARY-DEBUG)
 
 

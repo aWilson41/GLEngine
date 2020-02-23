@@ -1,0 +1,13 @@
+#@PACKAGE_INIT@
+
+# Include/libs of the target we generated
+include("@CMAKE_CURRENT_BINARY_DIR@/GLEngineTargets.cmake")
+
+get_target_property(GLEngine_INCLUDE_DIRS GLEngine INTERFACE_INCLUDE_DIRECTORIES)
+get_target_property(GLEngine_LIBRARIES GLEngine INTERFACE_LINK_LIBRARIES)
+
+get_target_property(GLEngine_LIBRARY-RELEASE GLEngine IMPORTED_LOCATION_RELEASE)
+get_target_property(GLEngine_LIBRARY-DEBUG GLEngine IMPORTED_LOCATION_DEBUG)
+
+list(APPEND GLEngine_LIBRARIES optimized ${GLEngine_LIBRARY-RELEASE})
+list(APPEND GLEngine_LIBRARIES debug ${GLEngine_LIBRARY-DEBUG})

@@ -10,6 +10,8 @@ find_path(GLM_INCLUDE_DIR
   PATHS
 	${INCLUDE_SEARCH_DIR}
   NO_DEFAULT_PATH)
+  
+message("GLM Include is: ${GLM_INCLUDE_DIR}")
 
 # Complete
 include(FindPackageHandleStandardArgs)
