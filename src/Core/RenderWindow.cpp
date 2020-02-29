@@ -1,4 +1,5 @@
 #include "RenderWindow.h"
+#include "Framebuffer.h"
 #include "Renderer.h"
 #include "WindowInteractor.h"
 #include <GLFW/glfw3.h>
@@ -98,6 +99,18 @@ void RenderWindow::render()
 		return;
 
 	ren->render();
+
+	// Blit the results to the default fbo
+	const glm::ivec2 fboDim = ren->getFramebufferDim();
+	ren->getColorOutput()->bindRead();
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+	glBlitFramebuffer(0, 0, fboDim.x, fboDim.y, 0, 0, fboDim.x, fboDim.y, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+
+	ren->getDepthOutput()->bindRead();
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+	glBlitFramebuffer(0, 0, fboDim.x, fboDim.y, 0, 0, fboDim.x, fboDim.y, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	glfwSwapBuffers(window);
 	glfwPollEvents();

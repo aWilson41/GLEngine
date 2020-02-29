@@ -13,8 +13,6 @@ public:
 public:
 	void render() override;
 
-	void resizeFramebuffer(UINT width, UINT height) override;
-
 protected:
 	void bindCameraUniforms(GLuint shaderID);
 	void bindSceneUniforms(GLuint shaderID);

@@ -25,7 +25,6 @@ void LightingPass::render(DeferredRenderer* ren)
 {
 	framebuffer->bind();
 	framebuffer->clearColor();
-	framebuffer->clearDepth();
 
 	GLuint shaderID = shader->getProgramID();
 	glUseProgram(shaderID);

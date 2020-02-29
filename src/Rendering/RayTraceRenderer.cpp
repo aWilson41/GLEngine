@@ -1,7 +1,8 @@
 #include "RayTraceRenderer.h"
+#include "Camera.h"
+#include "Framebuffer.h"
 #include "ShaderProgram.h"
 #include "Shaders.h"
-#include "Camera.h"
 
 static int nextPowerOfTwo(int x) {
 	x--;
@@ -33,8 +34,8 @@ RayTraceRenderer::RayTraceRenderer()
 
 void RayTraceRenderer::render()
 {
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	framebuffer->bind();
+	framebuffer->clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	GLuint shaderID = shaderProgram->getProgramID();
 	glUseProgram(shaderID);
@@ -51,8 +52,9 @@ void RayTraceRenderer::render()
 	// Do the render
 	static GLint workGroupSize[3] = { -1, -1, -1 };
 	glGetProgramiv(shaderID, GL_COMPUTE_WORK_GROUP_SIZE, workGroupSize);
-	int numGroupsX = nextPowerOfTwo(defaultFboWidth) / workGroupSize[0];
-	int numGroupsY = nextPowerOfTwo(defaultFboHeight) / workGroupSize[1];
+	const glm::ivec2 fboDim = getFramebufferDim();
+	int numGroupsX = nextPowerOfTwo(fboDim.x) / workGroupSize[0];
+	int numGroupsY = nextPowerOfTwo(fboDim.y) / workGroupSize[1];
 	glDispatchCompute(numGroupsX, numGroupsY, 1);
 
 	// Block until the image is written
@@ -76,22 +78,8 @@ void RayTraceRenderer::render()
 	glBindVertexArray(0);
 	glUseProgram(0);
 	frameCount++;
-}
 
-// Resizes the framebuffer (deletes and recreates), can also be used for initialization
-void RayTraceRenderer::resizeFramebuffer(UINT width, UINT height)
-{
-	Renderer::resizeFramebuffer(width, height);
-
-	if (colorTexID != -1)
-		glDeleteTextures(1, &colorTexID);
-
-	glGenTextures(1, &colorTexID);
-	glBindTexture(GL_TEXTURE_2D, colorTexID);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, width, height, 0, GL_RGBA, GL_FLOAT, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glBindTexture(GL_TEXTURE_2D, 0);
+	framebuffer->unbind();
 }
 
 void RayTraceRenderer::bindCameraUniforms(GLuint shaderID)

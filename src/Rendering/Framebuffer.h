@@ -138,7 +138,7 @@ private:
 
 	GLuint texID = -1;
 
-	glm::ivec2 dim = glm::ivec2(-1, -1);
+	glm::ivec2 dim = glm::ivec2(100, 100);
 	Format format = Format::RGB32F;
 	void* data = nullptr;
 };
@@ -163,6 +163,13 @@ public:
 
 public:
 	std::shared_ptr<FramebufferAttachment> getAttachment(UINT port) const { return attachments[port]; }
+	glm::ivec2 getDim()
+	{
+		if (attachments.size() > 0)
+			return attachments[0]->getDim();
+		else
+			return glm::ivec2(0);
+	}
 
 	bool resize(const UINT width, const UINT height) { return resize(glm::ivec2(width, height)); }
 	bool resize(const glm::ivec2 dim)
@@ -242,16 +249,10 @@ public:
 	}
 	void unbind() { glBindFramebuffer(GL_FRAMEBUFFER, 0); }
 
-	void clearColor()
-	{
-		glBindFramebuffer(GL_FRAMEBUFFER, fboID);
-		glClear(GL_COLOR_BUFFER_BIT);
-	}
-	void clearDepth()
-	{
-		glBindFramebuffer(GL_FRAMEBUFFER, fboID);
-		glClear(GL_COLOR_BUFFER_BIT);
-	}
+	void clearColor() { glClear(GL_COLOR_BUFFER_BIT); }
+	void clearDepth() { glClear(GL_DEPTH_BUFFER_BIT); }
+	void clearStencil() { glClear(GL_STENCIL_BUFFER_BIT); }
+	void clear(GLbitfield mask) { glClear(mask); }
 
 private:
 	GLuint fboID = -1;

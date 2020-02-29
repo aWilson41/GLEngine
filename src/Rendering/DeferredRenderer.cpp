@@ -44,31 +44,15 @@ DeferredRenderer::~DeferredRenderer()
 
 void DeferredRenderer::render()
 {
+	const glm::ivec2 fboDim = getFramebufferDim();
 	if (PassesModified)
-		resizeFramebuffer(defaultFboWidth, defaultFboHeight);
-
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	glClearColor(clearColor[0], clearColor[1], clearColor[2], clearColor[3]);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		resizeFramebuffer(fboDim.x, fboDim.y);
 
 	// Execute all the render passses
 	for (UINT i = 0; i < renderPasses.size(); i++)
 	{
 		renderPasses[i]->render(this);
 	}
-
-	// Blit the results to the default fbo
-	//printf("Blitting color from fbo %d to 0\n", colorFboID);
-	colorFbo->bindRead();
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-	glBlitFramebuffer(0, 0, defaultFboWidth, defaultFboHeight, 0, 0, defaultFboWidth, defaultFboHeight, GL_COLOR_BUFFER_BIT, GL_NEAREST);
-
-	//printf("Blitting depth from fbo %d to 0\n", depthFboID);
-	depthFbo->bindRead();
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-	glBlitFramebuffer(0, 0, defaultFboWidth, defaultFboHeight, 0, 0, defaultFboWidth, defaultFboHeight, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
-
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 void DeferredRenderer::pass()

@@ -13,8 +13,9 @@ public:
 	~DeferredRenderer();
 
 public:
-	void setColorFbo(std::shared_ptr<Framebuffer> fbo) { colorFbo = fbo; }
-	void setDepthFbo(std::shared_ptr<Framebuffer> fbo) { depthFbo = fbo; }
+	void setColorFbo(std::shared_ptr<Framebuffer> fbo) { colorOutputFbo = fbo; }
+	void setDepthFbo(std::shared_ptr<Framebuffer> fbo) { depthOutputFbo = fbo; }
+	void setStencilFbo(std::shared_ptr<Framebuffer> fbo) { stencilOutputFbo = fbo; }
 
 	void render() override;
 
@@ -35,7 +36,6 @@ private:
 	bool useDefaults = true;
 	std::vector<RenderPass*> renderPasses;
 	// The color and depth fbo's to blit after everything is rendered
-	std::shared_ptr<Framebuffer> colorFbo = nullptr;
-	std::shared_ptr<Framebuffer> depthFbo = nullptr;
+	
 	bool PassesModified = false;
 };
