@@ -1,6 +1,7 @@
 #pragma once
 #include "Renderer.h"
 
+class Framebuffer;
 class RenderPass;
 
 // Implements a deferred rendering process
@@ -12,8 +13,8 @@ public:
 	~DeferredRenderer();
 
 public:
-	void setColorFboID(GLuint fboID) { colorFboID = fboID; }
-	void setDepthFboID(GLuint fboID) { depthFboID = fboID; }
+	void setColorFbo(std::shared_ptr<Framebuffer> fbo) { colorFbo = fbo; }
+	void setDepthFbo(std::shared_ptr<Framebuffer> fbo) { depthFbo = fbo; }
 
 	void render() override;
 
@@ -27,14 +28,14 @@ public:
 	}
 	void removePass(RenderPass* pass);
 
-	void resizeFramebuffer(int width, int height) override;
+	void resizeFramebuffer(UINT width, UINT height) override;
 
 private:
 	GLuint emptyVaoID = -1;
 	bool useDefaults = true;
 	std::vector<RenderPass*> renderPasses;
 	// The color and depth fbo's to blit after everything is rendered
-	GLuint colorFboID = -1;
-	GLuint depthFboID = -1;
+	std::shared_ptr<Framebuffer> colorFbo = nullptr;
+	std::shared_ptr<Framebuffer> depthFbo = nullptr;
 	bool PassesModified = false;
 };

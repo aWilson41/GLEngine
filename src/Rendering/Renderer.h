@@ -13,13 +13,12 @@ class Renderer
 {
 public:
 	Renderer();
-	~Renderer();
 
 public:
 	std::shared_ptr<AbstractMapper> getRenderItem(UINT i) const { return mappers[i]; }
 	std::shared_ptr<Camera> getCamera() const { return cam; }
-	ImageData* getOutputImage() const;
-	float* getClearColor() { return clearColor; }
+	std::shared_ptr<ImageData> getOutputImage() const;
+	glm::vec4 getClearColor() { return clearColor; }
 	glm::vec3 getLightDir() const { return lightDir; }
 	int getFramebufferWidth() const { return defaultFboWidth; }
 	int getFramebufferHeight() const { return defaultFboHeight; }
@@ -35,7 +34,7 @@ public:
 
 	virtual void render();
 	// The direct renderer uses the default framebuffer
-	virtual void resizeFramebuffer(int width, int height);
+	virtual void resizeFramebuffer(UINT width, UINT height);
 
 protected:
 	// Will eventually hold actors instead of mappers
@@ -50,5 +49,5 @@ protected:
 	// Default framebuffer size, resized on init
 	int defaultFboWidth = 100;
 	int defaultFboHeight = 100;
-	float clearColor[4] = { 0.5f, 0.3f, 0.25f, 1.0f };
+	glm::vec4 clearColor = glm::vec4(0.5f, 0.3f, 0.25f, 1.0f);
 };

@@ -42,5 +42,5 @@ protected:
 	GLuint vaoID = -1;
 	GLuint texID = -1;
 
-	ShaderProgram* shaderProgram = nullptr;
+	std::shared_ptr<ShaderProgram> shaderProgram = nullptr;
 };

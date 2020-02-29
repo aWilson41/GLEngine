@@ -9,21 +9,18 @@ class LightingPass : public RenderPass
 {
 public:
 	LightingPass();
-	~LightingPass();
 
 public:
-	GLuint* getColorOutput() { return &colorTexID; }
+	std::shared_ptr<FramebufferAttachment> getColorOutput() { return getOutput(0); }
 
-	void setPosInput(GLuint* posInput) { setInput(0, posInput); }
-	void setNormalInput(GLuint* normalInput) { setInput(1, normalInput); }
-	void setDiffuseInput(GLuint* diffuseInput) { setInput(2, diffuseInput); }
-	void setAmbientInput(GLuint* ambientInput) { setInput(3, ambientInput); }
+	void setPosInput(std::shared_ptr<FramebufferAttachment> posInput) { setInput(0, posInput); }
+	void setNormalInput(std::shared_ptr<FramebufferAttachment> normalInput) { setInput(1, normalInput); }
+	void setDiffuseInput(std::shared_ptr<FramebufferAttachment> diffuseInput) { setInput(2, diffuseInput); }
+	void setAmbientInput(std::shared_ptr<FramebufferAttachment> ambientInput) { setInput(3, ambientInput); }
 
 	void render(DeferredRenderer* ren) override;
-	void resizeFramebuffer(int width, int height) override;
+	void resizeFramebuffer(UINT width, UINT height) override;
 
 private:
-	ShaderProgram* shader = nullptr;
-	GLuint colorTexID = -1;
-	GLuint depthBufferID = -1;
+	std::shared_ptr<ShaderProgram> shader = nullptr;
 };

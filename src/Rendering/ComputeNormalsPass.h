@@ -7,20 +7,17 @@ class ComputeNormalsPass : public RenderPass
 {
 public:
 	ComputeNormalsPass();
-	~ComputeNormalsPass();
 
 public:
-	GLuint* getNormalOutput() { return &normalTexID; }
+	std::shared_ptr<FramebufferAttachment> getNormalOutput() { return getOutput(0); }
 
-	void setColorInput(GLuint* colorInput) { setInput(0, colorInput); }
+	void setColorInput(std::shared_ptr<FramebufferAttachment> colorInput) { setInput(0, colorInput); }
 	void setMaxDepth(GLfloat maxDepth) { ComputeNormalsPass::maxDepth = maxDepth; }
 
 	void render(DeferredRenderer* ren) override;
-	void resizeFramebuffer(int width, int height) override;
+	void resizeFramebuffer(UINT width, UINT height) override;
 
 private:
-	ShaderProgram* shader = nullptr;
-	GLuint normalTexID = -1;
-
+	std::shared_ptr<ShaderProgram> shader = nullptr;
 	GLfloat maxDepth = 1000.0f;
 };

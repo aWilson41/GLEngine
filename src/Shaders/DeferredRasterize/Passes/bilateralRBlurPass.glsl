@@ -14,7 +14,7 @@ out float fragColor;
 float gaussian(float x, float sigma)
 {
 	float a = 2.0f * sigma * sigma;
-    return exp(-(x * x) / a) / (M_PI * a);
+	return exp(-(x * x) / a) / (M_PI * a);
 }
 
 void main()

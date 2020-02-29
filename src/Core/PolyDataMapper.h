@@ -17,7 +17,7 @@ public:
 
 public:
 	std::shared_ptr<PolyData> getInput() const { return polyData; }
-	ShaderProgram* getShaderProgram() const { return shaderProgram; }
+	std::shared_ptr<ShaderProgram> getShaderProgram() const { return shaderProgram; }
 	std::shared_ptr<PhongMaterial> getMaterial() const { return material; }
 	glm::mat4 getModelMatrix() const { return model; }
 	CellType getPolyRepresentation() const { return representation; }
@@ -27,7 +27,7 @@ public:
 	std::string getMapperName() const override { return "PolyDataMapper"; }
 
 	void setInput(std::shared_ptr<PolyData> input) { polyData = input; }
-	void setShaderProgram(ShaderProgram* shaderProgram)
+	void setShaderProgram(std::shared_ptr<ShaderProgram> shaderProgram)
 	{
 		this->shaderProgram = shaderProgram;
 		useCustomShader = true;
@@ -67,7 +67,7 @@ protected:
 	GLfloat pointSize = 4.0f;
 	GLfloat lineWidth = 1.0f;
 
-	ShaderProgram* shaderProgram = nullptr;
+	std::shared_ptr<ShaderProgram> shaderProgram = nullptr;
 
 	// Use normals, scalars, and indices when available
 	// User set values

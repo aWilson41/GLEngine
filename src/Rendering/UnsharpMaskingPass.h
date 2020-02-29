@@ -11,11 +11,10 @@ class UnsharpMaskingPass : public RenderPass
 {
 public:
 	UnsharpMaskingPass();
-	~UnsharpMaskingPass();
 
 public:
-	void setColorInput(GLuint* colorInput) { setInput(0, colorInput); }
-	void setDepthInput(GLuint* depthInput) { setInput(1, depthInput); }
+	void setColorInput(std::shared_ptr<FramebufferAttachment> colorInput) { setInput(0, colorInput); }
+	void setDepthInput(std::shared_ptr<FramebufferAttachment> depthInput) { setInput(1, depthInput); }
 	// Enhances the effect
 	void setDarknessFactor(GLfloat darknessFactor) { UnsharpMaskingPass::darknessFactor = darknessFactor; }
 	// Area of effect (radius for the gaussian blur)
@@ -26,12 +25,10 @@ public:
 	void setSigma(GLfloat sigma) { UnsharpMaskingPass::sigma = sigma; }
 
 	void render(DeferredRenderer* ren) override;
-	void resizeFramebuffer(int width, int height) override;
+	void resizeFramebuffer(UINT width, UINT height) override;
 
 private:
-	ShaderProgram* shader = nullptr;
-	GLuint colorTexID = -1;
-	GLuint depthBufferID = -1;
+	std::shared_ptr<ShaderProgram> shader = nullptr;
 
 	GLfloat darknessFactor = 5.0f;
 	GLuint radius = 20;

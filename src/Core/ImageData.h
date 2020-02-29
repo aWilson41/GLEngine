@@ -14,6 +14,8 @@ public:
 	double* getBounds() { return bounds; }
 	double* getSpacing() { return spacing; }
 	double* getOrigin() { return origin; }
+	template<typename T>
+	T* getData() { return static_cast<T*>(data); }
 	void* getData() { return data; }
 	UINT getNumComps() const { return numComps; }
 	ScalarType getScalarType() const { return type; }

@@ -8,17 +8,15 @@ class DepthToRPass : public RenderPass
 {
 public:
 	DepthToRPass();
-	~DepthToRPass();
 
 public:
-	GLuint* getColorOutput() { return &colorTexID; }
+	std::shared_ptr<FramebufferAttachment> getColorOutput() { return getOutput(0); }
 
-	void setDepthInput(GLuint* depthInput) { setInput(0, depthInput); }
+	void setDepthInput(std::shared_ptr<FramebufferAttachment> depthInput) { setInput(0, depthInput); }
 
 	void render(DeferredRenderer* ren) override;
-	void resizeFramebuffer(int width, int height) override;
+	void resizeFramebuffer(UINT width, UINT height) override;
 
 private:
-	ShaderProgram* shader = nullptr;
-	GLuint colorTexID = -1;
+	std::shared_ptr<ShaderProgram> shader = nullptr;
 };

@@ -1,45 +1,45 @@
 #pragma once
 #include "MathHelper.h"
 #include <string>
+#include <memory>
 
 class DeferredRenderer;
+class Framebuffer;
+class FramebufferAttachment;
 
 class RenderPass
 {
 public:
-	RenderPass(std::string name) { passName = name; }
+	RenderPass(std::string name)
+	{
+		passName = name;
+		framebuffer = std::make_shared<Framebuffer>();
+	}
 
 public:
-	GLuint getNumberOfInputPorts() const { return static_cast<GLuint>(inputs.size()); }
-	GLuint getNumberOfOutputPorts() const { return static_cast<GLuint>(outputs.size()); }
-	GLuint* getInput(size_t portNum) const { return inputs[portNum]; };
-	GLuint getOutput(size_t portNum) const { return outputs[portNum]; }
-	std::vector<GLuint*> getInputs() const { return inputs; }
-	std::vector<GLuint> getOutputs() const { return outputs; }
+	UINT getNumberOfInputPorts() const { return static_cast<UINT>(inputs.size()); }
+	UINT getNumberOfOutputPorts() const { return static_cast<UINT>(outputs.size()); }
+	std::shared_ptr<FramebufferAttachment> getInput(size_t portNum) const { return inputs[portNum]; };
+	std::shared_ptr<FramebufferAttachment> getOutput(size_t portNum) const { return outputs[portNum]; }
 	std::string getPassName() const { return passName; }
-	GLuint getFramebuffer() const { return fboID; }
+	std::shared_ptr<Framebuffer> getFramebuffer() const { return framebuffer; }
 
-	void setPassDim(int width, int height)
-	{
-		fboWidth = width;
-		fboHeight = height;
-	}
-	void setInput(size_t portNum, GLuint* glId) { inputs[portNum] = glId; }
-	void setNumberOfInputPorts(GLuint numberOfPorts)
+	void setInput(size_t portNum, std::shared_ptr<FramebufferAttachment> fboIn) { inputs[portNum] = fboIn; }
+	void setNumberOfInputPorts(UINT numberOfPorts)
 	{
 		inputs.resize(numberOfPorts);
 		std::fill_n(inputs.data(), inputs.size(), nullptr);
 	}
-	void setNumberOfOutputPorts(GLuint numberOfPorts) { outputs.resize(numberOfPorts); }
+	void setNumberOfOutputPorts(UINT numberOfPorts);
 
 	virtual void render(DeferredRenderer* ren) = 0;
-	virtual void resizeFramebuffer(int width, int height) = 0;
+	virtual void resizeFramebuffer(UINT width, UINT height) = 0;
 
 protected:
-	GLuint fboID = -1;
 	std::string passName = "Unnamed";
-	std::vector<GLuint*> inputs;
-	std::vector<GLuint> outputs;
-	int fboWidth = 100;
-	int fboHeight = 100;
+	std::shared_ptr<Framebuffer> framebuffer = nullptr;
+	std::vector<std::shared_ptr<FramebufferAttachment>> inputs;
+	std::vector<std::shared_ptr<FramebufferAttachment>> outputs;
+	UINT fboWidth = 100;
+	UINT fboHeight = 100;
 };

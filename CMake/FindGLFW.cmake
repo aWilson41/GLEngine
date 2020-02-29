@@ -23,8 +23,8 @@ find_library(GLFW_LIBRARY-RELEASE
 	NO_DEFAULT_PATH)
 find_library(GLFW_LIBRARY-DEBUG
 	NAMES
-		glfw3dll.lib
-		libglfw3dll.lib
+		glfw3.lib
+		libglfw3.lib
 	PATHS
 		${LIB_SEARCH_DIR}
 		${LIB_SEARCH_DIR}/Debug

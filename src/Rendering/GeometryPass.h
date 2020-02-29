@@ -5,22 +5,14 @@ class GeometryPass : public RenderPass
 {
 public:
 	GeometryPass();
-	~GeometryPass();
 
 public:
-	GLuint* getPosOutput() { return &gPosTexID; }
-	GLuint* getNormalOutput() { return &gNormalTexID; }
-	GLuint* getDiffuseOutput() { return &gDiffuseColorTexID; }
-	GLuint* getAmbientOutput() { return &gAmbientColorTexID; }
-	GLuint* getDepthOutput() { return &gDepthTexID; }
+	std::shared_ptr<FramebufferAttachment> getPosOutput() const { return getOutput(0); }
+	std::shared_ptr<FramebufferAttachment> getNormalOutput() const { return getOutput(1); }
+	std::shared_ptr<FramebufferAttachment> getDiffuseOutput() const { return getOutput(2); }
+	std::shared_ptr<FramebufferAttachment> getAmbientOutput() const { return getOutput(3); }
+	std::shared_ptr<FramebufferAttachment> getDepthOutput() const { return getOutput(4); }
 
 	void render(DeferredRenderer* ren) override;
-	void resizeFramebuffer(int width, int height) override;
-
-private:
-	GLuint gPosTexID = -1;
-	GLuint gNormalTexID = -1;
-	GLuint gDiffuseColorTexID = -1;
-	GLuint gAmbientColorTexID = -1;
-	GLuint gDepthTexID = -1;
+	void resizeFramebuffer(UINT width, UINT height) override;
 };

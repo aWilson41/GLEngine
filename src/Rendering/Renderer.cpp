@@ -9,16 +9,11 @@ Renderer::Renderer()
 	glClearColor(clearColor[0], clearColor[1], clearColor[2], clearColor[3]);
 }
 
-Renderer::~Renderer()
-{
-	Shaders::deleteShaders();
-}
-
-ImageData* Renderer::getOutputImage() const
+std::shared_ptr<ImageData> Renderer::getOutputImage() const
 {
 	// Bind the default fbo
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	ImageData* results = new ImageData();
+	std::shared_ptr<ImageData> results = std::make_shared<ImageData>();
 	UINT dim[2] = { static_cast<UINT>(defaultFboWidth), static_cast<UINT>(defaultFboHeight) };
 	double spacing[2] = { 1.0, 1.0 };
 	double origin[2] = { 0.0, 0.0 };
@@ -86,7 +81,7 @@ void Renderer::render()
 	}
 }
 
-void Renderer::resizeFramebuffer(int width, int height)
+void Renderer::resizeFramebuffer(UINT width, UINT height)
 {
 	defaultFboWidth = width;
 	defaultFboHeight = height;

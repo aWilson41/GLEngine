@@ -79,7 +79,7 @@ void RayTraceRenderer::render()
 }
 
 // Resizes the framebuffer (deletes and recreates), can also be used for initialization
-void RayTraceRenderer::resizeFramebuffer(int width, int height)
+void RayTraceRenderer::resizeFramebuffer(UINT width, UINT height)
 {
 	Renderer::resizeFramebuffer(width, height);
 

@@ -13,7 +13,7 @@ public:
 public:
 	void render() override;
 
-	void resizeFramebuffer(int width, int height) override;
+	void resizeFramebuffer(UINT width, UINT height) override;
 
 protected:
 	void bindCameraUniforms(GLuint shaderID);
@@ -27,8 +27,8 @@ private:
 	glm::vec3 prevEyeRayDir = glm::vec3(0.0f);
 	GLuint frameCount = 0;
 
-	ShaderProgram* shaderProgram = nullptr;
-	ShaderProgram* quadShaderProgram = nullptr;
+	std::shared_ptr<ShaderProgram> shaderProgram = nullptr;
+	std::shared_ptr<ShaderProgram> quadShaderProgram = nullptr;
 	GLuint emptyVaoID = -1;
 	GLuint colorTexID = -1;
 	// GLuint depthBufferID = -1;

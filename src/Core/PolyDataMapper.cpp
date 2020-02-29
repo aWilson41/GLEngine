@@ -43,7 +43,7 @@ void PolyDataMapper::update()
 
 	updateInfo();
 
-	// If the vbo haven't been created yet
+	// If the vbo hasn't been created yet
 	if (vboID == -1)
 	{
 		// Generate the vao

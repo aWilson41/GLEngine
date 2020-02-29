@@ -16,7 +16,7 @@ public:
 	~PrimitivesMapper();
 
 public:
-	ShaderProgram* getShaderProgram() const { return shaderProgram; }
+	std::shared_ptr<ShaderProgram> getShaderProgram() const { return shaderProgram; }
 	std::shared_ptr<PhongMaterial> getMaterial() const { return material; }
 	GLfloat getLineWidth() const { return lineWidth; }
 	GLuint getShaderProgramID() const override;
@@ -54,7 +54,7 @@ protected:
 	GLfloat lineWidth = 0.1f;
 	GLfloat z = -1.0f;
 
-	ShaderProgram* shaderProgram = nullptr;
+	std::shared_ptr<ShaderProgram> shaderProgram = nullptr;
 };
 
 // Class for debug annotation rendering, static mapper must be added to your renderer

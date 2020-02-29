@@ -1,5 +1,6 @@
 #include "DeferredRenderer.h"
 #include "AbstractMapper.h"
+#include "Framebuffer.h"
 #include "GeometryPass.h"
 #include "LightingPass.h"
 #include "PlaneSource.h"
@@ -26,6 +27,9 @@ DeferredRenderer::DeferredRenderer(bool useDefaults)
 
 		addPass(geomPass);
 		addPass(lightPass);
+
+		setColorFbo(lightPass->getFramebuffer());
+		setDepthFbo(geomPass->getFramebuffer());
 	}
 }
 
@@ -55,12 +59,12 @@ void DeferredRenderer::render()
 
 	// Blit the results to the default fbo
 	//printf("Blitting color from fbo %d to 0\n", colorFboID);
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, colorFboID);
+	colorFbo->bindRead();
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 	glBlitFramebuffer(0, 0, defaultFboWidth, defaultFboHeight, 0, 0, defaultFboWidth, defaultFboHeight, GL_COLOR_BUFFER_BIT, GL_NEAREST);
 
 	//printf("Blitting depth from fbo %d to 0\n", depthFboID);
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, depthFboID);
+	depthFbo->bindRead();
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 	glBlitFramebuffer(0, 0, defaultFboWidth, defaultFboHeight, 0, 0, defaultFboWidth, defaultFboHeight, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
 
@@ -104,7 +108,7 @@ void DeferredRenderer::removePass(RenderPass* pass)
 }
 
 // Resizes the framebuffer (deletes and recreates), can also be used for initialization
-void DeferredRenderer::resizeFramebuffer(int width, int height)
+void DeferredRenderer::resizeFramebuffer(UINT width, UINT height)
 {
 	Renderer::resizeFramebuffer(width, height);
 

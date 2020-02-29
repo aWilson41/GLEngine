@@ -16,10 +16,10 @@ set(CMAKE_PREFIX_PATH ${CMAKE_INSTALL_PREFIX})
 # Add submodules
 ExternalProject_Add(GLEW
 	PREFIX           "${3RDPARTY_BINARY_DIR}/GLEW"
-	SOURCE_DIR       "3rdparty/GLEW/src"
+	SOURCE_DIR       "${3RDPARTY_SRC_DIR}/GLEW"
 	BINARY_DIR       "3rdparty/GLEW/build"
 	INSTALL_DIR      "install"
-	DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E copy_directory "${3RDPARTY_SRC_DIR}/GLEW" "${3RDPARTY_BINARY_DIR}/GLEW/src"
+	DOWNLOAD_COMMAND ""
 	CMAKE_ARGS
 		-DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_PREFIX_PATH}
 		-Dglew-cmake_BUILD_STATIC:BOOL=FALSE
@@ -28,10 +28,10 @@ ExternalProject_Add(GLEW
 	
 ExternalProject_Add(GLFW
 	PREFIX           "${3RDPARTY_BINARY_DIR}/GLFW"
-	SOURCE_DIR       "3rdparty/GLFW/src"
+	SOURCE_DIR       "${3RDPARTY_SRC_DIR}/GLFW"
 	BINARY_DIR       "3rdparty/GLFW/build"
 	INSTALL_DIR      "install"
-	DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E copy_directory "${3RDPARTY_SRC_DIR}/GLFW" "${3RDPARTY_BINARY_DIR}/GLFW/src"
+	DOWNLOAD_COMMAND ""
 	CMAKE_ARGS
 		-DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_PREFIX_PATH}
 		#-DBUILD_SHARED_LIBS:BOOL=TRUE
@@ -44,10 +44,10 @@ ExternalProject_Add(GLFW
 		
 ExternalProject_Add(GLM
 	PREFIX           "${3RDPARTY_BINARY_DIR}/GLM"
-	SOURCE_DIR       "3rdparty/GLM/src"
+	SOURCE_DIR       "${3RDPARTY_SRC_DIR}/GLM"
 	BINARY_DIR       "3rdparty/GLM/build"
 	INSTALL_DIR      "install"
-	DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E copy_directory "${3RDPARTY_SRC_DIR}/GLM" "${3RDPARTY_BINARY_DIR}/GLM/src"
+	DOWNLOAD_COMMAND ""
 	CMAKE_ARGS
 		-DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_PREFIX_PATH}
 		#-DBUILD_SHARED_LIBS:BOOL=TRUE
@@ -58,10 +58,10 @@ ExternalProject_Add(GLM
 	
 ExternalProject_Add(assimp
 	PREFIX           "${3RDPARTY_BINARY_DIR}/assimp"
-	SOURCE_DIR       "3rdparty/assimp/src"
+	SOURCE_DIR       "${3RDPARTY_SRC_DIR}/assimp"
 	BINARY_DIR       "3rdparty/assimp/build"
 	INSTALL_DIR      "install"
-	DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E copy_directory "${3RDPARTY_SRC_DIR}/assimp" "${3RDPARTY_BINARY_DIR}/assimp/src"
+	DOWNLOAD_COMMAND ""
 	CMAKE_ARGS
 		-DTBB_BUILD_TESTS:BOOL=FALSE
 		-DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_PREFIX_PATH}
@@ -70,10 +70,10 @@ ExternalProject_Add(assimp
 
 ExternalProject_Add(Eigen
 	PREFIX           "${3RDPARTY_BINARY_DIR}/Eigen"
-	SOURCE_DIR       "3rdparty/Eigen/src"
+	SOURCE_DIR       "${3RDPARTY_SRC_DIR}/Eigen"
 	BINARY_DIR       "3rdparty/Eigen/build"
 	INSTALL_DIR      "install"
-	DOWNLOAD_COMMAND ${CMAKE_COMMAND} -E copy_directory "${3RDPARTY_SRC_DIR}/Eigen" "${3RDPARTY_BINARY_DIR}/Eigen/src"
+	DOWNLOAD_COMMAND ""
 	CMAKE_ARGS
 		-DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_PREFIX_PATH}
 		-DBUILD_TESTING:BOOL=FALSE)

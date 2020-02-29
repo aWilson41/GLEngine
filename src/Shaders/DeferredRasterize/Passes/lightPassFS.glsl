@@ -27,26 +27,26 @@ void main()
     vec3 pos = texture(gPosition, texCoord).rgb;
     vec3 normal = normalize(texture(gNormal, texCoord).xyz);
 
-	// Warped diffuse (+0.5)
-    vec3 diffuse = (max(dot(normal, lightDir), 0.0) * 0.5f + 0.5f) * texture(gDiffuseColor, texCoord).rgb;
+	// Diffuse light
+    vec3 diffuse = max(dot(normal, lightDir), 0.0f) * texture(gDiffuseColor, texCoord).rgb;
 
 	// Ambient light
     vec3 ambient = texture(gAmbientColor, texCoord).rgb;
 
-	// Specular reflection
+	// Specular light
 	vec3 r = reflect(lightDir, normal);
 	float specular = clamp(pow(dot(r, viewDir), 0.2) * 0.1f, 0.0f, 1.0f);
 
 	// Fresnel
-	float fresnelScale = 0.5f;
-	float fresnelPower = 2.2f;
-	vec3 rayDir = getRayDir(texCoord);
-	float fresnel = min(fresnelScale * pow(1.0f + dot(rayDir, normal), fresnelPower), 1.0);
+	// float fresnelScale = 0.5f;
+	// float fresnelPower = 2.2f;
+	// vec3 rayDir = getRayDir(texCoord);
+	// float fresnel = min(fresnelScale * pow(1.0f + dot(rayDir, normal), fresnelPower), 1.0);
 
 	if (pos.x != 0.0f || pos.y != 0.0f || pos.z != 0.0f)
 		//fColor = vec4(diffuse + specular + fresnel + ambient, 1.0f);
-		//fColor = vec4(diffuse + specular + ambient, 1.0f);
-		fColor = vec4(diffuse + ambient, 1.0f);
+		fColor = vec4(diffuse + specular + ambient, 1.0f);
+		//fColor = vec4(diffuse + ambient, 1.0f);
 	else
 		fColor = vec4(ambient, 1.0f);
 

@@ -7,23 +7,21 @@ class BilateralRBlurPass : public RenderPass
 {
 public:
 	BilateralRBlurPass();
-	~BilateralRBlurPass();
 
 public:
-	GLuint* getColorOutput() { return &colorTexID; }
+	std::shared_ptr<FramebufferAttachment> getColorOutput() { return getOutput(0); }
 
-	void setColorInput(GLuint* colorInput) { setInput(0, colorInput); }
+	void setColorInput(std::shared_ptr<FramebufferAttachment> colorInput) { setInput(0, colorInput); }
 	// Area of effect (radius for the blur)
 	void setRadius(GLuint radius) { blurRadius = radius; }
 	void SetSigmaI(GLfloat sigma) { sigmaI = sigma; }
 	void SetSigmaS(GLfloat sigma) { sigmaS = sigma; }
 
 	void render(DeferredRenderer* ren) override;
-	void resizeFramebuffer(int width, int height) override;
+	void resizeFramebuffer(UINT width, UINT height) override;
 
 private:
-	ShaderProgram* shader = nullptr;
-	GLuint colorTexID = -1;
+	std::shared_ptr<ShaderProgram> shader = nullptr;
 
 	GLuint blurRadius = 15;
 	// Intensity domain
