@@ -19,7 +19,7 @@ UnsharpMaskingPass::UnsharpMaskingPass() : RenderPass("Unsharp Masking Pass", Re
 	setNumberOfOutputPorts(1);
 }
 
-void UnsharpMaskingPass::bind(DeferredRenderer* ren)
+void UnsharpMaskingPass::bindInputs(DeferredRenderer* ren)
 {
 	GLuint shaderID = shader->getProgramID();
 	glUseProgram(shaderID);
@@ -48,7 +48,7 @@ void UnsharpMaskingPass::bind(DeferredRenderer* ren)
 	inputs[1]->bind(1);
 }
 
-void UnsharpMaskingPass::resizeFramebuffer(UINT width, UINT height)
+void UnsharpMaskingPass::resize(UINT width, UINT height)
 {
 	// If it doesn't exist generate it
 	if (!framebuffer->isGenerated())
@@ -60,7 +60,4 @@ void UnsharpMaskingPass::resizeFramebuffer(UINT width, UINT height)
 	}
 	else
 		framebuffer->resize(width, height);
-
-	*outputs[0] = *framebuffer->getAttachment(0);
-	*outputs[1] = *framebuffer->getAttachment(1);
 }

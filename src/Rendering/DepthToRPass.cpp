@@ -19,7 +19,7 @@ DepthToRPass::DepthToRPass() : RenderPass("Depth_To_R_Pass", RenderPassType::QUA
 	setNumberOfOutputPorts(1);
 }
 
-void DepthToRPass::bind(DeferredRenderer* ren)
+void DepthToRPass::bindInputs(DeferredRenderer* ren)
 {
 	GLuint shaderID = shader->getProgramID();
 	glUseProgram(shaderID);
@@ -34,7 +34,7 @@ void DepthToRPass::bind(DeferredRenderer* ren)
 	inputs[0]->bind(0);
 }
 
-void DepthToRPass::resizeFramebuffer(UINT width, UINT height)
+void DepthToRPass::resize(UINT width, UINT height)
 {
 	// If it doesn't exist generate it
 	if (!framebuffer->isGenerated())
@@ -45,6 +45,4 @@ void DepthToRPass::resizeFramebuffer(UINT width, UINT height)
 	}
 	else
 		framebuffer->resize(width, height);
-
-	*outputs[0] = *framebuffer->getAttachment(0);
 }

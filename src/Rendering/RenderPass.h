@@ -43,10 +43,14 @@ public:
 	void setPassType(const RenderPassType passType) { this->passType = passType; }
 
 	void addMapper(std::shared_ptr<AbstractMapper> mapper) { mappers.push_back(mapper); }
+
+	void resizeFramebuffer(UINT width, UINT height);
 	void render(DeferredRenderer* ren);
-	virtual void clearFramebuffer(DeferredRenderer* ren);
-	virtual void bind(DeferredRenderer* ren) { };
-	virtual void resizeFramebuffer(UINT width, UINT height) = 0;
+
+protected:
+	virtual void clear(DeferredRenderer* ren);
+	virtual void bindInputs(DeferredRenderer* ren) { };
+	virtual void resize(UINT width, UINT height) = 0;
 
 protected:
 	std::string passName = "Unnamed";

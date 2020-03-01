@@ -9,7 +9,7 @@ GeometryPass::GeometryPass() : RenderPass("Geometry Pass", RenderPassType::FULL_
 	setNumberOfOutputPorts(5);
 }
 
-void GeometryPass::clearFramebuffer(DeferredRenderer* ren)
+void GeometryPass::clear(DeferredRenderer* ren)
 {
 	framebuffer->getAttachment(0)->clearTex(); // Position buffer
 	framebuffer->getAttachment(1)->clearTex(); // Normal buffer
@@ -23,7 +23,7 @@ void GeometryPass::clearFramebuffer(DeferredRenderer* ren)
 	framebuffer->getAttachment(4)->clearTex(); // Depth buffer
 }
 
-void GeometryPass::resizeFramebuffer(UINT width, UINT height)
+void GeometryPass::resize(UINT width, UINT height)
 {
 	// If it doesn't exist generate it
 	if (!framebuffer->isGenerated())
@@ -38,10 +38,4 @@ void GeometryPass::resizeFramebuffer(UINT width, UINT height)
 	}
 	else
 		framebuffer->resize(width, height);
-
-	*outputs[0] = *framebuffer->getAttachment(0);
-	*outputs[1] = *framebuffer->getAttachment(1);
-	*outputs[2] = *framebuffer->getAttachment(2);
-	*outputs[3] = *framebuffer->getAttachment(3);
-	*outputs[4] = *framebuffer->getAttachment(4);
 }

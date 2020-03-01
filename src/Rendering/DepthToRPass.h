@@ -14,8 +14,8 @@ public:
 
 	void setDepthInput(std::shared_ptr<FramebufferAttachment> depthInput) { setInput(0, depthInput); }
 
-	void bind(DeferredRenderer* ren) override;
-	void resizeFramebuffer(UINT width, UINT height) override;
+	void bindInputs(DeferredRenderer* ren) override;
+	void resize(UINT width, UINT height) override;
 
 private:
 	std::shared_ptr<ShaderProgram> shader = nullptr;

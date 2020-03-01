@@ -19,7 +19,7 @@ DepthToRgbPass::DepthToRgbPass() : RenderPass("Depth_To_Rgb_Pass", RenderPassTyp
 	setNumberOfOutputPorts(1);
 }
 
-void DepthToRgbPass::bind(DeferredRenderer* ren)
+void DepthToRgbPass::bindInputs(DeferredRenderer* ren)
 {
 	GLuint shaderID = shader->getProgramID();
 	glUseProgram(shaderID);
@@ -34,7 +34,7 @@ void DepthToRgbPass::bind(DeferredRenderer* ren)
 	inputs[0]->bind(0);
 }
 
-void DepthToRgbPass::resizeFramebuffer(UINT width, UINT height)
+void DepthToRgbPass::resize(UINT width, UINT height)
 {
 	// If it doesn't exist generate it
 	if (!framebuffer->isGenerated())
@@ -45,6 +45,4 @@ void DepthToRgbPass::resizeFramebuffer(UINT width, UINT height)
 	}
 	else
 		framebuffer->resize(width, height);
-
-	*outputs[0] = *framebuffer->getAttachment(0);
 }

@@ -18,7 +18,7 @@ BilateralRBlurPass::BilateralRBlurPass() : RenderPass("Bilateral_R_Blur_Pass", R
 	setNumberOfOutputPorts(1);
 }
 
-void BilateralRBlurPass::bind(DeferredRenderer* ren)
+void BilateralRBlurPass::bindInputs(DeferredRenderer* ren)
 {
 	GLuint shaderID = shader->getProgramID();
 	glUseProgram(shaderID);
@@ -37,7 +37,7 @@ void BilateralRBlurPass::bind(DeferredRenderer* ren)
 	inputs[0]->bind(0);
 }
 
-void BilateralRBlurPass::resizeFramebuffer(UINT width, UINT height)
+void BilateralRBlurPass::resize(UINT width, UINT height)
 {
 	// If it doesn't exist generate it
 	if (!framebuffer->isGenerated())
@@ -48,6 +48,4 @@ void BilateralRBlurPass::resizeFramebuffer(UINT width, UINT height)
 	}
 	else
 		framebuffer->resize(width, height);
-
-	*outputs[0] = *framebuffer->getAttachment(0);
 }

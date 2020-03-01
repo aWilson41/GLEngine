@@ -21,7 +21,7 @@ LightingPass::LightingPass() : RenderPass("Lighting Pass", RenderPassType::QUAD_
 	setNumberOfOutputPorts(1);
 }
 
-void LightingPass::bind(DeferredRenderer* ren)
+void LightingPass::bindInputs(DeferredRenderer* ren)
 {
 	GLuint shaderID = shader->getProgramID();
 	glUseProgram(shaderID);
@@ -50,7 +50,7 @@ void LightingPass::bind(DeferredRenderer* ren)
 }
 
 
-void LightingPass::resizeFramebuffer(UINT width, UINT height)
+void LightingPass::resize(UINT width, UINT height)
 {
 	// If it doesn't exist generate it
 	if (!framebuffer->isGenerated())
@@ -61,6 +61,4 @@ void LightingPass::resizeFramebuffer(UINT width, UINT height)
 	}
 	else
 		framebuffer->resize(width, height);
-
-	*outputs[0] = *framebuffer->getAttachment(0);
 }

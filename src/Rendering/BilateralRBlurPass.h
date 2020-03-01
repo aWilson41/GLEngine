@@ -17,8 +17,8 @@ public:
 	void SetSigmaI(GLfloat sigma) { sigmaI = sigma; }
 	void SetSigmaS(GLfloat sigma) { sigmaS = sigma; }
 
-	void bind(DeferredRenderer* ren) override;
-	void resizeFramebuffer(UINT width, UINT height) override;
+	void bindInputs(DeferredRenderer* ren) override;
+	void resize(UINT width, UINT height) override;
 
 private:
 	std::shared_ptr<ShaderProgram> shader = nullptr;

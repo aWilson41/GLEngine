@@ -22,6 +22,7 @@ public:
 
 public:
 	std::shared_ptr<FramebufferAttachment> getAttachment(UINT port) const { return attachments[port]; }
+	UINT getNumberOfAttachments() const { return static_cast<UINT>(attachments.size()); }
 	glm::ivec2 getDim()
 	{
 		if (attachments.size() > 0)

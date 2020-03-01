@@ -16,9 +16,9 @@ void RenderPass::render(DeferredRenderer* ren)
 {
 	framebuffer->bind();
 
-	clearFramebuffer(ren);
+	clear(ren);
 
-	bind(ren);
+	bindInputs(ren);
 
 	if (passType == RenderPassType::FULL_PASS)
 		ren->fullPass();
@@ -36,4 +36,16 @@ void RenderPass::render(DeferredRenderer* ren)
 	framebuffer->unbind();
 }
 
-void RenderPass::clearFramebuffer(DeferredRenderer* ren) { framebuffer->clear(); }
+void RenderPass::clear(DeferredRenderer* ren) { framebuffer->clear(); }
+
+void RenderPass::resizeFramebuffer(UINT width, UINT height)
+{
+	resize(width, height);
+
+	// Copy the outputs
+	const UINT numAttachments = framebuffer->getNumberOfAttachments();
+	for (UINT i = 0; i < numAttachments; i++)
+	{
+		*outputs[i] = *framebuffer->getAttachment(i);
+	}
+}

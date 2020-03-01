@@ -19,7 +19,7 @@ ComputeNormalsPass::ComputeNormalsPass() : RenderPass("Compute_Normals_Pass", Re
 	setNumberOfOutputPorts(1);
 }
 
-void ComputeNormalsPass::bind(DeferredRenderer* ren)
+void ComputeNormalsPass::bindInputs(DeferredRenderer* ren)
 {
 	GLuint shaderID = shader->getProgramID();
 	glUseProgram(shaderID);
@@ -53,7 +53,7 @@ void ComputeNormalsPass::bind(DeferredRenderer* ren)
 	inputs[0]->bind(0);
 }
 
-void ComputeNormalsPass::resizeFramebuffer(UINT width, UINT height)
+void ComputeNormalsPass::resize(UINT width, UINT height)
 {
 	// If it doesn't exist generate it
 	if (!framebuffer->isGenerated())
@@ -64,6 +64,4 @@ void ComputeNormalsPass::resizeFramebuffer(UINT width, UINT height)
 	}
 	else
 		framebuffer->resize(width, height);
-
-	*outputs[0] = *framebuffer->getAttachment(0);
 }
