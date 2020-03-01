@@ -64,8 +64,7 @@ void RayTraceRenderer::render()
 
 
 	// Present the actual image
-	GLuint quadShaderID = quadShaderProgram->getProgramID();
-	glUseProgram(quadShaderID);
+	glUseProgram(quadShaderProgram->getProgramID());
 	glBindVertexArray(0);
 	glBindTexture(GL_TEXTURE_2D, colorTexID);
 	
