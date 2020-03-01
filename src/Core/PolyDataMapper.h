@@ -23,15 +23,8 @@ public:
 	CellType getPolyRepresentation() const { return representation; }
 	GLfloat getPointSize() const { return pointSize; }
 	GLfloat getLineWidth() const { return lineWidth; }
-	GLuint getShaderProgramID() const override;
-	std::string getMapperName() const override { return "PolyDataMapper"; }
 
 	void setInput(std::shared_ptr<PolyData> input) { polyData = input; }
-	void setShaderProgram(std::shared_ptr<ShaderProgram> shaderProgram)
-	{
-		this->shaderProgram = shaderProgram;
-		useCustomShader = true;
-	}
 	void setMaterial(std::shared_ptr<PhongMaterial> material) { this->material = material; }
 	void setModelMatrix(glm::mat4 model) { this->model = model; }
 	void setPolyRepresentation(CellType representation) { this->representation = representation; }

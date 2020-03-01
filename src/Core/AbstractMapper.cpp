@@ -42,10 +42,4 @@ unsigned long long ShaderProperties::update()
 	return keyLong;
 }
 
-bool AbstractMapper::use(Renderer* ren)
-{
-	if (useCustomShader)
-		return true;
-	else
-		return useShader(ren->getShaderGroup());
-}
+bool AbstractMapper::use(Renderer* ren) { return useShader(ren->getShaderGroup()); }

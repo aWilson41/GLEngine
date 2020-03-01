@@ -33,8 +33,6 @@ PolyDataMapper::~PolyDataMapper()
 		glDeleteBuffers(1, &iboID);
 }
 
-GLuint PolyDataMapper::getShaderProgramID() const { return shaderProgram->getProgramID(); }
-
 void PolyDataMapper::update()
 {
 	// Poly data must have vertex data to be visually mapped
@@ -252,6 +250,10 @@ void PolyDataMapper::draw(Renderer* ren) const
 	const GLuint ambientColorLocation = glGetUniformLocation(shaderProgramId, "mat.ambientColor");
 	if (ambientColorLocation != -1)
 		glUniform3fv(ambientColorLocation, 1, &ambientColor[0]);
+	// Set the scene uniforms
+	const GLuint lightDirLocation = glGetUniformLocation(shaderProgramId, "lightDir");
+	if (lightDirLocation != -1)
+		glUniform3fv(lightDirLocation, 1, &ren->getLightDir()[0]);
 
 	glBindVertexArray(vaoID);
 	const CellType cellType = polyData->getCellType();

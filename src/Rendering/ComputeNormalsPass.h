@@ -14,7 +14,7 @@ public:
 	void setColorInput(std::shared_ptr<FramebufferAttachment> colorInput) { setInput(0, colorInput); }
 	void setMaxDepth(GLfloat maxDepth) { ComputeNormalsPass::maxDepth = maxDepth; }
 
-	void render(DeferredRenderer* ren) override;
+	void bind(DeferredRenderer* ren) override;
 	void resizeFramebuffer(UINT width, UINT height) override;
 
 private:

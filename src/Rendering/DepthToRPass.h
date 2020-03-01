@@ -14,7 +14,7 @@ public:
 
 	void setDepthInput(std::shared_ptr<FramebufferAttachment> depthInput) { setInput(0, depthInput); }
 
-	void render(DeferredRenderer* ren) override;
+	void bind(DeferredRenderer* ren) override;
 	void resizeFramebuffer(UINT width, UINT height) override;
 
 private:

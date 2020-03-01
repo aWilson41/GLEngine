@@ -17,7 +17,7 @@ public:
 	void SetSigmaI(GLfloat sigma) { sigmaI = sigma; }
 	void SetSigmaS(GLfloat sigma) { sigmaS = sigma; }
 
-	void render(DeferredRenderer* ren) override;
+	void bind(DeferredRenderer* ren) override;
 	void resizeFramebuffer(UINT width, UINT height) override;
 
 private:

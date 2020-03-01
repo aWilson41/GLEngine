@@ -16,8 +16,6 @@ public:
 public:
 	std::shared_ptr<ImageData> getInput() const { return imageData; }
 	glm::mat4 getModelMatrix() const { return model; }
-	GLuint getShaderProgramID() const override;
-	std::string getMapperName() const override { return "ImageMapper"; }
 
 	void setInput(std::shared_ptr<ImageData> data) { imageData = data; }
 	void setModelMatrix(glm::mat4 model) { ImageMapper::model = model; }

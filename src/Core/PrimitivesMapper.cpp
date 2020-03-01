@@ -31,8 +31,6 @@ PrimitivesMapper::~PrimitivesMapper()
 		glDeleteBuffers(1, &iboID);
 }
 
-GLuint PrimitivesMapper::getShaderProgramID() const { return shaderProgram->getProgramID(); }
-
 void PrimitivesMapper::addCircle(glm::vec2 pos, GLfloat r, UINT div)
 {
 	stdNew<CircleSource> source;
@@ -192,7 +190,7 @@ bool PrimitivesMapper::useShader(std::string shaderGroup)
 		return false;
 
 	if (objectProperties->isOutOfDate())
-		shaderProgram = Shaders::getShader(shaderGroup, getMapperName(), &properties);
+		shaderProgram = Shaders::getShader(shaderGroup, "PrimitivesMapper", &properties);
 
 	if (shaderProgram == nullptr)
 		return false;
@@ -240,6 +238,10 @@ void PrimitivesMapper::draw(Renderer* ren) const
 	const GLuint ambientColorLocation = glGetUniformLocation(shaderProgramId, "mat.ambientColor");
 	if (ambientColorLocation != -1)
 		glUniform3fv(ambientColorLocation, 1, &ambientColor[0]);
+	// Set the scene uniforms
+	const GLuint lightDirLocation = glGetUniformLocation(shaderProgramId, "lightDir");
+	if (lightDirLocation != -1)
+		glUniform3fv(lightDirLocation, 1, &ren->getLightDir()[0]);
 
 	glBindVertexArray(vaoID);
 	glDrawElements(GL_LINES, inputPolyData->getIndexCount(), GL_UNSIGNED_INT, (void*)(uintptr_t)0);

@@ -4,7 +4,7 @@
 #include "Framebuffer.h"
 #include "Shaders.h"
 
-DepthToRgbPass::DepthToRgbPass() : RenderPass("Depth_To_Rgb_Pass")
+DepthToRgbPass::DepthToRgbPass() : RenderPass("Depth_To_Rgb_Pass", RenderPassType::QUAD_PASS)
 {
 	shader = Shaders::loadVSFSShader("Depth_To_Rgb_Pass",
 		"Shaders/DeferredRasterize/Passes/quadVS.glsl",
@@ -19,11 +19,8 @@ DepthToRgbPass::DepthToRgbPass() : RenderPass("Depth_To_Rgb_Pass")
 	setNumberOfOutputPorts(1);
 }
 
-void DepthToRgbPass::render(DeferredRenderer* ren)
+void DepthToRgbPass::bind(DeferredRenderer* ren)
 {
-	framebuffer->bind();
-	framebuffer->clearColor();
-
 	GLuint shaderID = shader->getProgramID();
 	glUseProgram(shaderID);
 
@@ -35,10 +32,6 @@ void DepthToRgbPass::render(DeferredRenderer* ren)
 		glUniform1f(farZLocation, ren->getCamera()->getFarZ());
 
 	inputs[0]->bind(0);
-
-	ren->quadPass();
-
-	framebuffer->unbind();
 }
 
 void DepthToRgbPass::resizeFramebuffer(UINT width, UINT height)

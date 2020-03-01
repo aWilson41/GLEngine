@@ -4,6 +4,7 @@
 #include <string>
 
 class Renderer;
+class ShaderProgram;
 
 // Contains property maps that form a bitset combined of render, scene, and object properties
 class ShaderProperties
@@ -38,12 +39,6 @@ public:
 	AbstractMapper() { objectProperties = properties.getObjectProperties(); }
 
 public:
-	virtual GLuint getShaderProgramID() const = 0;
-	bool getUseCustomShader() { return useCustomShader; }
-	virtual std::string getMapperName() const = 0;
-
-	void setUseCustomShader(bool useCustomShader) { AbstractMapper::useCustomShader = useCustomShader; }
-
 	virtual void update() = 0;
 
 	// Binds the shader program
@@ -54,5 +49,4 @@ public:
 protected:
 	PropertyMap<32>* objectProperties = nullptr;
 	ShaderProperties properties;
-	bool useCustomShader = false;
 };

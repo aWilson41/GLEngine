@@ -3,15 +3,14 @@
 #include "Framebuffer.h"
 #include "Shaders.h"
 
-GeometryPass::GeometryPass() : RenderPass("Geometry Pass")
+GeometryPass::GeometryPass() : RenderPass("Geometry Pass", RenderPassType::FULL_PASS)
 {
 	setNumberOfInputPorts(0);
 	setNumberOfOutputPorts(5);
 }
 
-void GeometryPass::render(DeferredRenderer* ren)
+void GeometryPass::clearFramebuffer(DeferredRenderer* ren)
 {
-	framebuffer->bind();
 	framebuffer->getAttachment(0)->clearTex(); // Position buffer
 	framebuffer->getAttachment(1)->clearTex(); // Normal buffer
 	framebuffer->getAttachment(2)->clearTex(); // Diffuse buffer
@@ -22,10 +21,6 @@ void GeometryPass::render(DeferredRenderer* ren)
 		static_cast<unsigned char>(clearColor.b * 255.0f),
 		static_cast<unsigned char>(clearColor.a * 255.0f));
 	framebuffer->getAttachment(4)->clearTex(); // Depth buffer
-
-	ren->pass();
-
-	framebuffer->unbind();
 }
 
 void GeometryPass::resizeFramebuffer(UINT width, UINT height)

@@ -3,7 +3,7 @@
 #include "Framebuffer.h"
 #include "Shaders.h"
 
-BilateralRBlurPass::BilateralRBlurPass() : RenderPass("Bilateral_R_Blur_Pass")
+BilateralRBlurPass::BilateralRBlurPass() : RenderPass("Bilateral_R_Blur_Pass", RenderPassType::QUAD_PASS)
 {
 	shader = Shaders::loadVSFSShader("Bilateral_R_Blur_Pass",
 		"Shaders/DeferredRasterize/Passes/quadVS.glsl",
@@ -18,11 +18,8 @@ BilateralRBlurPass::BilateralRBlurPass() : RenderPass("Bilateral_R_Blur_Pass")
 	setNumberOfOutputPorts(1);
 }
 
-void BilateralRBlurPass::render(DeferredRenderer* ren)
+void BilateralRBlurPass::bind(DeferredRenderer* ren)
 {
-	framebuffer->bind();
-	framebuffer->clearColor();
-
 	GLuint shaderID = shader->getProgramID();
 	glUseProgram(shaderID);
 
@@ -38,10 +35,6 @@ void BilateralRBlurPass::render(DeferredRenderer* ren)
 		glUniform1f(sigmaSLocation, sigmaS);
 
 	inputs[0]->bind(0);
-
-	ren->quadPass();
-
-	framebuffer->unbind();
 }
 
 void BilateralRBlurPass::resizeFramebuffer(UINT width, UINT height)

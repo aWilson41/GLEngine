@@ -4,7 +4,7 @@
 #include "Framebuffer.h"
 #include "Shaders.h"
 
-LightingPass::LightingPass() : RenderPass("Lighting Pass")
+LightingPass::LightingPass() : RenderPass("Lighting Pass", RenderPassType::QUAD_PASS)
 {
 	shader = Shaders::loadVSFSShader("Lighting_Pass",
 		"Shaders/DeferredRasterize/Passes/quadVS.glsl",
@@ -21,11 +21,8 @@ LightingPass::LightingPass() : RenderPass("Lighting Pass")
 	setNumberOfOutputPorts(1);
 }
 
-void LightingPass::render(DeferredRenderer* ren)
+void LightingPass::bind(DeferredRenderer* ren)
 {
-	framebuffer->bind();
-	framebuffer->clearColor();
-
 	GLuint shaderID = shader->getProgramID();
 	glUseProgram(shaderID);
 
@@ -50,10 +47,6 @@ void LightingPass::render(DeferredRenderer* ren)
 	{
 		inputs[i]->bind(i);
 	}
-
-	ren->quadPass();
-
-	framebuffer->unbind();
 }
 
 

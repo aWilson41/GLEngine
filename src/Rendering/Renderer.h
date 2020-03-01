@@ -23,7 +23,7 @@ public:
 	std::shared_ptr<Framebuffer> getColorOutput() const;
 	std::shared_ptr<Framebuffer> getDepthOutput() const;
 	std::shared_ptr<Framebuffer> getStencilOutput() const;
-	glm::vec4 getClearColor() { return clearColor; }
+	glm::vec4 getClearColor() const { return clearColor; }
 	glm::vec3 getLightDir() const { return lightDir; }
 	glm::ivec2 getFramebufferDim() const;
 	std::string getShaderGroup() const { return shaderGroup; };

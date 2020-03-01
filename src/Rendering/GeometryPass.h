@@ -13,6 +13,6 @@ public:
 	std::shared_ptr<FramebufferAttachment> getAmbientOutput() const { return getOutput(3); }
 	std::shared_ptr<FramebufferAttachment> getDepthOutput() const { return getOutput(4); }
 
-	void render(DeferredRenderer* ren) override;
+	void clearFramebuffer(DeferredRenderer* ren) override;
 	void resizeFramebuffer(UINT width, UINT height) override;
 };

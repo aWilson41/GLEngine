@@ -3,7 +3,7 @@
 #include "Framebuffer.h"
 #include "Shaders.h"
 
-BilateralRgbBlurPass::BilateralRgbBlurPass() : RenderPass("Bilateral_R_Blur_Pass")
+BilateralRgbBlurPass::BilateralRgbBlurPass() : RenderPass("Bilateral_R_Blur_Pass", RenderPassType::QUAD_PASS)
 {
 	shader = Shaders::loadVSFSShader("Bilateral_R_Blur_Pass",
 		"Shaders/DeferredRasterize/Passes/quadVS.glsl",
@@ -18,12 +18,8 @@ BilateralRgbBlurPass::BilateralRgbBlurPass() : RenderPass("Bilateral_R_Blur_Pass
 	setNumberOfOutputPorts(1);
 }
 
-void BilateralRgbBlurPass::render(DeferredRenderer* ren)
+void BilateralRgbBlurPass::bind(DeferredRenderer* ren)
 {
-	// Use the default fbo to do the lighting pass
-	framebuffer->bind();
-	framebuffer->clearColor();
-
 	GLuint shaderID = shader->getProgramID();
 	glUseProgram(shaderID);
 
@@ -39,10 +35,6 @@ void BilateralRgbBlurPass::render(DeferredRenderer* ren)
 		glUniform1f(sigmaSLocation, sigmaS);
 
 	inputs[0]->bind(0);
-
-	ren->quadPass();
-
-	framebuffer->unbind();
 }
 
 void BilateralRgbBlurPass::resizeFramebuffer(UINT width, UINT height)

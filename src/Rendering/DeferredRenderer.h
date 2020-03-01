@@ -19,23 +19,23 @@ public:
 
 	void render() override;
 
-	void pass();
+	// Does a full pass over every mapper
+	void fullPass();
+	// Does a pass with a quad
 	void quadPass();
 
-	void addPass(RenderPass* pass)
+	void addPass(std::shared_ptr<RenderPass> pass)
 	{
 		renderPasses.push_back(pass);
 		PassesModified = true;
 	}
-	void removePass(RenderPass* pass);
+	void removePass(std::shared_ptr<RenderPass> pass);
 
 	void resizeFramebuffer(UINT width, UINT height) override;
 
 private:
 	GLuint emptyVaoID = -1;
 	bool useDefaults = true;
-	std::vector<RenderPass*> renderPasses;
-	// The color and depth fbo's to blit after everything is rendered
-	
+	std::vector<std::shared_ptr<RenderPass>> renderPasses;
 	bool PassesModified = false;
 };

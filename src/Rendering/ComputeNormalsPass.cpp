@@ -4,7 +4,7 @@
 #include "Framebuffer.h"
 #include "Shaders.h"
 
-ComputeNormalsPass::ComputeNormalsPass() : RenderPass("Compute_Normals_Pass")
+ComputeNormalsPass::ComputeNormalsPass() : RenderPass("Compute_Normals_Pass", RenderPassType::QUAD_PASS)
 {
 	shader = Shaders::loadVSFSShader("Compute_Normals_Pass",
 		"Shaders/DeferredRasterize/Passes/quadVS.glsl",
@@ -19,11 +19,8 @@ ComputeNormalsPass::ComputeNormalsPass() : RenderPass("Compute_Normals_Pass")
 	setNumberOfOutputPorts(1);
 }
 
-void ComputeNormalsPass::render(DeferredRenderer* ren)
+void ComputeNormalsPass::bind(DeferredRenderer* ren)
 {
-	framebuffer->bind();
-	framebuffer->clearColor();
-
 	GLuint shaderID = shader->getProgramID();
 	glUseProgram(shaderID);
 
@@ -54,10 +51,6 @@ void ComputeNormalsPass::render(DeferredRenderer* ren)
 		glUniform1f(farZLocation, ren->getCamera()->getFarZ());
 
 	inputs[0]->bind(0);
-
-	ren->quadPass();
-
-	framebuffer->unbind();
 }
 
 void ComputeNormalsPass::resizeFramebuffer(UINT width, UINT height)

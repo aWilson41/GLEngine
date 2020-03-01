@@ -78,14 +78,7 @@ void Renderer::render()
 	{
 		std::shared_ptr<AbstractMapper> mapper = mappers[i];
 		if (mapper->use(this))
-		{
-			// Set the scene uniforms
-			GLuint lightDirLocation = glGetUniformLocation(mapper->getShaderProgramID(), "lightDir");
-			if (lightDirLocation != -1)
-				glUniform3fv(lightDirLocation, 1, &lightDir[0]);
-
 			mapper->draw(this);
-		}
 	}
 
 	framebuffer->unbind();

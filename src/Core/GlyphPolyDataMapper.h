@@ -14,7 +14,6 @@ public:
 	GLfloat* getOffsetData() const { return offsetData; }
 	GLfloat* getColorData() const { return colorData; }
 	UINT getInstanceCount() const { return instanceCount; }
-	std::string getMapperName() const override { return "GlyphPolyDataMapper"; }
 
 	void allocateOffsets(UINT count)
 	{

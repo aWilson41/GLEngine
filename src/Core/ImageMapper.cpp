@@ -27,8 +27,6 @@ ImageMapper::~ImageMapper()
 		glDeleteBuffers(1, &iboID);
 }
 
-GLuint ImageMapper::getShaderProgramID() const { return shaderProgram->getProgramID(); }
-
 void ImageMapper::update()
 {
 	// Has no input
@@ -164,9 +162,13 @@ void ImageMapper::draw(Renderer* ren) const
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 	// Object uniforms
-	glUseProgram(shaderProgram->getProgramID());
+	const GLuint shaderProgramId = shaderProgram->getProgramID();
 	const glm::mat4 mvp = ren->getCamera()->proj * ren->getCamera()->view * model * imageSizeMat;
-	glUniformMatrix4fv(glGetUniformLocation(shaderProgram->getProgramID(), "mvp_matrix"), 1, GL_FALSE, &mvp[0][0]);
+	glUniformMatrix4fv(glGetUniformLocation(shaderProgramId, "mvp_matrix"), 1, GL_FALSE, &mvp[0][0]);
+	// Set the scene uniforms
+	const GLuint lightDirLocation = glGetUniformLocation(shaderProgramId, "lightDir");
+	if (lightDirLocation != -1)
+		glUniform3fv(lightDirLocation, 1, &ren->getLightDir()[0]);
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, texID);

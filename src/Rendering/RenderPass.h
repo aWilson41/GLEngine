@@ -3,16 +3,24 @@
 #include <string>
 #include <memory>
 
+class AbstractMapper;
 class DeferredRenderer;
 class Framebuffer;
 class FramebufferAttachment;
 
+enum class RenderPassType
+{
+	FULL_PASS,
+	QUAD_PASS,
+	CUSTOM_PASS
+};
+
 class RenderPass
 {
 public:
-	RenderPass(std::string name)
+	RenderPass(std::string name, RenderPassType type) : 
+		passName(name), passType(type)
 	{
-		passName = name;
 		framebuffer = std::make_shared<Framebuffer>();
 	}
 
@@ -31,8 +39,13 @@ public:
 		std::fill_n(inputs.data(), inputs.size(), nullptr);
 	}
 	void setNumberOfOutputPorts(UINT numberOfPorts);
+	// If on the pass will iterate over
+	void setPassType(const RenderPassType passType) { this->passType = passType; }
 
-	virtual void render(DeferredRenderer* ren) = 0;
+	void addMapper(std::shared_ptr<AbstractMapper> mapper) { mappers.push_back(mapper); }
+	void render(DeferredRenderer* ren);
+	virtual void clearFramebuffer(DeferredRenderer* ren);
+	virtual void bind(DeferredRenderer* ren) { };
 	virtual void resizeFramebuffer(UINT width, UINT height) = 0;
 
 protected:
@@ -42,4 +55,7 @@ protected:
 	std::vector<std::shared_ptr<FramebufferAttachment>> outputs;
 	UINT fboWidth = 100;
 	UINT fboHeight = 100;
+
+	RenderPassType passType = RenderPassType::FULL_PASS;
+	std::vector<std::shared_ptr<AbstractMapper>> mappers;
 };

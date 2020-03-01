@@ -19,8 +19,6 @@ public:
 	std::shared_ptr<ShaderProgram> getShaderProgram() const { return shaderProgram; }
 	std::shared_ptr<PhongMaterial> getMaterial() const { return material; }
 	GLfloat getLineWidth() const { return lineWidth; }
-	GLuint getShaderProgramID() const override;
-	std::string getMapperName() const override { return "PrimitivesMapper"; }
 
 	void setMaterial(std::shared_ptr<PhongMaterial> material) { this->material = material; }
 	void setLineWidth(GLfloat lineWidth) { this->lineWidth = lineWidth; }

@@ -17,8 +17,8 @@ DeferredRenderer::DeferredRenderer(bool useDefaults)
 	DeferredRenderer::useDefaults = useDefaults;
 	if (useDefaults)
 	{
-		GeometryPass* geomPass = new GeometryPass();
-		LightingPass* lightPass = new LightingPass();
+		std::shared_ptr<GeometryPass> geomPass = std::make_shared<GeometryPass>();
+		std::shared_ptr<LightingPass> lightPass = std::make_shared<LightingPass>();
 
 		lightPass->setPosInput(geomPass->getPosOutput());
 		lightPass->setNormalInput(geomPass->getNormalOutput());
@@ -36,10 +36,6 @@ DeferredRenderer::DeferredRenderer(bool useDefaults)
 DeferredRenderer::~DeferredRenderer()
 {
 	glDeleteVertexArrays(1, &emptyVaoID);
-	for (UINT i = 0; i < renderPasses.size(); i++)
-	{
-		delete renderPasses[i];
-	}
 }
 
 void DeferredRenderer::render()
@@ -55,7 +51,7 @@ void DeferredRenderer::render()
 	}
 }
 
-void DeferredRenderer::pass()
+void DeferredRenderer::fullPass()
 {
 	// Render the geometry
 	for (UINT i = 0; i < mappers.size(); i++)
@@ -74,7 +70,7 @@ void DeferredRenderer::quadPass()
 	glBindVertexArray(0);
 }
 
-void DeferredRenderer::removePass(RenderPass* pass)
+void DeferredRenderer::removePass(std::shared_ptr<RenderPass> pass)
 {
 	size_t passIndex = -1;
 	for (size_t i = 0; i < renderPasses.size(); i++)

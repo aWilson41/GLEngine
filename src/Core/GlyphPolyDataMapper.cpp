@@ -211,9 +211,9 @@ void GlyphPolyDataMapper::draw(Renderer* ren) const
 	}
 
 	// Set the uniforms
-	const GLuint programId = shaderProgram->getProgramID();
+	const GLuint shaderProgramId = shaderProgram->getProgramID();
 	glm::mat4 mvp = ren->getCamera()->proj * ren->getCamera()->view * model;
-	const GLuint mvpMatrixLocation = glGetUniformLocation(programId, "mvp_matrix");
+	const GLuint mvpMatrixLocation = glGetUniformLocation(shaderProgramId, "mvp_matrix");
 	if (mvpMatrixLocation != -1)
 		glUniformMatrix4fv(mvpMatrixLocation, 1, GL_FALSE, &mvp[0][0]);
 	glm::vec3 diffuse = glm::vec3(0.7f, 0.7f, 0.7f);
@@ -223,12 +223,16 @@ void GlyphPolyDataMapper::draw(Renderer* ren) const
 		diffuse = material->getDiffuse();
 		ambient = material->getAmbient();
 	}
-	const GLuint diffuseColorLocation = glGetUniformLocation(programId, "mat.diffuseColor");
+	const GLuint diffuseColorLocation = glGetUniformLocation(shaderProgramId, "mat.diffuseColor");
 	if (diffuseColorLocation != -1)
 		glUniform3fv(diffuseColorLocation, 1, &diffuse[0]);
-	const GLuint ambientColorLocation = glGetUniformLocation(programId, "mat.ambientColor");
+	const GLuint ambientColorLocation = glGetUniformLocation(shaderProgramId, "mat.ambientColor");
 	if (ambientColorLocation != -1)
 		glUniform3fv(ambientColorLocation, 1, &ambient[0]);
+	// Set the scene uniforms
+	const GLuint lightDirLocation = glGetUniformLocation(shaderProgramId, "lightDir");
+	if (lightDirLocation != -1)
+		glUniform3fv(lightDirLocation, 1, &ren->getLightDir()[0]);
 
 	glBindVertexArray(vaoID);
 	const CellType cellType = polyData->getCellType();
