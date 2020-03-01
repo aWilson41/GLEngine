@@ -59,10 +59,7 @@ bool Renderer::containsRenderItem(std::shared_ptr<AbstractMapper> mapper) const
 
 void Renderer::setClearColor(float r, float g, float b, float a)
 {
-	clearColor[0] = r;
-	clearColor[1] = g;
-	clearColor[2] = b;
-	clearColor[3] = a;
+	clearColor = glm::vec4(r, g, b, a);
 	glClearColor(r, g, b, a);
 }
 

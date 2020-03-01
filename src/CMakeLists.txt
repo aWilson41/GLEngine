@@ -36,6 +36,7 @@ find_package(GLEW REQUIRED)
 find_package(GLFW REQUIRED)
 find_package(GLM REQUIRED)
 find_package(Eigen REQUIRED)
+find_package(tbb REQUIRED)
 
 #Set the includes and libraries
 set(GLENGINE_INCLUDE_DIRS
@@ -45,6 +46,7 @@ set(GLENGINE_INCLUDE_DIRS
 	${ASSIMP_INCLUDE_DIR}
 	${EIGEN_INCLUDE_DIR}
 	${OPENGL_INCLUDE_DIRS}
+	${TBB_INCLUDE_DIR}
 	${CMAKE_CURRENT_SOURCE_DIR}
 	Core
 	IO
@@ -55,6 +57,7 @@ set(GLENGINE_LIBRARIES
 	${OPENGL_LIBRARIES}
 	${GLFW_LIBRARIES}
 	${GLEW_LIBRARIES}
+	${TBB_LIBRARIES}
 	${ASSIMP_LIBRARIES})
 
 add_library(GLEngine STATIC

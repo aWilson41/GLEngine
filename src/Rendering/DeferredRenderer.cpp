@@ -14,7 +14,7 @@ DeferredRenderer::DeferredRenderer(bool useDefaults)
 	// A non-zero vao must be bound even if not using vertex attributes for quad pass
 	glGenVertexArrays(1, &emptyVaoID);
 
-	DeferredRenderer::useDefaults = useDefaults;
+	this->useDefaults = useDefaults;
 	if (useDefaults)
 	{
 		std::shared_ptr<GeometryPass> geomPass = std::make_shared<GeometryPass>();
@@ -40,6 +40,9 @@ DeferredRenderer::~DeferredRenderer()
 
 void DeferredRenderer::render()
 {
+	if (cam == nullptr)
+		printf("Renderer missing camera.\n");
+
 	const glm::ivec2 fboDim = getFramebufferDim();
 	if (PassesModified)
 		resizeFramebuffer(fboDim.x, fboDim.y);

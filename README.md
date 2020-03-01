@@ -14,4 +14,6 @@ GLM for convienent math
 
 Assimp for scene loading
 
+tbb for parallelism
+
 Eigen for various maths (sparse martices, linear solvers, etc)

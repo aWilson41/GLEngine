@@ -54,7 +54,7 @@ ExternalProject_Add(GLM
 		#-DBUILD_STATIC_LIBS:BOOL=FALSE
 		-DBUILD_SHARED_LIBS:BOOL=FALSE
 		-DBUILD_STATIC_LIBS:BOOL=TRUE
-		-DGLM_TEST_ENABLE:BOOL=FALSE
+		-DGLM_TEST_ENABLE:BOOL=FALSE)
 		-DGLM_TEST_ENABLE_SIMD_AVX2:BOOL=TRUE)
 	
 ExternalProject_Add(assimp
@@ -69,6 +69,18 @@ ExternalProject_Add(assimp
 		-DASSIMP_BUILD_ASSIMP_TOOLS:BOOL=FALSE
 		-DASSIMP_BUILD_TESTS:BOOL=FALSE)
 
+ExternalProject_Add(tbb
+	PREFIX           "${3RDPARTY_BINARY_DIR}/tbb"
+	SOURCE_DIR       "${3RDPARTY_SRC_DIR}/tbb"
+	BINARY_DIR       "3rdparty/tbb/build"
+	INSTALL_DIR      "install"
+	DOWNLOAD_COMMAND ""
+	CMAKE_ARGS
+		-DTBB_BUILD_TESTS:BOOL=FALSE
+		-DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_PREFIX_PATH}
+		-DTBB_BUILD_SHARED:BOOL=TRUE
+		-DTBB_BUILD_STATIC:BOOL=TRUE)
+
 ExternalProject_Add(Eigen
 	PREFIX           "${3RDPARTY_BINARY_DIR}/Eigen"
 	SOURCE_DIR       "${3RDPARTY_SRC_DIR}/Eigen"
@@ -80,7 +92,7 @@ ExternalProject_Add(Eigen
 		-DBUILD_TESTING:BOOL=FALSE)
 		
 ExternalProject_Add(GLEngine
-	DEPENDS          GLEW GLFW assimp Eigen GLM
+	DEPENDS          GLEW GLFW assimp Eigen GLM tbb
 	SOURCE_DIR       ${CMAKE_SOURCE_DIR}/src
 	BINARY_DIR       "GLEngine"
 	INSTALL_DIR      "install"
