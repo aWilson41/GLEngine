@@ -1,4 +1,5 @@
 #pragma once
+#include <memory>
 #include "WindowInteractor.h"
 
 class TrackballCamera;
@@ -7,7 +8,10 @@ class TrackballCamera;
 class TrackballCameraInteractor : public WindowInteractor
 {
 public:
-	void setCamera(TrackballCamera* cam) { TrackballCameraInteractor::cam = cam; }
+	virtual ~TrackballCameraInteractor() override = default;
+
+public:
+	void setCamera(std::shared_ptr<TrackballCamera> cam) { TrackballCameraInteractor::cam = cam; }
 
 	void init(glm::vec2 pos, int windowWidth, int windowHeight) override;
 
@@ -16,6 +20,6 @@ public:
 	void windowResize(int width, int height) override;
 
 protected:
-	TrackballCamera* cam = nullptr;
+	std::shared_ptr<TrackballCamera> cam = nullptr;
 	glm::vec2 screenSize = glm::vec2(1.0f);
 };

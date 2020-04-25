@@ -1,7 +1,7 @@
 #version 460
 struct Material
 {
-	vec3 diffuseColor;
+	vec4 diffuseColor;
 	vec3 ambientColor;
 };
 
@@ -19,6 +19,6 @@ void main()
 {
 	gPosition = pos;
 	gNormal = normal;
-	gDiffuseColor = vec4(mat.diffuseColor, 1.0f);
+	gDiffuseColor = mat.diffuseColor;
 	gAmbientColor = vec4(mat.ambientColor, 1.0f);
 }

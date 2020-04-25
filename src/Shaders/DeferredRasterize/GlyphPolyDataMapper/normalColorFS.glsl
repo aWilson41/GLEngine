@@ -1,7 +1,7 @@
 #version 460
 struct Material
 {
-	vec3 diffuseColor;
+	vec4 diffuseColor;
 	vec3 ambientColor;
 };
 

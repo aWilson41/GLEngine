@@ -48,6 +48,11 @@ namespace geom2d
 		type = RECT;
 	}
 	GLfloat Rect::area() const { return extent.x * extent.y * 4.0f; }
+	GLfloat* Rect::getBounds()
+	{
+		static GLfloat bounds[4] = { pos.x - extent.x, pos.x + extent.x, pos.y - extent.y, pos.y + extent.y };
+		return bounds;
+	}
 	glm::vec2 Rect::topLeft() const { return pos - extent; }
 	glm::vec2 Rect::topRight() const { return pos + glm::vec2(extent.x, -extent.y); }
 	glm::vec2 Rect::bottomRight() const { return pos + extent; }

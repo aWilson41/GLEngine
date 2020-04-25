@@ -1,6 +1,7 @@
 #pragma once
-#include <vector>
+#include <memory>
 #include <string>
+#include <vector>
 
 class WindowInteractor;
 class GLFWwindow;
@@ -14,10 +15,11 @@ public:
 		int x = -1, int y = -1,
 		int width = -1, int height = -1,
 		bool fullscreen = false);
+	RenderWindow(std::string windowName, int width, int height, bool fullscreen = false);
 	~RenderWindow() { stop(); }
 
 public:
-	WindowInteractor* getInteractor() const { return interactor; }
+	std::shared_ptr<WindowInteractor> getInteractor() const { return interactor; }
 	int getWindowWidth() const;
 	int getWindowHeight() const;
 	int getFramebufferWidth() const;
@@ -25,7 +27,7 @@ public:
 
 	void setRenderer(Renderer* ren);
 	void setWindowName(std::string name);
-	void setInteractor(WindowInteractor* interactor);
+	void setInteractor(std::shared_ptr<WindowInteractor> interactor);
 
 	void start();
 	void stop();
@@ -51,6 +53,6 @@ protected:
 protected:
 	GLFWwindow* window = nullptr;
 	Renderer* ren = nullptr;
-	WindowInteractor* interactor = nullptr;
+	std::shared_ptr<WindowInteractor> interactor = nullptr;
 	std::string windowName = "GLFW Window";
 };

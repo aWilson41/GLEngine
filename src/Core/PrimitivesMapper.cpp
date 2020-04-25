@@ -6,12 +6,17 @@
 #include "PolyData.h"
 #include "Renderer.h"
 #include "Shaders.h"
+#include "SphereSource.h"
 #include "stdNew.h"
 
 std::shared_ptr<PrimitivesMapper> Primitives2d::mapper = std::make_shared<PrimitivesMapper>();
+std::shared_ptr<PrimitivesMapper> Primitives3d::mapper = std::make_shared<PrimitivesMapper>();
 
-void Primitives2d::setColor(glm::vec3 color) { mapper->getMaterial()->setDiffuse(color); }
-void Primitives2d::setColor(GLfloat r, GLfloat g, GLfloat b) { mapper->getMaterial()->setDiffuse(r, g, b); }
+void Primitives2d::setColor(const glm::vec3& color) { mapper->getMaterial()->setDiffuse(color); }
+void Primitives2d::setColor(const GLfloat r, const GLfloat g, const GLfloat b) { mapper->getMaterial()->setDiffuse(r, g, b); }
+
+void Primitives3d::setColor(const glm::vec3& color) { mapper->getMaterial()->setDiffuse(color); }
+void Primitives3d::setColor(const GLfloat r, const GLfloat g, const GLfloat b) { mapper->getMaterial()->setDiffuse(r, g, b); }
 
 PrimitivesMapper::PrimitivesMapper()
 {
@@ -31,7 +36,7 @@ PrimitivesMapper::~PrimitivesMapper()
 		glDeleteBuffers(1, &iboID);
 }
 
-void PrimitivesMapper::addCircle(glm::vec2 pos, GLfloat r, UINT div)
+void PrimitivesMapper::addCircle(const glm::vec2& pos, const GLfloat r, const UINT div)
 {
 	stdNew<CircleSource> source;
 	source->setOrigin(pos.x, pos.y, z);
@@ -45,14 +50,28 @@ void PrimitivesMapper::addCircle(glm::vec2 pos, GLfloat r, UINT div)
 	inputPolyData = appender->getOutput();
 	update();
 }
-void PrimitivesMapper::addLine(glm::vec2 p1, glm::vec2 p2)
+void PrimitivesMapper::addSphere(const glm::vec3& pos, const GLfloat r, const UINT divTheta, const UINT divPhi)
+{
+	stdNew<SphereSource> source;
+	source->setOrigin(pos);
+	source->setRadius(r);
+	source->setDivisions(divTheta, divPhi);
+	source->update();
+	stdNew<AppendPolyData> appender;
+	appender->setInput1(inputPolyData);
+	appender->setInput2(source->getOutput());
+	appender->update();
+	inputPolyData = appender->getOutput();
+	update();
+}
+void PrimitivesMapper::addLine(const glm::vec3& p1, const glm::vec3& p2)
 {
 	stdNew<PolyData> polyData;
 	polyData->allocateVertexData(2);
 	polyData->allocateIndexData(2, CellType::LINE);
 	glm::vec3* vertexData = reinterpret_cast<glm::vec3*>(polyData->getVertexData());
-	vertexData[0] = glm::vec3(p1, z);
-	vertexData[1] = glm::vec3(p2, z);
+	vertexData[0] = p1;
+	vertexData[1] = p2;
 	polyData->getIndexData()[0] = 0;
 	polyData->getIndexData()[1] = 1;
 	stdNew<AppendPolyData> appender;
@@ -62,7 +81,7 @@ void PrimitivesMapper::addLine(glm::vec2 p1, glm::vec2 p2)
 	inputPolyData = appender->getOutput();
 	update();
 }
-void PrimitivesMapper::addArrow(glm::vec2 p1, glm::vec2 p2, GLfloat headSize, GLfloat headRatio)
+void PrimitivesMapper::addArrow(const glm::vec2& p1, const glm::vec2& p2, const GLfloat headSize, const GLfloat headRatio)
 {
 	stdNew<PolyData> polyData;
 	polyData->allocateVertexData(4);
@@ -220,24 +239,24 @@ void PrimitivesMapper::draw(Renderer* ren) const
 	const GLuint lineThicknessLocation = glGetUniformLocation(shaderProgramId, "lineThickness");
 	if (lineThicknessLocation != -1)
 		glUniform1f(lineThicknessLocation, lineWidth);
-	glm::vec3 diffuseColor = glm::vec3(0.7f, 0.7f, 0.7f);
-	glm::vec3 specularColor = glm::vec3(0.0f, 0.0f, 0.0f);
-	glm::vec3 ambientColor = glm::vec3(0.0f, 0.0f, 0.0f);
+	glm::vec4 diffuse = glm::vec4(0.7f, 0.7f, 0.7f, 1.0f);
+	glm::vec3 specular = glm::vec3(0.0f, 0.0f, 0.0f);
+	glm::vec3 ambient = glm::vec3(0.0f, 0.0f, 0.0f);
 	if (material != nullptr)
 	{
-		diffuseColor = material->getDiffuse();
-		specularColor = material->getSpecular();
-		ambientColor = material->getAmbient();
+		diffuse = material->getDiffuse();
+		specular = material->getSpecular();
+		ambient = material->getAmbient();
 	}
-	const GLuint diffuseColorLocation = glGetUniformLocation(shaderProgramId, "mat.diffuseColor");
-	if (diffuseColorLocation != -1)
-		glUniform3fv(diffuseColorLocation, 1, &diffuseColor[0]);
-	const GLuint specularColorLocation = glGetUniformLocation(shaderProgramId, "mat.specularColor");
-	if (specularColorLocation != -1)
-		glUniform3fv(specularColorLocation, 1, &specularColor[0]);
-	const GLuint ambientColorLocation = glGetUniformLocation(shaderProgramId, "mat.ambientColor");
-	if (ambientColorLocation != -1)
-		glUniform3fv(ambientColorLocation, 1, &ambientColor[0]);
+	const GLuint diffuseLocation = glGetUniformLocation(shaderProgramId, "mat.diffuseColor");
+	if (diffuseLocation != -1)
+		glUniform4fv(diffuseLocation, 1, &diffuse[0]);
+	const GLuint specularLocation = glGetUniformLocation(shaderProgramId, "mat.specularColor");
+	if (specularLocation != -1)
+		glUniform3fv(specularLocation, 1, &specular[0]);
+	const GLuint ambientLocation = glGetUniformLocation(shaderProgramId, "mat.ambientColor");
+	if (ambientLocation != -1)
+		glUniform3fv(ambientLocation, 1, &ambient[0]);
 	// Set the scene uniforms
 	const GLuint lightDirLocation = glGetUniformLocation(shaderProgramId, "lightDir");
 	if (lightDirLocation != -1)

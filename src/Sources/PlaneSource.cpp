@@ -18,7 +18,7 @@ void PlaneSource::update()
 	outputData->allocateIndexData(6, CellType::TRIANGLE);
 	GLuint* iData = outputData->getIndexData();
 	iData[0] = 0; iData[1] = 1; iData[2] = 2;
-	iData[3] = 0; iData[4] = 3; iData[5] = 2;
+	iData[3] = 0; iData[4] = 2; iData[5] = 3;
 
 	outputData->allocateNormalData();
 	glm::vec3* normalData = reinterpret_cast<glm::vec3*>(outputData->getNormalData());

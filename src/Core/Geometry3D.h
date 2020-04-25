@@ -7,12 +7,13 @@ class PolyData;
 // Serves as a lightweight abstraction for geometric functions
 namespace geom3d
 {
-	enum ShapeType
+	enum class ShapeType
 	{
 		POINT = 0,
 		SPHERE = 1,
 		RECT = 2,
-		RAY = 3
+		RAY = 3,
+		ORIENTEDRECT = 4
 	};
 
 	class Shape
@@ -53,9 +54,28 @@ namespace geom3d
 		GLfloat volume() const override;
 		glm::vec3 size() const;
 		glm::vec3 origin() const;
+		GLfloat* bounds() const;
 
 	public:
 		glm::vec3 extent = glm::vec3(0.0f);
+	};
+
+	class OrientedRect : public Rect
+	{
+	public:
+		OrientedRect()
+		{
+			orientation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
+			type = ShapeType::ORIENTEDRECT;
+		}
+		OrientedRect(glm::vec3 center, glm::vec3 size, glm::quat orientation) : Rect(center, size)
+		{
+			this->orientation = orientation;
+			type = ShapeType::ORIENTEDRECT;
+		}
+
+	public:
+		glm::quat orientation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
 	};
 
 	class Ray : public Shape

@@ -27,7 +27,36 @@ RenderWindow::RenderWindow(std::string windowName, int x, int y, int width, int 
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_DEPTH_CLAMP);
 	glEnable(GL_MULTISAMPLE);
-	glDisable(GL_CULL_FACE);
+	glEnable(GL_CULL_FACE);
+	glDepthFunc(GL_LESS); // The default
+	glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
+}
+RenderWindow::RenderWindow(std::string windowName, int width, int height, bool fullscreen)
+{
+	glfwSetErrorCallback(glfwErrorCallback);
+
+	if (!glfwInit())
+		throw std::runtime_error("Failed to initialise GLFW");
+
+	glfwWindowHint(GLFW_SAMPLES, 4);
+	glfwWindowHint(GLFW_DEPTH_BITS, 24);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // Deprecated functionality removed
+														 //glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
+
+	const GLFWvidmode* vidMode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+	int windowWidth = static_cast<int>(vidMode->width * 0.75);
+	int windowHeight = static_cast<int>(vidMode->height * 0.75);
+	int x = static_cast<int>((windowWidth - width) * 0.5);
+	int y = static_cast<int>((windowHeight - height) * 0.5);
+	createWindow(windowName, x, y, width, height, fullscreen);
+
+	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_DEPTH_CLAMP);
+	glEnable(GL_MULTISAMPLE);
+	glEnable(GL_CULL_FACE);
 	glDepthFunc(GL_LESS); // The default
 	glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
 }
@@ -71,7 +100,7 @@ void RenderWindow::setWindowName(std::string name)
 	windowName = name;
 	glfwSetWindowTitle(window, windowName.c_str());
 }
-void RenderWindow::setInteractor(WindowInteractor* interactor)
+void RenderWindow::setInteractor(std::shared_ptr<WindowInteractor> interactor)
 {
 	RenderWindow::interactor = interactor;
 	// Initialize interactor with mouse position

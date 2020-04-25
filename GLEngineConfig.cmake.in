@@ -1,0 +1,15 @@
+#@PACKAGE_INIT@
+
+set(CMAKE_MODULE_PATH "@GLEngine_CMAKE_DIR@")
+set(Innerbuild_DIR "@Innerbuild_DIR@")
+
+include(CMakeFindDependencyMacro)
+find_package(OpenGL REQUIRED)
+find_dependency(GLEW REQUIRED)
+find_dependency(GLFW REQUIRED)
+find_dependency(GLM REQUIRED)
+find_dependency(assimp REQUIRED)
+find_dependency(Eigen REQUIRED)
+find_dependency(tbb REQUIRED)
+
+include(${Innerbuild_DIR}/GLEngineConfig.cmake)

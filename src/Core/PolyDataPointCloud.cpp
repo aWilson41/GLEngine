@@ -49,10 +49,27 @@ void PolyDataPointCloud::update()
 {
 	outputData->clear();
 
+	if (generatePoints)
+		generate();
+	// If we shouldn't generate points then just copy input to output
+	else
+	{
+		const UINT numInputPts = inputData->getVertexCount();
+		outputData->allocateVertexData(numInputPts);
+		glm::vec3* outputVertexData = reinterpret_cast<glm::vec3*>(outputData->getVertexData());
+		glm::vec3* inputVertexData = reinterpret_cast<glm::vec3*>(inputData->getVertexData());
+		std::copy_n(inputVertexData, numInputPts, outputVertexData);
+	}
+
+	if (optimizeByRadius)
+		solve();
+}
+
+void PolyDataPointCloud::generate()
+{
 	// Vertices
 	outputData->allocateVertexData(numPts);
 	glm::vec3* outputVertexData = reinterpret_cast<glm::vec3*>(outputData->getVertexData());
-
 	glm::vec3* inputVertexData = reinterpret_cast<glm::vec3*>(inputData->getVertexData());
 	const UINT numInputPts = inputData->getVertexCount();
 
@@ -64,6 +81,7 @@ void PolyDataPointCloud::update()
 	bounds[3] = rect.pos.y + rect.extent.y;
 	bounds[4] = rect.pos.z - rect.extent.z;
 	bounds[5] = rect.pos.z + rect.extent.z;
+
 	if (use2d)
 	{
 		// Just a rectangle hit or miss strategy. Maybe later I'll come up with a better scheme but for small polygons
@@ -175,6 +193,13 @@ void PolyDataPointCloud::update()
 				outputVertexData[count++] = newPt;
 		}
 	}
+}
+
+void PolyDataPointCloud::solve()
+{
+	glm::vec3* outputVertexData = reinterpret_cast<glm::vec3*>(outputData->getVertexData());
+	glm::vec3* inputVertexData = reinterpret_cast<glm::vec3*>(inputData->getVertexData());
+	const UINT numInputPts = inputData->getVertexCount();
 
 	// Iteratively move points out of each other
 	const GLfloat r2 = radius * radius;

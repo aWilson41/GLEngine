@@ -6,6 +6,7 @@ class Camera2D : public Camera
 {
 public:
 	Camera2D() { reset(); }
+	virtual ~Camera2D() override = default;
 
 public:
 	GLfloat getShiftSpeed() const { return shiftSpeed; }

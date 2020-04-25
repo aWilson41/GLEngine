@@ -24,6 +24,7 @@ void RectangularPrismSource::update()
 	pts[7] = origin + localPts[2] + localPts[1];
 
 	outputData->allocateVertexData(36);
+	outputData->setCellType(CellType::TRIANGLE);
 	glm::vec3* vData = reinterpret_cast<glm::vec3*>(outputData->getVertexData());
 	// Face 1
 	// Triangle 1

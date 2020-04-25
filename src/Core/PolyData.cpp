@@ -12,6 +12,17 @@ GLfloat PolyData::getArea() const
 	return area * 0.5f;
 }
 
+glm::vec3 PolyData::getCenter() const
+{
+	glm::vec3 sum = glm::vec3(0.0f);
+	glm::vec3* vertices = reinterpret_cast<glm::vec3*>(getVertexData());
+	for (UINT i = 0; i < points.count; i++)
+	{
+		sum += vertices[i];
+	}
+	return sum / static_cast<GLfloat>(points.count);
+}
+
 void PolyData::setCellType(CellType type)
 {
 	cells.type = type;

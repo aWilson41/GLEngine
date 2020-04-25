@@ -1,7 +1,7 @@
 #version 460
 struct Material
 {
-	vec3 diffuseColor;
+	vec4 diffuseColor;
 	vec3 ambientColor;
 };
 
@@ -14,6 +14,8 @@ out vec4 fColor;
 
 void main()
 {
-	vec3 color = clamp(dot(lightDir, normal) * mat.diffuseColor + mat.ambientColor, 0.0f, 1.0f);
-	fColor = vec4(color, 1.0f);
+	float diffuse = dot(lightDir, normal);
+
+	vec3 color = clamp(diffuse * mat.diffuseColor.rgb + mat.ambientColor, 0.0f, 1.0f);
+	fColor = vec4(color, mat.diffuseColor.a);
 }

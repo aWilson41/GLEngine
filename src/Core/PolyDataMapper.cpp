@@ -39,6 +39,9 @@ void PolyDataMapper::update()
 	if (polyData->getVertexData() == nullptr)
 		return;
 
+	if (polyData->getVertexCount() == 0)
+		return;
+
 	updateInfo();
 
 	// If the vbo hasn't been created yet
@@ -205,7 +208,7 @@ bool PolyDataMapper::useShader(std::string shaderGroup)
 
 void PolyDataMapper::draw(Renderer* ren) const
 {
-	if (polyData == nullptr || vaoID == -1)
+	if (polyData == nullptr || vaoID == -1 || polyData->getVertexCount() == 0)
 		return;
 
 	// Save the polygon mode
@@ -226,30 +229,41 @@ void PolyDataMapper::draw(Renderer* ren) const
 		glPointSize(pointSize);
 	}
 
+	GLboolean cacheBlendState;
+	glGetBooleanv(GL_BLEND, &cacheBlendState);
+	GLboolean cacheDepthTest;
+	glGetBooleanv(GL_DEPTH_TEST, &cacheDepthTest);
+
 	// Set object uniforms
 	const GLuint shaderProgramId = shaderProgram->getProgramID();
 	glm::mat4 mvp = ren->getCamera()->proj * ren->getCamera()->view * model;
 	const GLuint mvpMatrixLocation = glGetUniformLocation(shaderProgramId, "mvp_matrix");
 	if (mvpMatrixLocation != -1)
 		glUniformMatrix4fv(mvpMatrixLocation, 1, GL_FALSE, &mvp[0][0]);
-	glm::vec3 diffuseColor = glm::vec3(0.7f, 0.7f, 0.7f);
-	glm::vec3 specularColor = glm::vec3(0.0f, 0.0f, 0.0f);
-	glm::vec3 ambientColor = glm::vec3(0.0f, 0.0f, 0.0f);
+	glm::vec4 diffuse = glm::vec4(0.7f, 0.7f, 0.7f, 1.0f);
+	glm::vec3 specular = glm::vec3(0.0f, 0.0f, 0.0f);
+	glm::vec3 ambient = glm::vec3(0.0f, 0.0f, 0.0f);
 	if (material != nullptr)
 	{
-		diffuseColor = material->getDiffuse();
-		specularColor = material->getSpecular();
-		ambientColor = material->getAmbient();
+		diffuse = material->getDiffuse();
+		if (diffuse.a < 1.0f)
+		{
+			glEnable(GL_BLEND);
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			glBlendEquation(GL_FUNC_ADD);
+		}
+		specular = material->getSpecular();
+		ambient = material->getAmbient();
 	}
-	const GLuint diffuseColorLocation = glGetUniformLocation(shaderProgramId, "mat.diffuseColor");
-	if (diffuseColorLocation != -1)
-		glUniform3fv(diffuseColorLocation, 1, &diffuseColor[0]);
-	const GLuint specularColorLocation = glGetUniformLocation(shaderProgramId, "mat.specularColor");
-	if (specularColorLocation != -1)
-		glUniform3fv(specularColorLocation, 1, &specularColor[0]);
-	const GLuint ambientColorLocation = glGetUniformLocation(shaderProgramId, "mat.ambientColor");
-	if (ambientColorLocation != -1)
-		glUniform3fv(ambientColorLocation, 1, &ambientColor[0]);
+	const GLuint diffuseLocation = glGetUniformLocation(shaderProgramId, "mat.diffuseColor");
+	if (diffuseLocation != -1)
+		glUniform4fv(diffuseLocation, 1, &diffuse[0]);
+	const GLuint specularLocation = glGetUniformLocation(shaderProgramId, "mat.specularColor");
+	if (specularLocation != -1)
+		glUniform3fv(specularLocation, 1, &specular[0]);
+	const GLuint ambientLocation = glGetUniformLocation(shaderProgramId, "mat.ambientColor");
+	if (ambientLocation != -1)
+		glUniform3fv(ambientLocation, 1, &ambient[0]);
 	// Set the scene uniforms
 	const GLuint lightDirLocation = glGetUniformLocation(shaderProgramId, "lightDir");
 	if (lightDirLocation != -1)
@@ -263,6 +277,11 @@ void PolyDataMapper::draw(Renderer* ren) const
 		glDrawArrays(mode[cellType], 0, static_cast<GLsizei>(polyData->getVertexCount()));
 	glBindVertexArray(0);
 
-	// Restore poly mode
+	// Restore states
 	glPolygonMode(GL_FRONT_AND_BACK, prevPolyMode);
+	glEnable(cacheBlendState);
+
+	glBlendFunc(GL_ONE, GL_ZERO);
+	if (cacheDepthTest)
+		glEnable(GL_DEPTH_TEST);
 }

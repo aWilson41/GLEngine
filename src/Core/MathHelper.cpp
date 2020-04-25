@@ -263,11 +263,13 @@ glm::vec3 MathHelp::calcCentroid(glm::vec3* vertices, UINT count)
 
 geom2d::Rect MathHelp::get2dBounds(glm::vec2* vertices, UINT count)
 {
+	if (count == 0)
+		return geom2d::Rect(glm::vec2(0.0f), glm::vec2(0.0f));
 	GLfloat maxX, maxY, minX, minY;
-	maxX = maxY = std::numeric_limits<GLfloat>::min();
-	minX = minY = std::numeric_limits<GLfloat>::max();
+	maxX = minX = vertices[0].x;
+	maxY = minY = vertices[0].y;
 
-	for (UINT i = 0; i < count; i++)
+	for (UINT i = 1; i < count; i++)
 	{
 		if (vertices[i].x > maxX)
 			maxX = vertices[i].x;
@@ -283,11 +285,14 @@ geom2d::Rect MathHelp::get2dBounds(glm::vec2* vertices, UINT count)
 }
 geom3d::Rect MathHelp::get3dBounds(glm::vec3* vertices, UINT count)
 {
+	if (count == 0)
+		return geom3d::Rect(glm::vec3(0.0f), glm::vec3(0.0f));
 	GLfloat maxX, maxY, maxZ, minX, minY, minZ;
-	maxX = maxY = maxZ = std::numeric_limits<GLfloat>::min();
-	minX = minY = minZ = std::numeric_limits<GLfloat>::max();
+	maxX = minX = vertices[0].x;
+	maxY = minY = vertices[0].y;
+	maxZ = minZ = vertices[0].z;
 
-	for (UINT i = 0; i < count; i++)
+	for (UINT i = 1; i < count; i++)
 	{
 		if (vertices[i].x > maxX)
 			maxX = vertices[i].x;

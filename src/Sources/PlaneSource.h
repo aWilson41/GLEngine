@@ -4,7 +4,7 @@
 
 class PolyData;
 
-// Defines a plane (defaults 1x1 with origin [-0.5, 0, -0.5])
+// Defines a 3d plane (defaults 1x1 with origin [-0.5, 0, -0.5])
 class PlaneSource
 {
 public:

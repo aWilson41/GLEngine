@@ -26,6 +26,8 @@ public:
 	void setUse2d(bool use2d) { this->use2d = use2d; }
 	// Iteratively moves points away from each other for better distribution, Default: false
 	void setOptimizeByRadius(bool optimizeByRadius) { this->optimizeByRadius = optimizeByRadius; }
+	// Randomly generates points within input, Default: true (if off then input copied to output)
+	void setGeneratePoints(bool generatePoints) { this->generatePoints = generatePoints; }
 	// Number of points to generate, Default: 1000
 	void setNumberOfPoints(UINT numPts) { this->numPts = numPts; }
 	// Radius for iterative optimization, Default: 0.05
@@ -38,11 +40,16 @@ public:
 	void update();
 
 private:
+	void generate();
+	void solve();
+
+private:
 	std::shared_ptr<PolyData> inputData = nullptr;
 	std::shared_ptr<PolyData> outputData = nullptr;
 
 	bool use2d = false;
 	bool optimizeByRadius = false;
+	bool generatePoints = true;
 	GLfloat bounds[6] = { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f };
 	UINT numPts = 1000;
 	GLfloat radius = 0.05f;

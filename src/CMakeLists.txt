@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0.2)
+cmake_minimum_required(VERSION 3.9)
  
 project(GLEngine)
 
@@ -24,42 +24,25 @@ file(GLOB_RECURSE SHADER_DEFERRED_FILES Shaders/DeferredRasterize/*glsl)
 file(GLOB_RECURSE SHADER_RAYCAST_FILES Shaders/Raycast/*glsl)
 file(GLOB_RECURSE SHADER_RAYTRACE_FILES Shaders/Raytrace/*glsl)
 file(GLOB_RECURSE SHADER_PATHTRACE_FILES Shaders/Pathtrace/*glsl)
-set(SHADER_FILES ${SHADER_DIRECT_FILES} ${SHADER_DEFERRED_FILES} ${SHADER_RAYCAST_FILES} ${SHADER_RAYTRACE_FILES} ${SHADER_PATHTRACE_FILES})
+file(GLOB_RECURSE SHADER_COMMON_FILES Shaders/Common/*.glsl)
+set(SHADER_FILES ${SHADER_DIRECT_FILES} ${SHADER_DEFERRED_FILES} ${SHADER_RAYCAST_FILES} ${SHADER_RAYTRACE_FILES} ${SHADER_PATHTRACE_FILES} ${SHADER_COMMON_FILES})
 
 file(GLOB LODEPNG_FILES LodePNG/lodepng.h LodePNG/lodepng.cpp)
 
 set(HEADER_FILES ${CORE_HEADER_FILES} ${RENDERING_HEADER_FILES} ${DATASOURCE_HEADER_FILES} ${IO_HEADER_FILES} LodePNG/lodepng.h)
+
 
 # Find all the packages
 find_package(OpenGL REQUIRED)
 find_package(GLEW REQUIRED)
 find_package(GLFW REQUIRED)
 find_package(GLM REQUIRED)
+find_package(assimp REQUIRED)
 find_package(Eigen REQUIRED)
 find_package(tbb REQUIRED)
 
-#Set the includes and libraries
-set(GLENGINE_INCLUDE_DIRS
-	${GLM_INCLUDE_DIR}
-	${GLEW_INCLUDE_DIR}
-	${GLFW_INCLUDE_DIR}
-	${ASSIMP_INCLUDE_DIR}
-	${EIGEN_INCLUDE_DIR}
-	${OPENGL_INCLUDE_DIRS}
-	${TBB_INCLUDE_DIR}
-	${CMAKE_CURRENT_SOURCE_DIR}
-	Core
-	IO
-	LodePNG
-	Rendering
-	Sources)
-set(GLENGINE_LIBRARIES
-	${OPENGL_LIBRARIES}
-	${GLFW_LIBRARIES}
-	${GLEW_LIBRARIES}
-	${TBB_LIBRARIES}
-	${ASSIMP_LIBRARIES})
 
+# Create the library
 add_library(GLEngine STATIC
 	${CORE_FILES}
 	${RENDERING_FILES}
@@ -67,8 +50,25 @@ add_library(GLEngine STATIC
 	${IO_FILES}
 	${SHADER_FILES}
 	${LODEPNG_FILES})
-target_include_directories(GLEngine PUBLIC ${GLENGINE_INCLUDE_DIRS})
-target_link_libraries(GLEngine ${GLENGINE_LIBRARIES})
+# Link the dependencies
+target_link_libraries(GLEngine
+	PUBLIC
+		OpenGL::GL
+		GLM GLEW GLFW
+		Eigen
+		assimp
+		tbb)
+# Include the subdirectories
+target_include_directories(GLEngine
+	PUBLIC
+		${CMAKE_CURRENT_SOURCE_DIR}
+		Core
+		IO
+		LodePNG
+		Rendering
+		Sources)
+set_target_properties(GLEngine PROPERTIES DEBUG_POSTFIX "d")
+
 
 # Enable parallel build for msvc
 if(WIN32 AND MSVC)
@@ -86,6 +86,7 @@ source_group("Shaders\\Deferred" FILES ${SHADER_DEFERRED_FILES})
 source_group("Shaders\\Raycast" FILES ${SHADER_RAYCAST_FILES})
 source_group("Shaders\\Raytrace" FILES ${SHADER_RAYTRACE_FILES})
 source_group("Shaders\\Pathtrace" FILES ${SHADER_PATHTRACE_FILES})
+source_group("Shaders\\Common" FILES ${SHADER_COMMON_FILES})
 source_group("LodePNG" FILES ${LODEPNG_FILES})
 
 install(TARGETS GLEngine EXPORT GLEngine_TARGETS DESTINATION lib)

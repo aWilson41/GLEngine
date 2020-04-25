@@ -13,7 +13,7 @@ class PrimitivesMapper : public AbstractMapper
 {
 public:
 	PrimitivesMapper();
-	~PrimitivesMapper();
+	~PrimitivesMapper() override;
 
 public:
 	std::shared_ptr<ShaderProgram> getShaderProgram() const { return shaderProgram; }
@@ -21,12 +21,14 @@ public:
 	GLfloat getLineWidth() const { return lineWidth; }
 
 	void setMaterial(std::shared_ptr<PhongMaterial> material) { this->material = material; }
-	void setLineWidth(GLfloat lineWidth) { this->lineWidth = lineWidth; }
-	void setZ(GLfloat z) { this->z = z; }
+	void setLineWidth(const GLfloat lineWidth) { this->lineWidth = lineWidth; }
+	void setZ(const GLfloat z) { this->z = z; }
 
-	void addCircle(glm::vec2 pos, GLfloat r, UINT div);
-	void addLine(glm::vec2 p1, glm::vec2 p2);
-	void addArrow(glm::vec2 p1, glm::vec2 p2, GLfloat headSize = 1.0f, GLfloat headRatio = 0.9f);
+	void addCircle(const glm::vec2& pos, const GLfloat r, const UINT div);
+	void addSphere(const glm::vec3& pos, const GLfloat r, const UINT divTheta, const UINT divPhi);
+	void addLine(const glm::vec2& p1, const glm::vec2& p2) { addLine(glm::vec3(p1, z), glm::vec3(p2, z)); }
+	void addLine(const glm::vec3& p1, const glm::vec3& p2);
+	void addArrow(const glm::vec2& p1, const glm::vec2& p2, const GLfloat headSize = 1.0f, const GLfloat headRatio = 0.9f);
 
 	// Removes all geometry
 	void clear();
@@ -61,16 +63,31 @@ class Primitives2d : public Singleton<Primitives2d>
 public:
 	static std::shared_ptr<PrimitivesMapper> getMapper() { return mapper; }
 
-	static void setZ(GLfloat z) { mapper->setZ(z); }
-	static void setColor(glm::vec3 color);
-	static void setColor(GLfloat r, GLfloat g, GLfloat b);
+	static void setZ(const GLfloat z) { mapper->setZ(z); }
+	static void setColor(const glm::vec3& color);
+	static void setColor(const GLfloat r, const GLfloat g, const GLfloat b);
 
-	static void addCircle(glm::vec2 pos, GLfloat r, UINT div) { mapper->addCircle(pos, r, div); }
-	static void addLine(glm::vec2 p1, glm::vec2 p2) { mapper->addLine(p1, p2); }
-	static void addArrow(glm::vec2 p1, glm::vec2 p2, GLfloat headSize = 1.0f, GLfloat headRatio = 0.9f)
+	static void addCircle(const glm::vec2& pos, const GLfloat r, const UINT div) { mapper->addCircle(pos, r, div); }
+	static void addLine(const glm::vec2& p1, const glm::vec2& p2) { mapper->addLine(p1, p2); }
+	static void addArrow(const glm::vec2& p1, const glm::vec2& p2, const GLfloat headSize = 1.0f, const GLfloat headRatio = 0.9f)
 	{
 		mapper->addArrow(p1, p2, headSize, headRatio);
 	}
+
+	static void clear() { mapper->clear(); }
+
+private:
+	static std::shared_ptr<PrimitivesMapper> mapper;
+};
+class Primitives3d : public Singleton<Primitives3d>
+{
+public:
+	static std::shared_ptr<PrimitivesMapper> getMapper() { return mapper; }
+
+	static void setColor(const glm::vec3& color);
+	static void setColor(const GLfloat r, const GLfloat g, const GLfloat b);
+
+	static void addSphere(const glm::vec3& pos, const GLfloat r, const UINT divTheta, const UINT divPhi) { mapper->addSphere(pos, r, divTheta, divPhi); }
 
 	static void clear() { mapper->clear(); }
 

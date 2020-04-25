@@ -12,6 +12,9 @@ enum Button
 class WindowInteractor
 {
 public:
+	virtual ~WindowInteractor() = default;
+
+public:
 	virtual void init(glm::vec2 mousePos, int windowWidth, int windowHeight)
 	{
 		prevMousePos = mousePos;

@@ -4,7 +4,7 @@
 
 class PolyData;
 
-// Defines a quad (1x1 on XY plane, center at 0.0)
+// Defines a 2d quad (1x1 on XY plane, center at 0.0)
 class QuadSource
 {
 public:

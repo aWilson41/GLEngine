@@ -15,7 +15,7 @@ void QuadSource::update()
 	vertexData[2] = p1 + p2 - origin;
 	vertexData[3] = p2; // default along x
 
-	outputData->allocateIndexData(8, CellType::TRIANGLE);
+	outputData->allocateIndexData(8, CellType::LINE);
 	GLuint* iData = outputData->getIndexData();
 	iData[0] = 0; iData[1] = 1;
 	iData[2] = 1; iData[3] = 2;

@@ -15,6 +15,7 @@ class Renderer
 {
 public:
 	Renderer();
+	virtual ~Renderer() = default;
 
 public:
 	std::shared_ptr<AbstractMapper> getRenderItem(UINT i) const { return mappers[i]; }
@@ -32,6 +33,7 @@ public:
 
 	void setCamera(std::shared_ptr<Camera> cam) { Renderer::cam = cam; }
 	void setClearColor(float r, float g, float b, float a);
+	void setLightDir(const glm::vec3& lightDir) { this->lightDir = lightDir; }
 	void setShaderGroup(std::string shaderGroup) { Renderer::shaderGroup = shaderGroup; }
 	void setDepthTest(bool depthTestOn) { depthTestOn ? glEnable(GL_DEPTH_TEST) : glDisable(GL_DEPTH_TEST); }
 	// Might split mapper into actor where this becomes addActor

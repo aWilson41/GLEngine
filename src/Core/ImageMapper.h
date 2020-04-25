@@ -7,11 +7,12 @@ class PlaneSource;
 class ShaderProgram;
 
 // Does rendering and pre rendering operations (mapping input to visual representation)
+// Only supports uchar type
 class ImageMapper : public AbstractMapper
 {
 public:
 	ImageMapper();
-	~ImageMapper();
+	~ImageMapper() override;
 
 public:
 	std::shared_ptr<ImageData> getInput() const { return imageData; }

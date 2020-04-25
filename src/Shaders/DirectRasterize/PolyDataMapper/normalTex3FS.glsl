@@ -2,7 +2,7 @@
 
 struct PhongMaterial
 {
-	vec3 diffuseColor;
+	vec4 diffuseColor;
 	vec4 specularColor;
 	vec3 ambientColor;
 };
@@ -19,8 +19,8 @@ void main()
 {
 	float diffuse = clamp(dot(lightDir, normal), 0.0f, 1.0f);
 
-	vec3 diffuseColor = diffuse * vec3(texture2D(tex, texCoord);
+	vec3 diffuseColor = diffuse * vec3(texture2D(tex, texCoord));
 	vec3 ambientColor = mat.ambientColor;
 
-	fColor = vec4(diffuseColor + ambientColor, 1.0f);
+	fColor = vec4(diffuseColor + ambientColor, mat.diffuseColor.a);
 }

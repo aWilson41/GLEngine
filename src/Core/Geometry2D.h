@@ -46,6 +46,7 @@ namespace geom2d
 
 	public:
 		GLfloat area() const override;
+		GLfloat* getBounds();
 		glm::vec2 topLeft() const;
 		glm::vec2 topRight() const;
 		glm::vec2 bottomRight() const;

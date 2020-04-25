@@ -41,13 +41,32 @@ public:
 		initCamera(left, right, top, bottom, nearZ, farZ);
 	}
 
+	void updateProj()
+	{
+		if (ortho)
+		{
+			const GLfloat dist = glm::distance(eyePos, focalPt);
+			orthoBounds[0] = -dist;
+			orthoBounds[1] = dist;
+			orthoBounds[2] = dist;
+			orthoBounds[3] = -dist;
+		}
+		Camera::updateProj();
+	}
+
 	void updateView() override
 	{
 		view = glm::lookAt(eyePos, focalPt, up);
 		invView = glm::inverse(view);
 	}
 
-	void reset() override { initCameraLookAt(45.0f, 16.0f / 9.0f, 0.0001f, 1000.0f, glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f)); }
+	void reset() override
+	{
+		if (ortho)
+			initCameraLookAt(-1.0f, 1.0f, 1.0f, -1.0f, 0.0001f, 1000.0f, glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f));
+		else
+			initCameraLookAt(45.0f, 16.0f / 9.0f, 0.0001f, 1000.0f, glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f));
+	}
 
 protected:
 	// Eye position

@@ -6,7 +6,8 @@ void TrackballCameraInteractor::init(glm::vec2 pos, int windowWidth, int windowH
 	// If the camera doesn't get initialized with the current mouse position 
 	// there will be a big jump when first mouse move is called
 	screenSize = glm::vec2(windowWidth, windowHeight);
-	cam->initTrackballCamera(cam->getFov(), static_cast<GLfloat>(windowWidth) / windowHeight, cam->getNearZ(), cam->getFarZ());
+	if (!cam->getOrtho())
+		cam->initTrackballCamera(cam->getFov(), static_cast<GLfloat>(windowWidth) / windowHeight, cam->getNearZ(), cam->getFarZ());
 	prevMousePos = mousePos = pos / screenSize;
 }
 
@@ -31,5 +32,6 @@ void TrackballCameraInteractor::windowResize(int width, int height)
 	WindowInteractor::windowResize(width, height);
 
 	screenSize = glm::vec2(width, height);
-	cam->setPerspective(45.0f, static_cast<GLfloat>(width) / height, 0.1f, 10000.0f);
+	if (!cam->getOrtho())
+		cam->setPerspective(45.0f, static_cast<GLfloat>(width) / height, 0.1f, 10000.0f);
 }

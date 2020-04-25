@@ -10,7 +10,7 @@ class DeferredRenderer : public Renderer
 {
 public:
 	DeferredRenderer(bool useDefaults = true);
-	~DeferredRenderer();
+	virtual ~DeferredRenderer() override;
 
 public:
 	void setColorFbo(std::shared_ptr<Framebuffer> fbo) { colorOutputFbo = fbo; }

@@ -37,6 +37,7 @@ class AbstractMapper
 {
 public:
 	AbstractMapper() { objectProperties = properties.getObjectProperties(); }
+	virtual ~AbstractMapper() = default;
 
 public:
 	virtual void update() = 0;

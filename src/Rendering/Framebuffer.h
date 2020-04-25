@@ -11,7 +11,7 @@ public:
 		DEPTH,
 		STENCIL
 	};
-	using Config = std::tuple<AttachmentType, FramebufferAttachment::Format, void*>;
+	using AttachmentConfig = std::tuple<AttachmentType, FramebufferAttachment::Format, void*>;
 
 public:
 	~Framebuffer()
@@ -35,7 +35,7 @@ public:
 	bool resize(const glm::ivec2 dim);
 
 	// Generate and add attachments (returns if succesful)
-	bool generate(const UINT width, const UINT height, std::vector<Config> config);
+	bool generate(const UINT width, const UINT height, std::vector<AttachmentConfig> configs);
 	// Returns true if complete
 	bool isComplete() { return (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE); }
 	bool isGenerated() { return fboID != -1; }
@@ -60,6 +60,7 @@ public:
 private:
 	GLuint fboID = -1;
 	std::vector<std::shared_ptr<FramebufferAttachment>> attachments;
+	std::vector<AttachmentConfig> attachmentConfigs;
 	UINT numColorAttachments = 0;
 	GLbitfield clearMask = GL_COLOR_BUFFER_BIT;
 };

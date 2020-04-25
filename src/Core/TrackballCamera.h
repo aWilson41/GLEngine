@@ -16,6 +16,8 @@ public:
 		initTrackballCamera(phi, theta, rho);
 	}
 
+	virtual ~TrackballCamera() override = default;
+
 public:
 	GLfloat getPhi() const { return phi; }
 	GLfloat getTheta() const { return theta; }
@@ -23,9 +25,9 @@ public:
 	GLfloat getRotateSpeed() const { return rotateSpeed; }
 	GLfloat getShiftSpeed() const { return shiftSpeed; }
 
-	void setPhi(GLfloat phi) { TrackballCamera::phi = phi; }
-	void setTheta(GLfloat theta) { TrackballCamera::theta = theta; }
-	void setRho(GLfloat rho) { TrackballCamera::rho = rho; }
+	void setPhi(GLfloat phi) { this->phi = phi; }
+	void setTheta(GLfloat theta) { this->theta = theta; }
+	void setRho(GLfloat rho) { this->rho = rho; }
 	// Default is 4.0f
 	void setRotateSpeed(GLfloat speed) { rotateSpeed = speed; }
 	// Default is 0.025f
@@ -36,28 +38,36 @@ public:
 	void initTrackballCamera(GLfloat phi, GLfloat theta, GLfloat rho,
 		GLfloat fov, GLfloat aspectRatio, GLfloat nearZ, GLfloat farZ)
 	{
-		TrackballCamera::phi = phi;
-		TrackballCamera::theta = theta;
-		TrackballCamera::rho = rho;
+		this->phi = phi;
+		this->theta = theta;
+		this->rho = rho;
 		initCameraLookAt(fov, aspectRatio, nearZ, farZ, eyePos, focalPt);
 	}
 	void initTrackballCamera(GLfloat phi, GLfloat theta, GLfloat rho)
 	{
-		TrackballCamera::phi = phi;
-		TrackballCamera::theta = theta;
-		TrackballCamera::rho = rho;
+		this->phi = phi;
+		this->theta = theta;
+		this->rho = rho;
 		initCameraLookAt(fov, aspectRatio, nearZ, farZ, eyePos, focalPt);
 	}
 	void initTrackballCamera(GLfloat phi, GLfloat theta, GLfloat rho, GLfloat fov, GLfloat nearZ, GLfloat farZ)
 	{
-		TrackballCamera::phi = phi;
-		TrackballCamera::theta = theta;
-		TrackballCamera::rho = rho;
+		this->phi = phi;
+		this->theta = theta;
+		this->rho = rho;
 		initCameraLookAt(fov, aspectRatio, nearZ, farZ, eyePos, focalPt);
 	}
 	void initTrackballCamera(GLfloat fov, GLfloat aspectRatio, GLfloat nearZ, GLfloat farZ)
 	{
 		initCameraLookAt(fov, aspectRatio, nearZ, farZ, eyePos, focalPt);
+	}
+	void initTrackballCamera(GLfloat phi, GLfloat theta, GLfloat rho,
+		GLfloat left, GLfloat right, GLfloat top, GLfloat bottom, GLfloat nearZ, GLfloat farZ)
+	{
+		this->phi = phi;
+		this->theta = theta;
+		this->rho = rho;
+		initCameraLookAt(left, right, top, bottom, nearZ, farZ, eyePos, focalPt, up);
 	}
 
 	void updateView() override
@@ -81,7 +91,7 @@ public:
 		theta += diff.x * rotateSpeed;
 		phi -= diff.y * rotateSpeed;
 
-		phi = MathHelp::clamp(phi, 0.01f, 3.14f);
+		phi = glm::clamp(phi, 0.01f, 3.14f);
 		update();
 	}
 	// Maps 2d mouse coordinates to shifts
@@ -107,7 +117,10 @@ public:
 	// Resets to defaults
 	void reset() override
 	{
-		initTrackballCamera(1.4f, 1.57f, 35.0f, 45.0f, 16.0f / 9.0f, 0.0001f, 1000.0f);
+		if (ortho)
+			initTrackballCamera(1.4f, 1.57f, 35.0f, -1.0f, 1.0f, 1.0f, -1.0f, 0.0001f, 1000.0f);
+		else
+			initTrackballCamera(1.4f, 1.57f, 35.0f, 45.0f, 16.0f / 9.0f, 0.0001f, 1000.0f);
 	}
 
 protected:

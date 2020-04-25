@@ -28,7 +28,8 @@ void main()
     vec3 normal = normalize(texture(gNormal, texCoord).xyz);
 
 	// Diffuse light
-    vec3 diffuse = max(dot(normal, lightDir), 0.0f) * texture(gDiffuseColor, texCoord).rgb;
+	vec4 diffuseColor = texture(gDiffuseColor, texCoord).rgba;
+    vec3 diffuse = max(dot(normal, lightDir), 0.0f) * diffuseColor.rgb;
 
 	// Ambient light
     vec3 ambient = texture(gAmbientColor, texCoord).rgb;
@@ -45,10 +46,10 @@ void main()
 
 	if (pos.x != 0.0f || pos.y != 0.0f || pos.z != 0.0f)
 		//fColor = vec4(diffuse + specular + fresnel + ambient, 1.0f);
-		fColor = vec4(diffuse + specular + ambient, 1.0f);
+		fColor = vec4(diffuse + specular + ambient, diffuseColor.a);
 		//fColor = vec4(diffuse + ambient, 1.0f);
 	else
-		fColor = vec4(ambient, 1.0f);
+		fColor = vec4(ambient, diffuseColor.a);
 
 	//fColor = vec4(viewDir.x, viewDir.y, viewDir.z, 1.0f);
 	//fColor = vec4(lightDir.x, lightDir.y, lightDir.z, 1.0f);

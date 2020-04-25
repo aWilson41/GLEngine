@@ -8,12 +8,19 @@ class GlyphPolyDataMapper : public PolyDataMapper
 {
 public:
 	GlyphPolyDataMapper();
-	~GlyphPolyDataMapper();
+	~GlyphPolyDataMapper() override;
 
 public:
 	GLfloat* getOffsetData() const { return offsetData; }
 	GLfloat* getColorData() const { return colorData; }
 	UINT getInstanceCount() const { return instanceCount; }
+
+	void setData(GLfloat* offsetData, GLfloat* colorData, UINT count)
+	{
+		instanceCount = count;
+		this->offsetData = offsetData;
+		this->colorData = colorData;
+	}
 
 	void allocateOffsets(UINT count)
 	{

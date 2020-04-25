@@ -1,4 +1,5 @@
 #pragma once
+#define NOMINMAX
 #include "tbb/tbb.h"
 
 template<class IndexType, class Function>

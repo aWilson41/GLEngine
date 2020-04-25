@@ -13,7 +13,7 @@ class PolyDataMapper : public AbstractMapper
 {
 public:
 	PolyDataMapper();
-	~PolyDataMapper();
+	virtual ~PolyDataMapper();
 
 public:
 	std::shared_ptr<PolyData> getInput() const { return polyData; }

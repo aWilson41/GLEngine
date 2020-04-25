@@ -23,6 +23,7 @@ public:
 	{
 		framebuffer = std::make_shared<Framebuffer>();
 	}
+	virtual ~RenderPass() = default;
 
 public:
 	UINT getNumberOfInputPorts() const { return static_cast<UINT>(inputs.size()); }

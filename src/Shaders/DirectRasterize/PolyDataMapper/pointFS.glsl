@@ -2,7 +2,7 @@
 
 struct PhongMaterial
 {
-	vec3 diffuseColor;
+	vec4 diffuseColor;
 	vec4 specularColor;
 	vec3 ambientColor;
 };
@@ -13,5 +13,5 @@ out vec4 fColor;
 
 void main()
 {
-	fColor = vec4(mat.ambientColor, 1.0);
+	fColor = vec4(mat.ambientColor, mat.diffuseColor.a);
 }

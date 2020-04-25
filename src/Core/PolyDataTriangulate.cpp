@@ -38,7 +38,7 @@ static void earClipTriangulate(std::shared_ptr<PolyData> inputData, std::shared_
 		{
 			// If it contains a point from the existing polygon then bail on this pt
 			bool containsPt = false;
-			for (unsigned int j = 0; j < numPts; j++)
+			for (UINT j = 0; j < numPts; j++)
 			{
 				const UINT i4 = indices[j];
 				if (i4 != i1 && i4 != i2 && i4 != i3 && MathHelp::intersectTrianglePoint(p1, pt, p3, inputVertexData[i4]))
@@ -113,6 +113,9 @@ PolyDataTriangulate::PolyDataTriangulate() { outputData = std::make_shared<PolyD
 void PolyDataTriangulate::update()
 {
 	outputData->clear();
+
+	if (inputData->getVertexData() == nullptr || inputData->getVertexCount() == 0)
+		return;
 
 	if (type == TriangulateType::EARCLIP)
 		earClipTriangulate(inputData, outputData);

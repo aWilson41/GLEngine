@@ -19,6 +19,18 @@ public:
 	void* getData() { return data; }
 	UINT getNumComps() const { return numComps; }
 	ScalarType getScalarType() const { return type; }
+	template<typename T>
+	T* getScalarRange()
+	{
+		T* data = getData<T>();
+		static T range[2] = { static_cast<T>(FLOAT_MAX), static_cast<T>(FLOAT_MIN) };
+		for (UINT i = 0; i < dim[0] * dim[1] * dim[2]; i++)
+		{
+			range[0] = std::min(data[i], range[0]);
+			range[1] = std::max(data[i], range[1]);
+		}
+		return range;
+	}
 
 	void setSpacing(double x, double y, double z)
 	{
@@ -42,7 +54,7 @@ public:
 	void clear();
 
 protected:
-	template<class T>
+	template<typename T>
 	void allocateData(T, const UINT count) { data = new T[count]; }
 
 protected:

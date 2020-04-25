@@ -10,6 +10,7 @@ class Camera
 public:
 	// Makes sure to update with default on creation
 	Camera() { reset(); }
+	virtual ~Camera() = default;
 
 public:
 	GLfloat getFov() { return fov; }
@@ -18,6 +19,7 @@ public:
 	GLfloat getFarZ() { return farZ; }
 	glm::vec3 getLookDir() const { return glm::vec3(view[2][0], view[2][1], view[2][2]); }
 	glm::vec3 getViewPos() const { return glm::vec3(invView[3][0], invView[3][1], invView[3][2]); }
+	bool getOrtho() const { return ortho; }
 	geom3d::Ray getEyeRay(glm::vec2 ndc) const
 	{
 		glm::vec4 worldPos = glm::inverse(proj * view) * glm::vec4(ndc, 0.0f, 1.0f);
