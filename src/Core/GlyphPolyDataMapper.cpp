@@ -88,7 +88,7 @@ void GlyphPolyDataMapper::update()
 	}
 	updateBuffer();
 
-	representation = MathHelp::clamp(representation, CellType::POINT, polyData->getCellType());
+	representation = std::min(std::max(representation, CellType::POINT), polyData->getCellType());
 }
 void GlyphPolyDataMapper::updateInfo()
 {

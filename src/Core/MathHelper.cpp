@@ -379,7 +379,7 @@ bool MathHelp::intersectTrianglePoint(const glm::vec2& a, const glm::vec2& b, co
 		return false;
 	return true;
 }
-bool MathHelp::intersectSegmentSegment
+bool MathHelp::intersectSegmentSegment(
 	const glm::vec2& a1, const glm::vec2& a2,
 	const glm::vec2& b1, const glm::vec2& b2,
 	glm::vec2& intersectionPt)

@@ -94,7 +94,7 @@ void PolyDataMapper::update()
 	updateBuffer();
 
 	// Verify the desired representation (we can't map cells with more elements to one of fewer ie: can't represent point with triangle)
-	representation = MathHelp::clamp(representation, CellType::POINT, polyData->getCellType());
+	representation = std::min(std::max(representation, CellType::POINT), polyData->getCellType());
 }
 void PolyDataMapper::updateInfo()
 {
