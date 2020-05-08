@@ -5,8 +5,6 @@
 #include "PolyDataPointCloud.h"
 #include "PolyData.h"
 #include <Geometry2D.h>
-#include <random>
-#include <time.h>
 
 PolyDataReverse::PolyDataReverse() { outputData = std::make_shared<PolyData>(); }
 

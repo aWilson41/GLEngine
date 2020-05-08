@@ -39,7 +39,7 @@ glm::mat4 MathHelp::translate(GLfloat x, GLfloat y, GLfloat z)
 	results[3][2] = z;
 	return results;
 }
-glm::mat4 MathHelp::translate(glm::vec3 t) { return translate(t.x, t.y, t.z); }
+glm::mat4 MathHelp::translate(const glm::vec3& t) { return translate(t.x, t.y, t.z); }
 glm::mat4 MathHelp::scale(GLfloat s)
 {
 	return scale(s, s, s);
@@ -52,9 +52,9 @@ glm::mat4 MathHelp::scale(GLfloat x, GLfloat y, GLfloat z)
 	results[2][2] = z;
 	return results;
 }
-glm::mat4 MathHelp::scale(glm::vec3 s) { return scale(s.x, s.y, s.z); }
+glm::mat4 MathHelp::scale(const glm::vec3& s) { return scale(s.x, s.y, s.z); }
 
-glm::mat3 MathHelp::skewSym(glm::vec3 a) // ?
+glm::mat3 MathHelp::skewSym(const glm::vec3& a)
 {
 	glm::mat3 m;
 	m[0][0] = 0.0f; m[0][1] = -a.z; m[0][2] = a.y;
@@ -63,51 +63,51 @@ glm::mat3 MathHelp::skewSym(glm::vec3 a) // ?
 	return m;
 }
 
-glm::mat3 MathHelp::rotateVectorToVector(glm::vec3 a, glm::vec3 b)
+glm::mat3 MathHelp::rotateVectorToVector(const glm::vec3& a, const glm::vec3& b)
 {
-	glm::vec3 v = glm::cross(a, b);
-	GLfloat s = glm::length(v);
-	GLfloat c = glm::dot(a, b);
+	const glm::vec3 v = glm::cross(a, b);
+	const GLfloat s = glm::length(v);
+	const GLfloat c = glm::dot(a, b);
 	glm::mat3 ss = skewSym(v);
 	return glm::mat3(1.0f) + ss + ss * ss * (1 - c) / (s * s);
 }
 
-glm::quat MathHelp::Vec4ToQuat(glm::vec4 q)
+glm::quat MathHelp::Vec4ToQuat(const glm::vec4& q)
 {
 	return glm::quat(q.w, q.x, q.y, q.z);
 }
-glm::vec4 MathHelp::QuatToVec4(glm::quat q)
+glm::vec4 MathHelp::QuatToVec4(const glm::quat& q)
 {
 	return glm::vec4(q.x, q.y, q.z, q.w);
 }
 
 // We define the 2d cross product as the length of the 3d ax * by - ay * bx
-GLfloat MathHelp::cross(glm::vec2 a, glm::vec2 b) { return a.x * b.y - a.y * b.x; }
+GLfloat MathHelp::cross(const glm::vec2& a, const glm::vec2& b) { return a.x * b.y - a.y * b.x; }
 
 glm::vec2 MathHelp::slope(GLfloat theta) { return glm::vec2(glm::cos(theta), glm::sin(theta)); }
 
-glm::vec2 MathHelp::perp(glm::vec2 a) { return glm::vec2(-a.y, a.x); }
+glm::vec2 MathHelp::perp(const glm::vec2& a) { return glm::vec2(-a.y, a.x); }
 
-GLfloat MathHelp::sqrDistance(glm::vec3 a, glm::vec3 b)
+GLfloat MathHelp::sqrDistance(const glm::vec3& a, const glm::vec3& b)
 {
-	glm::vec3 diff = b - a;
+	const glm::vec3 diff = b - a;
 	return glm::dot(diff, diff);
 }
 
-glm::vec2 MathHelp::projAToB(glm::vec2 a, glm::vec2 b)
+glm::vec2 MathHelp::projAToB(const glm::vec2& a, const glm::vec2& b)
 {
-	GLfloat m = glm::length(b);
+	const GLfloat m = glm::length(b);
 	return b * (glm::dot(a, b) / (m * m));
 }
-glm::vec3 MathHelp::projAToB(glm::vec3 a, glm::vec3 b)
+glm::vec3 MathHelp::projAToB(const glm::vec3& a, const glm::vec3& b)
 {
-	GLfloat m = glm::length(b);
+	const GLfloat m = glm::length(b);
 	return b * (glm::dot(a, b) / (m * m));
 }
 
 // Triangles
-GLfloat MathHelp::triangleAreaSigned(glm::vec2 p1, glm::vec2 p2, glm::vec2 p3) { return cross(p2 - p1, p3 - p1) * 0.5f; }
-GLfloat MathHelp::triangleArea(glm::vec2 p1, glm::vec2 p2, glm::vec2 p3) { return abs(triangleAreaSigned(p1, p2, p3)); }
+GLfloat MathHelp::triangleAreaSigned(const glm::vec2& p1, const glm::vec2& p2, const glm::vec2& p3) { return cross(p2 - p1, p3 - p1) * 0.5f; }
+GLfloat MathHelp::triangleArea(const glm::vec2& p1, const glm::vec2& p2, const glm::vec2& p3) { return abs(triangleAreaSigned(p1, p2, p3)); }
 // Computes intersection point on triangle and then bary centric coordinate, returns vec4(u, v, w, intersectionDepth)
 // If failed, returns vec4(0, 0, 0, max)
 //glm::vec4 MathHelp::triangleRayIntersection(geom::Ray ray, glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, glm::vec3 n)
@@ -129,36 +129,36 @@ GLfloat MathHelp::triangleArea(glm::vec2 p1, glm::vec2 p2, glm::vec2 p3) { retur
 //}
 
 // Computes bary centric coordinates of point p in triangle a,b,c
-glm::vec3 MathHelp::baryCentric(glm::vec2 p, glm::vec2 a, glm::vec2 b, glm::vec2 c)
+glm::vec3 MathHelp::baryCentric(const glm::vec2& p, const glm::vec2& a, const glm::vec2& b, const glm::vec2& c)
 {
-	glm::vec2 v0 = b - a;
-	glm::vec2 v1 = c - a;
-	glm::vec2 v2 = p - a;
-	GLfloat d00 = glm::dot(v0, v0);
-	GLfloat d01 = glm::dot(v0, v1);
-	GLfloat d11 = glm::dot(v1, v1);
-	GLfloat d20 = glm::dot(v2, v0);
-	GLfloat d21 = glm::dot(v2, v1);
-	GLfloat denom = d00 * d11 - d01 * d01;
-	GLfloat v = (d11 * d20 - d01 * d21) / denom;
-	GLfloat w = (d00 * d21 - d01 * d20) / denom;
-	GLfloat u = 1.0f - v - w;
+	const glm::vec2 v0 = b - a;
+	const glm::vec2 v1 = c - a;
+	const glm::vec2 v2 = p - a;
+	const GLfloat d00 = glm::dot(v0, v0);
+	const GLfloat d01 = glm::dot(v0, v1);
+	const GLfloat d11 = glm::dot(v1, v1);
+	const GLfloat d20 = glm::dot(v2, v0);
+	const GLfloat d21 = glm::dot(v2, v1);
+	const GLfloat invDenom = 1.0f / (d00 * d11 - d01 * d01);
+	const GLfloat v = (d11 * d20 - d01 * d21) * invDenom;
+	const GLfloat w = (d00 * d21 - d01 * d20) * invDenom;
+	const GLfloat u = 1.0f - v - w;
 	return glm::vec3(u, v, w);
 }
-glm::vec3 MathHelp::baryCentric(glm::vec3 p, glm::vec3 a, glm::vec3 b, glm::vec3 c)
+glm::vec3 MathHelp::baryCentric(const glm::vec3& p, const glm::vec3& a, const glm::vec3& b, const glm::vec3& c)
 {
 	glm::vec3 v0 = b - a;
 	glm::vec3 v1 = c - a;
 	glm::vec3 v2 = p - a;
-	GLfloat d00 = glm::dot(v0, v0);
-	GLfloat d01 = glm::dot(v0, v1);
-	GLfloat d11 = glm::dot(v1, v1);
-	GLfloat d20 = glm::dot(v2, v0);
-	GLfloat d21 = glm::dot(v2, v1);
-	GLfloat denom = d00 * d11 - d01 * d01;
-	GLfloat v = (d11 * d20 - d01 * d21) / denom;
-	GLfloat w = (d00 * d21 - d01 * d20) / denom;
-	GLfloat u = 1.0f - v - w;
+	const GLfloat d00 = glm::dot(v0, v0);
+	const GLfloat d01 = glm::dot(v0, v1);
+	const GLfloat d11 = glm::dot(v1, v1);
+	const GLfloat d20 = glm::dot(v2, v0);
+	const GLfloat d21 = glm::dot(v2, v1);
+	const GLfloat invDenom = 1.0f / (d00 * d11 - d01 * d01);
+	const GLfloat v = (d11 * d20 - d01 * d21) * invDenom;
+	const GLfloat w = (d00 * d21 - d01 * d20) * invDenom;
+	const GLfloat u = 1.0f - v - w;
 	return glm::vec3(u, v, w);
 }
 
@@ -171,7 +171,7 @@ glm::vec3 MathHelp::baryCentric(glm::vec3 p, glm::vec3 a, glm::vec3 b, glm::vec3
 //	return geom::Ray(start, glm::normalize(start));
 //}
 
-glm::vec3 MathHelp::lerp(std::vector<std::tuple<GLfloat, glm::vec3>> colorFunc, GLfloat val)
+glm::vec3 MathHelp::lerp(const std::vector<std::tuple<GLfloat, glm::vec3>>& colorFunc, GLfloat val)
 {
 	// Assumes colorFunc ordered by val1 in the tuple
 	// If no colors specified return black
@@ -189,18 +189,18 @@ glm::vec3 MathHelp::lerp(std::vector<std::tuple<GLfloat, glm::vec3>> colorFunc, 
 
 	for (UINT i = 0; i < colorFunc.size() - 1; i++)
 	{
-		GLfloat val1 = std::get<0>(colorFunc[i]);
-		GLfloat val2 = std::get<0>(colorFunc[i + 1]);
+		const GLfloat val1 = std::get<0>(colorFunc[i]);
+		const GLfloat val2 = std::get<0>(colorFunc[i + 1]);
 		if (val >= val1 && val < val2)
 			return lerp(std::get<1>(colorFunc[i]), std::get<1>(colorFunc[i + 1]), (val - val1) / (val2 - val1));
 	}
 	return glm::vec3(0.0f, 0.0f, 0.0f);
 }
 
-glm::vec3 MathHelp::catmullRom(glm::vec3 p0, glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, GLfloat t)
+glm::vec3 MathHelp::catmullRom(const glm::vec3& p0, const glm::vec3& p1, const glm::vec3& p2, const glm::vec3& p3, GLfloat t)
 {
-	GLfloat t2 = t * t;
-	GLfloat t3 = t2 * t;
+	const GLfloat t2 = t * t;
+	const GLfloat t3 = t2 * t;
 	return 0.5f * ((2.0f * p1) + (-p0 + p2) * t +
 		(2.0f * p0 - 5.0f * p1 + 4.0f * p2 - p3) * t2 +
 		(-p0 + 3.0f * p1 - 3.0f * p2 + p3) * t3);
@@ -278,7 +278,7 @@ geom2d::Rect MathHelp::get2dBounds(glm::vec2* vertices, UINT count)
 		if (vertices[i].y < minY)
 			minY = vertices[i].y;
 	}
-	glm::vec2 size = glm::vec2(maxX - minX, maxY - minY);
+	const glm::vec2& size = glm::vec2(maxX - minX, maxY - minY);
 	return geom2d::Rect(glm::vec2(minX, minY) + size * 0.5f, size);
 }
 geom3d::Rect MathHelp::get3dBounds(glm::vec3* vertices, UINT count)
@@ -305,7 +305,7 @@ geom3d::Rect MathHelp::get3dBounds(glm::vec3* vertices, UINT count)
 		if (vertices[i].z < minZ)
 			minZ = vertices[i].z;
 	}
-	glm::vec3 size = glm::vec3(maxX - minX, maxY - minY, maxZ - minZ);
+	const glm::vec3& size = glm::vec3(maxX - minX, maxY - minY, maxZ - minZ);
 	return geom3d::Rect(glm::vec3(minX, minY, minZ) + size * 0.5f, size);
 }
 
@@ -317,7 +317,7 @@ void MathHelp::setData(glm::mat2x2& m, GLfloat m00, GLfloat m01, GLfloat m10, GL
 	m[1][1] = m11;
 }
 
-void MathHelp::svd(glm::mat2x2 source, glm::mat2x2* u, glm::vec2* s, glm::mat2x2* v)
+void MathHelp::svd(const glm::mat2x2& source, glm::mat2x2* u, glm::vec2* s, glm::mat2x2* v)
 {
 	Eigen::Matrix2f m;
 	m(0, 0) = source[0][0];
@@ -342,12 +342,12 @@ void MathHelp::svd(glm::mat2x2 source, glm::mat2x2* u, glm::vec2* s, glm::mat2x2
 	(*v)[1][1] = tmp1(1, 1);
 }
 
-void MathHelp::pd(glm::mat2x2 source, glm::mat2* r)
+void MathHelp::pd(const glm::mat2x2& source, glm::mat2* r)
 {
 	glm::mat2 u, v;
 	glm::vec2 s;
 	svd(source, &u, &s, &v);
-	glm::mat2 tmp = u * glm::transpose(v);
+	const glm::mat2 tmp = u * glm::transpose(v);
 
 	(*r)[0][0] = tmp[0][0];
 	(*r)[1][0] = tmp[1][0];
@@ -361,17 +361,17 @@ bool MathHelp::intersectTrianglePoint(const glm::vec2& a, const glm::vec2& b, co
 	GLfloat u = 0.0f;
 	GLfloat v = 0.0f;
 	GLfloat w = 0.0f;
-	glm::vec2 v0 = b - a;
-	glm::vec2 v1 = c - a;
-	glm::vec2 v2 = pt - a;
-	GLfloat d00 = glm::dot(v0, v0);
-	GLfloat d01 = glm::dot(v0, v1);
-	GLfloat d11 = glm::dot(v1, v1);
-	GLfloat d20 = glm::dot(v2, v0);
-	GLfloat d21 = glm::dot(v2, v1);
-	GLfloat denom = d00 * d11 - d01 * d01;
-	v = (d11 * d20 - d01 * d21) / denom;
-	w = (d00 * d21 - d01 * d20) / denom;
+	const glm::vec2 v0 = b - a;
+	const glm::vec2 v1 = c - a;
+	const glm::vec2 v2 = pt - a;
+	const GLfloat d00 = glm::dot(v0, v0);
+	const GLfloat d01 = glm::dot(v0, v1);
+	const GLfloat d11 = glm::dot(v1, v1);
+	const GLfloat d20 = glm::dot(v2, v0);
+	const GLfloat d21 = glm::dot(v2, v1);
+	const GLfloat invDenom = 1.0f / (d00 * d11 - d01 * d01);
+	v = (d11 * d20 - d01 * d21) * invDenom;
+	w = (d00 * d21 - d01 * d20) * invDenom;
 	u = 1.0f - v - w;
 	if (u < 0.0f || u > 1.0f)
 		return false;
@@ -379,7 +379,7 @@ bool MathHelp::intersectTrianglePoint(const glm::vec2& a, const glm::vec2& b, co
 		return false;
 	return true;
 }
-bool MathHelp::intersectSegmentSegment(
+bool MathHelp::intersectSegmentSegment
 	const glm::vec2& a1, const glm::vec2& a2,
 	const glm::vec2& b1, const glm::vec2& b2,
 	glm::vec2& intersectionPt)

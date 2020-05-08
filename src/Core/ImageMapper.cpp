@@ -9,6 +9,9 @@
 ImageMapper::ImageMapper()
 {
 	planeSource = std::make_shared<PlaneSource>();
+	planeSource->setOrigin(0.0f, 0.0f, 0.0f);
+	planeSource->setP1(1.0f, 0.0f, 0.0f);
+	planeSource->setP2(0.0f, 1.0f, 0.0f);
 	planeSource->update();
 
 	objectProperties->clear();
@@ -49,8 +52,10 @@ void ImageMapper::update()
 
 	// Transform the plane the image goes on to be in the XY plane and be the size of the image
 	double* bounds = imageData->getBounds();
+	double* origin = imageData->getOrigin();
 	const glm::vec2 size = glm::vec2(static_cast<GLfloat>(bounds[1] - bounds[0]), static_cast<GLfloat>(bounds[3] - bounds[2]));
-	imageSizeMat = MathHelp::translate(0.5f, 0.5f, 0.0f) * MathHelp::scale(size.x, size.y, 1.0f) * MathHelp::rotateX(HALFPI);
+	imageSizeMat = MathHelp::scale(size.x, size.y, 1.0f) *
+		MathHelp::translate(static_cast<float>(origin[0]), static_cast<float>(origin[1]), static_cast<float>(origin[2])) /** MathHelp::rotateX(HALFPI)*/;
 
 	// If the vao and vbo haven't been created yet
 	if (vaoID == -1)

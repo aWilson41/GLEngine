@@ -2,6 +2,8 @@
 #include "ImageData.h"
 #include "LodePNG/lodepng.h"
 
+PNGReader::PNGReader() { imageData = std::make_shared<ImageData>(); }
+
 void PNGReader::update()
 {
 	if (fileName == "")
@@ -32,15 +34,18 @@ void PNGReader::update()
 	double spacing[] = { 1.0, 1.0, 1.0 };
 	double origin[] = { 0.0, 0.0, 0.0 };
 	imageData->allocate2DImage(dim, spacing, origin, 3, ScalarType::UCHAR_T);
-	unsigned char* data = static_cast<unsigned char*>(imageData->getData());
+	unsigned char* data = imageData->getData<unsigned char>();
 
 	// Copy the loaded image
-	for (UINT i = 0; i < width * height; i++)
+	for (UINT y1 = 0, y2 = height - 1; y1 < height; y1++, y2--)
 	{
-		UINT index1 = i * 3;
-		UINT index2 = i * 4;
-		data[index1] = image[index2];         // r
-		data[index1 + 1] = image[index2 + 1]; // g
-		data[index1 + 2] = image[index2 + 2]; // b
+		for (UINT x = 0; x < width; x++)
+		{
+			UINT i1 = (x + y1 * width) * 3;
+			UINT i2 = (x + y2 * width) * 4;
+			data[i1] = image[i2]; // r
+			data[i1 + 1] = image[i2 + 1]; // g
+			data[i1 + 2] = image[i2 + 2]; // b
+		}
 	}
 }

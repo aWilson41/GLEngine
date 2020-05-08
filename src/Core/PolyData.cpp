@@ -110,14 +110,13 @@ void PolyData::clear()
 	cells = CellData();
 }
 
-void PolyData::copyFrom(std::shared_ptr<PolyData> sourcePolyData)
+void PolyData::copy(std::shared_ptr<PolyData> sourcePolyData)
 {
 	clear();
 	cells.indexCount = sourcePolyData->cells.indexCount;
 	cells.cellCount = sourcePolyData->cells.cellCount;
 	cells.type = sourcePolyData->cells.type;
 	points.count = sourcePolyData->points.count;
-
 	if (cells.indexCount != 0)
 	{
 		if (cells.data != nullptr)

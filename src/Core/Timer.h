@@ -21,6 +21,13 @@ public:
 		return std::chrono::duration<double, Period>(end - begin).count();
 	}
 	void reset() { start(); }
+	void printElapsed()
+	{
+		if (std::is_same<Period, Time::S>::value)
+			printf("%fs\n", getElapsed());
+		else if (std::is_same<Period, Time::MS>::value)
+			printf("%fms\n", getElapsed());
+	}
 
 protected:
 	std::chrono::time_point<std::chrono::steady_clock> begin;

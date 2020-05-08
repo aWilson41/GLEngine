@@ -11,12 +11,12 @@ void AppendPolyData::update()
 
 	if (inputData1 == nullptr)
 	{
-		outputData->copyFrom(inputData2);
+		outputData->copy(inputData2);
 		return;
 	}
 	if (inputData2 == nullptr)
 	{
-		outputData->copyFrom(inputData1);
+		outputData->copy(inputData1);
 		return;
 	}
 

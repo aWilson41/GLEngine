@@ -7,6 +7,9 @@ class ImageData;
 class PNGReader
 {
 public:
+	PNGReader();
+
+public:
 	std::shared_ptr<ImageData> getOutput() const { return imageData; }
 	std::string getFileName() const { return fileName; }
 

@@ -11,6 +11,12 @@
 
 using UINT = unsigned int;
 
+namespace glm
+{
+using uivec2 = glm::vec<2, glm::uint32>;
+using uivec3 = glm::vec<3, glm::uint32>;
+}
+
 // Conversion of Math double of PI to float PI
 const GLfloat PI = glm::pi<GLfloat>();
 const GLfloat HALFPI = PI * 0.5f;
@@ -40,38 +46,38 @@ public:
 	static glm::mat4 rotateY(GLfloat radians);
 	static glm::mat4 rotateZ(GLfloat radians);
 	static glm::mat4 translate(GLfloat x, GLfloat y, GLfloat z);
-	static glm::mat4 translate(glm::vec3 t);
+	static glm::mat4 translate(const glm::vec3& t);
 	static glm::mat4 scale(GLfloat s);
 	static glm::mat4 scale(GLfloat x, GLfloat y, GLfloat z);
-	static glm::mat4 scale(glm::vec3 s);
+	static glm::mat4 scale(const glm::vec3& s);
 
-	static glm::mat3 MathHelp::skewSym(glm::vec3 a);
-	static glm::mat3 rotateVectorToVector(glm::vec3 a, glm::vec3 b);
+	static glm::mat3 MathHelp::skewSym(const glm::vec3& a);
+	static glm::mat3 rotateVectorToVector(const glm::vec3& a, const glm::vec3& b);
 
-	static glm::quat Vec4ToQuat(glm::vec4 q);
-	static glm::vec4 QuatToVec4(glm::quat q);
+	static glm::quat Vec4ToQuat(const glm::vec4& q);
+	static glm::vec4 QuatToVec4(const glm::quat& q);
 
 	// We define the 2d cross product as the length of the 3d
-	static GLfloat cross(glm::vec2 a, glm::vec2 b);
+	static GLfloat cross(const glm::vec2& a, const glm::vec2& b);
 
 	// Makes a unit vector from radians
 	static glm::vec2 slope(GLfloat theta);
 
 	// Compute 2d perp vector (-y, x)
-	static glm::vec2 perp(glm::vec2 a);
+	static glm::vec2 perp(const glm::vec2& a);
 
-	static GLfloat sqrDistance(glm::vec3 a, glm::vec3 b);
+	static GLfloat sqrDistance(const glm::vec3& a, const glm::vec3& b);
 
-	static glm::vec2 projAToB(glm::vec2 a, glm::vec2 b);
-	static glm::vec3 projAToB(glm::vec3 a, glm::vec3 b);
+	static glm::vec2 projAToB(const glm::vec2& a, const glm::vec2& b);
+	static glm::vec3 projAToB(const glm::vec3& a, const glm::vec3& b);
 
 	// Triangles
-	static GLfloat triangleAreaSigned(glm::vec2 p1, glm::vec2 p2, glm::vec2 p3);
-	static GLfloat triangleArea(glm::vec2 p1, glm::vec2 p2, glm::vec2 p3);
+	static GLfloat triangleAreaSigned(const glm::vec2& p1, const glm::vec2& p2, const glm::vec2& p3);
+	static GLfloat triangleArea(const glm::vec2& p1, const glm::vec2& p2, const glm::vec2& p3);
 
 	// Computes bary centric coordinates of point p in triangle a,b,c
-	static glm::vec3 baryCentric(glm::vec2 p, glm::vec2 a, glm::vec2 b, glm::vec2 c);
-	static glm::vec3 baryCentric(glm::vec3 p, glm::vec3 a, glm::vec3 b, glm::vec3 c);
+	static glm::vec3 baryCentric(const glm::vec2& p, const glm::vec2& a, const glm::vec2& b, const glm::vec2& c);
+	static glm::vec3 baryCentric(const glm::vec3& p, const glm::vec3& a, const glm::vec3& b, const glm::vec3& c);
 
 	// Computes ray given screen position, width, height, fov, and near plane
 	//static geom::Ray computeEyeRay(glm::vec2 pos, UINT width, UINT height, GLfloat fov, GLfloat nearZ);
@@ -84,10 +90,10 @@ public:
 	template<typename T>
 	static T lerp(T start, T end, GLfloat t) { return start + t * (end - start); }
 	// Samples a function of vectors with linear interpolation
-	static glm::vec3 lerp(std::vector<std::tuple<GLfloat, glm::vec3>> func, GLfloat val);
+	static glm::vec3 lerp(const std::vector<std::tuple<GLfloat, glm::vec3>>& func, GLfloat val);
 
 	// Catmull rom interpolation between p1 and p2 given t [0, 1]
-	static glm::vec3 catmullRom(glm::vec3 p0, glm::vec3 p1, glm::vec3 p2, glm::vec3 p3, GLfloat t);
+	static glm::vec3 catmullRom(const glm::vec3& p0, const glm::vec3& p1, const glm::vec3& p2, const glm::vec3& p3, GLfloat t);
 
 	// Calculates the centroid of a polygon
 	static glm::vec2 calcCentroid(glm::vec2* vertices, UINT count);
@@ -97,10 +103,10 @@ public:
 	static geom2d::Rect get2dBounds(glm::vec2* vertices, UINT count);
 	static geom3d::Rect get3dBounds(glm::vec3* vertices, UINT count);
 
-	static GLfloat trace(glm::mat2 mat) { return mat[0][0] + mat[1][1]; }
+	static GLfloat trace(const glm::mat2& mat) { return mat[0][0] + mat[1][1]; }
 
 	template<glm::length_t C, glm::length_t R, typename T, glm::qualifier Q>
-	static glm::mat<C, R, T, Q> outer(glm::vec<C, T, Q> a, glm::vec<R, T, Q> b)
+	static glm::mat<C, R, T, Q> outer(const glm::vec<C, T, Q>& a, const glm::vec<R, T, Q>& b)
 	{
 		glm::mat<C, R, T, Q> results;
 		for (glm::length_t r = 0; r < R; r++)
@@ -114,7 +120,7 @@ public:
 	}
 
 	template<glm::length_t C, glm::length_t R, typename T, glm::qualifier Q>
-	static void printMat(glm::mat<C, R, T, Q> m)
+	static void printMat(const glm::mat<C, R, T, Q>& m)
 	{
 		for (glm::length_t r = 0; r < R; r++)
 		{
@@ -127,24 +133,13 @@ public:
 	}
 
 	template<glm::length_t N, typename T, glm::qualifier Q>
-	static void printVec(glm::vec<N, T, Q> vec)
+	static void printVec(const glm::vec<N, T, Q>& vec)
 	{
 		for (glm::length_t n = 0; n < N - 1; n++)
 		{
 			printf("%f, ", vec[n]);
 		}
 		printf("%f\n", vec[N - 1]);
-	}
-
-	template<typename T>
-	static T clamp(T val, T min, T max)
-	{
-		if (val > max)
-			return max;
-		else if (val < min)
-			return min;
-		else
-			return val;
 	}
 
 	static void setData(glm::mat2x2& m, GLfloat m00, GLfloat m01, GLfloat m10, GLfloat m11);
@@ -167,7 +162,7 @@ public:
 	}
 	// Only for square matrices
 	template<glm::length_t C, glm::length_t R, typename T, glm::qualifier Q>
-	static glm::mat<C, R, T, Q> diagSum(glm::mat<C, R, T, Q> m, glm::vec<C, T, Q> vec)
+	static glm::mat<C, R, T, Q> diagSum(const glm::mat<C, R, T, Q>& m, const glm::vec<C, T, Q>& vec)
 	{
 		glm::mat<C, R, T, Q> results = m;
 		for (glm::length_t i = 0; i < C; i++)
@@ -178,7 +173,7 @@ public:
 	}
 	// Only for square matrices
 	template<glm::length_t C, glm::length_t R, typename T, glm::qualifier Q>
-	static glm::mat<C, R, T, Q> diagSum(glm::mat<C, R, T, Q> m, GLfloat a)
+	static glm::mat<C, R, T, Q> diagSum(const glm::mat<C, R, T, Q>& m, GLfloat a)
 	{
 		glm::mat<C, R, T, Q> results = m;
 		for (glm::length_t i = 0; i < C; i++)

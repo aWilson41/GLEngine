@@ -68,24 +68,26 @@ void MarchingSquares::update()
 	tbb::atomic<UINT> vertexCount(0);
 	parallelFor(dim[1] - 1, [&](const UINT& y)
 		{
-			UINT index = y * (dim[0] - 1);
+			UINT i = y * (dim[0] - 1);
+			UINT j = y * dim[0];
 			UINT innerVertexCount = 0;
-			for (UINT x = 0; x < dim[0] - 1; x++, index++)
+			for (UINT x = 0; x < dim[0] - 1; x++, i++, j++)
 			{
-				const float botRightVal = imgPtr[calcIndex(x + 1, y, dim)];
-				const float topRightVal = imgPtr[calcIndex(x + 1, y + 1, dim)];
-				const float topLeftVal = imgPtr[calcIndex(x, y + 1, dim)];
-				const float botLeftVal = imgPtr[calcIndex(x, y, dim)];
+				const float vals[4] = {
+					imgPtr[j + 1],
+					imgPtr[j + dim[0] + 1],
+					imgPtr[j + dim[0]],
+					imgPtr[j] };
 
-				if (botLeftVal > isoValue)
-					caseTypes[index] |= BOT_LEFT;
-				if (botRightVal > isoValue)
-					caseTypes[index] |= BOT_RIGHT;
-				if (topRightVal > isoValue)
-					caseTypes[index] |= TOP_RIGHT;
-				if (topLeftVal > isoValue)
-					caseTypes[index] |= TOP_LEFT;
-				innerVertexCount += caseToNumVertices[caseTypes[index]];
+				if (vals[3] > isoValue)
+					caseTypes[i] |= BOT_LEFT;
+				if (vals[0] > isoValue)
+					caseTypes[i] |= BOT_RIGHT;
+				if (vals[1] > isoValue)
+					caseTypes[i] |= TOP_RIGHT;
+				if (vals[2] > isoValue)
+					caseTypes[i] |= TOP_LEFT;
+				innerVertexCount += caseToNumVertices[caseTypes[i]];
 			}
 			if (innerVertexCount != 0)
 				vertexCount += innerVertexCount;
@@ -98,25 +100,26 @@ void MarchingSquares::update()
 	const glm::vec2 spacing = glm::vec2(inputData->getSpacing()[0], inputData->getSpacing()[1]);
 	const glm::vec2 origin = glm::vec2(inputData->getOrigin()[0], inputData->getOrigin()[1]);
 	const glm::vec2 size = glm::vec2(dim[0], dim[1]) * spacing;
-	const glm::vec2 shift = origin + spacing * 0.5f - size * 0.5f;
+	const glm::vec2 shift = origin + spacing * 0.5f;
 	UINT polyVertexIter = 0;
-	UINT groupIter = 0;
-	for (UINT y = 0; y < dim[1] - 1; y++)
+	UINT i = 0;
+	UINT j = 0;
+	for (UINT y = 0; y < dim[1] - 1; y++, j++)
 	{
-		for (UINT x = 0; x < dim[0] - 1; x++, groupIter++)
+		for (UINT x = 0; x < dim[0] - 1; x++, i++, j++)
 		{
 			const float vals[4] = {
-				imgPtr[calcIndex(x + 1, y, dim)],
-				imgPtr[calcIndex(x + 1, y + 1, dim)],
-				imgPtr[calcIndex(x, y + 1, dim)],
-				imgPtr[calcIndex(x, y, dim)] };
+				imgPtr[j + 1],
+				imgPtr[j + dim[0] + 1],
+				imgPtr[j + dim[0]],
+				imgPtr[j] };
 			const glm::vec2 pts[4] = {
 				glm::vec2(x + 1, y) * spacing + shift,
 				glm::vec2(x + 1, y + 1) * spacing + shift,
 				glm::vec2(x, y + 1) * spacing + shift,
 				glm::vec2(x, y) * spacing + shift
 			};
-			MC_CASE caseType = caseTypes[groupIter];
+			MC_CASE caseType = caseTypes[i];
 
 			// Only bottom left
 			if (caseType == 1)

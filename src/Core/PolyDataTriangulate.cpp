@@ -28,12 +28,12 @@ static void earClipTriangulate(std::shared_ptr<PolyData> inputData, std::shared_
 		const UINT i1 = indices[i % numPts];
 		const UINT i2 = indices[(i + 1) % numPts];
 		const UINT i3 = indices[(i + 2) % numPts];
-		const glm::vec3 p1 = inputVertexData[i1];
-		const glm::vec3 pt = inputVertexData[i2];
-		const glm::vec3 p3 = inputVertexData[i3];
+		const glm::vec3& p1 = inputVertexData[i1];
+		const glm::vec3& pt = inputVertexData[i2];
+		const glm::vec3& p3 = inputVertexData[i3];
 
 		// Figure out if p2 is concave
-		GLfloat signedArea = MathHelp::triangleAreaSigned(p1, pt, p3);
+		const GLfloat signedArea = MathHelp::triangleAreaSigned(p1, pt, p3);
 		if (signedArea > 0.0f)
 		{
 			// If it contains a point from the existing polygon then bail on this pt

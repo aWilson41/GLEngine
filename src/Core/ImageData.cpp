@@ -1,11 +1,5 @@
 #include "ImageData.h"
 
-ImageData::~ImageData()
-{
-	if (data != nullptr)
-		delete[] data;
-}
-
 void ImageData::allocate2DImage(UINT* dim, double* spacing, double* origin, UINT numComps, ScalarType type)
 {
 	this->dim[0] = dim[0];
@@ -24,7 +18,7 @@ void ImageData::allocate2DImage(UINT* dim, double* spacing, double* origin, UINT
 	const UINT count = dim[0] * dim[1] * numComps;
 	switch (type)
 	{
-		TemplateMacro(allocateData(static_cast<TT>(0), count));
+		TemplateMacro(allocateData<TT>(count));
 	default:
 		break;
 	}
@@ -47,7 +41,7 @@ void ImageData::allocate3DImage(UINT* dim, double* spacing, double* origin, UINT
 	const UINT count = dim[0] * dim[1] * dim[2] * numComps;
 	switch (type)
 	{
-		TemplateMacro(allocateData(static_cast<TT>(0), count));
+		TemplateMacro(allocateData<TT>(count));
 	default:
 		break;
 	}
@@ -63,4 +57,13 @@ void ImageData::updateBounds()
 	bounds[5] = origin[2] + dim[2] * spacing[2];
 }
 
-void ImageData::clear() { delete[] data; }
+void ImageData::clear()
+{
+	const UINT count = dim[0] * dim[1] * dim[2] * numComps;
+	switch (type)
+	{
+		TemplateMacro(clearData<TT>(count));
+	default:
+		break;
+	}
+}

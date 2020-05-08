@@ -6,8 +6,8 @@
 class ImageData
 {
 public:
-	ImageData() { }
-	~ImageData();
+	ImageData() = default;
+	~ImageData() { clear(); }
 
 public:
 	UINT* getDimensions() { return dim; }
@@ -55,7 +55,22 @@ public:
 
 protected:
 	template<typename T>
-	void allocateData(T, const UINT count) { data = new T[count]; }
+	void clearData(const UINT count)
+	{
+		if (data != nullptr)
+		{
+			delete[] data;
+			data = nullptr;
+		}
+	}
+
+	template<typename T>
+	void allocateData(const UINT count)
+	{
+		if (data != nullptr)
+			delete[] data;
+		data = new T[count];
+	}
 
 protected:
 	void* data = nullptr;
