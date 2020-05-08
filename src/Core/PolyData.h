@@ -49,7 +49,7 @@ public:
 	// Deletes all point and cell data
 	void clear();
 	// Doesn't copy attributes
-	void copy(std::shared_ptr<PolyData> sourcePolyData);
+	void copyFrom(std::shared_ptr<PolyData> sourcePolyData);
 
 protected:
 	PointData points;

@@ -1,6 +1,6 @@
 #@PACKAGE_INIT@
 
-set(CMAKE_MODULE_PATH "@GLEngine_CMAKE_DIR@")
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "@GLEngine_CMAKE_DIR@")
 set(Innerbuild_DIR "@Innerbuild_DIR@")
 
 include(CMakeFindDependencyMacro)

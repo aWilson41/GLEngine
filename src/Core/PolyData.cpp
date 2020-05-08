@@ -110,13 +110,26 @@ void PolyData::clear()
 	cells = CellData();
 }
 
-void PolyData::copy(std::shared_ptr<PolyData> sourcePolyData)
+void PolyData::copyFrom(std::shared_ptr<PolyData> sourcePolyData)
 {
 	clear();
 	cells.indexCount = sourcePolyData->cells.indexCount;
 	cells.cellCount = sourcePolyData->cells.cellCount;
 	cells.type = sourcePolyData->cells.type;
-	std::copy_n(sourcePolyData->cells.data, cells.indexCount, cells.data);
 	points.count = sourcePolyData->points.count;
-	std::copy_n(sourcePolyData->points.data, points.count * 3, points.data);
+
+	if (cells.indexCount != 0)
+	{
+		if (cells.data != nullptr)
+			delete[] cells.data;
+		cells.data = new UINT[cells.indexCount];
+		std::copy_n(sourcePolyData->cells.data, cells.indexCount, cells.data);
+	}
+	if (points.count != 0)
+	{
+		if (points.data != nullptr)
+			delete[] points.data;
+		points.data = new float[points.count * 3];
+		std::copy_n(sourcePolyData->points.data, points.count * 3, points.data);
+	}
 }

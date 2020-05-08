@@ -50,7 +50,7 @@ void ImageMapper::update()
 	// Transform the plane the image goes on to be in the XY plane and be the size of the image
 	double* bounds = imageData->getBounds();
 	const glm::vec2 size = glm::vec2(static_cast<GLfloat>(bounds[1] - bounds[0]), static_cast<GLfloat>(bounds[3] - bounds[2]));
-	imageSizeMat = MathHelp::scale(size.x, size.y, 1.0f) * MathHelp::rotateX(HALFPI);
+	imageSizeMat = MathHelp::translate(0.5f, 0.5f, 0.0f) * MathHelp::scale(size.x, size.y, 1.0f) * MathHelp::rotateX(HALFPI);
 
 	// If the vao and vbo haven't been created yet
 	if (vaoID == -1)

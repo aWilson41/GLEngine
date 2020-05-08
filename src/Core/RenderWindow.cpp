@@ -27,7 +27,8 @@ RenderWindow::RenderWindow(std::string windowName, int x, int y, int width, int 
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_DEPTH_CLAMP);
 	glEnable(GL_MULTISAMPLE);
-	glEnable(GL_CULL_FACE);
+	//glEnable(GL_CULL_FACE);
+	glDisable(GL_CULL_FACE);
 	glDepthFunc(GL_LESS); // The default
 	glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
 }
@@ -86,9 +87,9 @@ int RenderWindow::getFramebufferHeight() const
 	return height;
 }
 
-void RenderWindow::setRenderer(Renderer* ren)
+void RenderWindow::setRenderer(std::shared_ptr<Renderer> ren)
 {
-	RenderWindow::ren = ren;
+	this->ren = ren;
 	// Get the default framebuffers new size
 	int frameBufferWidth, frameBufferHeight;
 	glfwGetFramebufferSize(window, &frameBufferWidth, &frameBufferHeight);
@@ -102,7 +103,7 @@ void RenderWindow::setWindowName(std::string name)
 }
 void RenderWindow::setInteractor(std::shared_ptr<WindowInteractor> interactor)
 {
-	RenderWindow::interactor = interactor;
+	this->interactor = interactor;
 	// Initialize interactor with mouse position
 	double posX, posY;
 	glfwGetCursorPos(window, &posX, &posY);

@@ -25,7 +25,7 @@ public:
 	int getFramebufferWidth() const;
 	int getFramebufferHeight() const;
 
-	void setRenderer(Renderer* ren);
+	void setRenderer(std::shared_ptr<Renderer> ren);
 	void setWindowName(std::string name);
 	void setInteractor(std::shared_ptr<WindowInteractor> interactor);
 
@@ -52,7 +52,7 @@ protected:
 
 protected:
 	GLFWwindow* window = nullptr;
-	Renderer* ren = nullptr;
+	std::shared_ptr<Renderer> ren = nullptr;
 	std::shared_ptr<WindowInteractor> interactor = nullptr;
 	std::string windowName = "GLFW Window";
 };

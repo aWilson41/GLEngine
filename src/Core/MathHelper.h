@@ -149,12 +149,10 @@ public:
 
 	static void setData(glm::mat2x2& m, GLfloat m00, GLfloat m01, GLfloat m10, GLfloat m11);
 
-#ifdef USEEIGEN
 	// Singular value decomp source = u * (s * Identity) * v^T
 	static void svd(glm::mat2x2 source, glm::mat2x2* u, glm::vec2* s, glm::mat2x2* v);
 	// Polar decomp but only returns the rotational
 	static void pd(glm::mat2x2 source, glm::mat2x2* r);
-#endif
 
 	// Only for square matrices
 	template<glm::length_t C, glm::length_t R, typename T, glm::qualifier Q>
@@ -191,9 +189,12 @@ public:
 	}
 
 	// Triangle vs Point
-	static bool intersectTrianglePoint(glm::vec2 a, glm::vec2 b, glm::vec2 c, glm::vec2 pt);
-	// Segment vs Segment
-	static bool intersectSegmentSegment(glm::vec2 a1, glm::vec2 a2, glm::vec2 b1, glm::vec2 b2, glm::vec2& intersectionPt, bool inclusive = true);
+	static bool intersectTrianglePoint(const glm::vec2& a, const glm::vec2& b, const glm::vec2& c, const glm::vec2& pt);
+	// Segment vs Segment (inclusive)
+	static bool intersectSegmentSegment(
+		const glm::vec2& a1, const glm::vec2& a2,
+		const glm::vec2& b1, const glm::vec2& b2,
+		glm::vec2& intersectionPt);
 	// Segment vs Line (give two points on line)
 	//static bool intersectSegmentLine(glm::vec2 a1, glm::vec2 a2, glm::vec2 b1, glm::vec2 b2, glm::vec2& intersectionPt, bool inclusive = true);
 };

@@ -1,9 +1,7 @@
 #include "MathHelper.h"
 #include "Geometry2D.h"
 #include "Geometry3D.h"
-#ifdef USEEIGEN
 #include <Eigen/SVD>
-#endif
 #include <tuple>
 
 glm::mat4 MathHelp::rotateX(GLfloat radians)
@@ -319,7 +317,6 @@ void MathHelp::setData(glm::mat2x2& m, GLfloat m00, GLfloat m01, GLfloat m10, GL
 	m[1][1] = m11;
 }
 
-#ifdef USEEIGEN
 void MathHelp::svd(glm::mat2x2 source, glm::mat2x2* u, glm::vec2* s, glm::mat2x2* v)
 {
 	Eigen::Matrix2f m;
@@ -357,9 +354,8 @@ void MathHelp::pd(glm::mat2x2 source, glm::mat2* r)
 	(*r)[0][1] = tmp[0][1];
 	(*r)[1][1] = tmp[1][1];
 }
-#endif
 
-bool MathHelp::intersectTrianglePoint(glm::vec2 a, glm::vec2 b, glm::vec2 c, glm::vec2 pt)
+bool MathHelp::intersectTrianglePoint(const glm::vec2& a, const glm::vec2& b, const glm::vec2& c, const glm::vec2& pt)
 {
 	// Compute barycentric coordinates
 	GLfloat u = 0.0f;
@@ -383,40 +379,30 @@ bool MathHelp::intersectTrianglePoint(glm::vec2 a, glm::vec2 b, glm::vec2 c, glm
 		return false;
 	return true;
 }
-bool MathHelp::intersectSegmentSegment(glm::vec2 a1, glm::vec2 a2, glm::vec2 b1, glm::vec2 b2, glm::vec2& intersectionPt, bool inclusive)
+bool MathHelp::intersectSegmentSegment(
+	const glm::vec2& a1, const glm::vec2& a2,
+	const glm::vec2& b1, const glm::vec2& b2,
+	glm::vec2& intersectionPt)
 {
-	glm::vec2 a = a2 - a1;
-	glm::vec2 b = b1 - b2;
-	glm::vec2 d = b1 - a1;
+	const glm::vec2 a = a2 - a1;
+	const glm::vec2 b = b1 - b2;
+	const glm::vec2 d = b1 - a1;
 
-	GLfloat det = MathHelp::cross(a, b);
+	const GLfloat det = MathHelp::cross(a, b);
 	// Then lines are congruent (never intersect, may be colinear though)
 	if (det == 0.0f)
 		return false;
 
-	GLfloat r = MathHelp::cross(d, b) / det;
-	GLfloat s = MathHelp::cross(a, d) / det;
+	const GLfloat invDet = 1.0f / det;
+	const GLfloat r = MathHelp::cross(d, b) * invDet;
+	const GLfloat s = MathHelp::cross(a, d) * invDet;
 
-	if (inclusive)
+	if (r >= 0.0f && r <= 1.0f && s >= 0.0f && s <= 1.0f)
 	{
-		if (r >= 0.0f && r <= 1.0f && s >= 0.0f && s <= 1.0f)
-		{
-			glm::vec2 pos = a * r;
-			intersectionPt = a1 + pos;
-			return true;
-		}
-		else
-			return false;
+		const glm::vec2 pos = a * r;
+		intersectionPt = a1 + pos;
+		return true;
 	}
 	else
-	{
-		if (r > 0.0f && r < 1.0f && s > 0.0f && s < 1.0f)
-		{
-			glm::vec2 pos = a * r;
-			intersectionPt = a1 + pos;
-			return true;
-		}
-		else
-			return false;
-	}
+		return false;
 }
