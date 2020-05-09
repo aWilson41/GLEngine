@@ -15,9 +15,9 @@ public:
 
 	void init(glm::vec2 pos, int windowWidth, int windowHeight) override;
 
-	void mouseMove(glm::vec2 pos) override;
-	void mouseScroll(GLfloat ds) override;
-	void windowResize(int width, int height) override;
+	virtual void mouseMove(glm::vec2 pos) override;
+	virtual void mouseScroll(GLfloat ds) override;
+	virtual void windowResize(int width, int height) override;
 
 protected:
 	std::shared_ptr<TrackballCamera> cam = nullptr;

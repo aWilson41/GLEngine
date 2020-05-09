@@ -364,12 +364,12 @@ bool MathHelp::intersectTrianglePoint(const glm::vec2& a, const glm::vec2& b, co
 	const glm::vec2 v0 = b - a;
 	const glm::vec2 v1 = c - a;
 	const glm::vec2 v2 = pt - a;
-	const GLfloat d00 = glm::dot(v0, v0);
-	const GLfloat d01 = glm::dot(v0, v1);
-	const GLfloat d11 = glm::dot(v1, v1);
-	const GLfloat d20 = glm::dot(v2, v0);
-	const GLfloat d21 = glm::dot(v2, v1);
-	const GLfloat invDenom = 1.0f / (d00 * d11 - d01 * d01);
+	const float d00 = glm::dot(v0, v0);
+	const float d01 = glm::dot(v0, v1);
+	const float d11 = glm::dot(v1, v1);
+	const float d20 = glm::dot(v2, v0);
+	const float d21 = glm::dot(v2, v1);
+	const float invDenom = 1.0f / (d00 * d11 - d01 * d01);
 	v = (d11 * d20 - d01 * d21) * invDenom;
 	w = (d00 * d21 - d01 * d20) * invDenom;
 	u = 1.0f - v - w;
@@ -377,6 +377,20 @@ bool MathHelp::intersectTrianglePoint(const glm::vec2& a, const glm::vec2& b, co
 		return false;
 	if (v < 0.0f || u + v > 1.0f)
 		return false;
+	return true;
+}
+bool MathHelp::intersectPlaneRay(const glm::vec3& n, const glm::vec3& planePt, const geom3d::Ray& ray, glm::vec3& intersectionPt)
+{
+	float denom = glm::dot(n, ray.dir);
+	// Line is tangent, or nearly
+	if (glm::abs(denom) < 0.000001f)
+		return false;
+
+	GLfloat t = glm::dot(planePt - ray.pos, n) / denom;
+	// Starts outside of plane
+	if (t < 0.0f)
+		return false;
+	intersectionPt = ray.pos + t * ray.dir;
 	return true;
 }
 bool MathHelp::intersectSegmentSegment(
@@ -393,9 +407,9 @@ bool MathHelp::intersectSegmentSegment(
 	if (det == 0.0f)
 		return false;
 
-	const GLfloat invDet = 1.0f / det;
-	const GLfloat r = MathHelp::cross(d, b) * invDet;
-	const GLfloat s = MathHelp::cross(a, d) * invDet;
+	const float invDet = 1.0f / det;
+	const float r = MathHelp::cross(d, b) * invDet;
+	const float s = MathHelp::cross(a, d) * invDet;
 
 	if (r >= 0.0f && r <= 1.0f && s >= 0.0f && s <= 1.0f)
 	{

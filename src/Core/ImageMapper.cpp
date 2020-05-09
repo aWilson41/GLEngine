@@ -71,6 +71,7 @@ void ImageMapper::update()
 
 		glGenBuffers(1, &iboID);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, iboID);
+		// Quad, 6 indices
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * 6, NULL, GL_DYNAMIC_DRAW);
 
 		updateBuffer();
@@ -80,7 +81,8 @@ void ImageMapper::update()
 		updateBuffer();
 
 	// Setup the texture if it hasn't already been created
-	const GLuint* dim = imageData->getDimensions();
+	UINT* dim = imageData->getDimensions();
+	
 	if (texID == -1)
 	{
 		glGenTextures(1, &texID);
@@ -92,9 +94,15 @@ void ImageMapper::update()
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
 		if (numComps == 1)
+		{
+			glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, dim[0], dim[1], 0, GL_RED, GL_UNSIGNED_BYTE, imageData->getData());
+		}
 		else if (numComps == 3)
+		{
+			glPixelStorei(GL_UNPACK_ALIGNMENT, 3);
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, dim[0], dim[1], 0, GL_RGB, GL_UNSIGNED_BYTE, imageData->getData());
+		}
 
 		glUniform1i(glGetUniformLocation(0, "tex"), 0);
 	}
@@ -102,10 +110,19 @@ void ImageMapper::update()
 	else
 	{
 		glBindTexture(GL_TEXTURE_2D, texID);
+
 		if (numComps == 1)
+		{
+			glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 			glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, dim[0], dim[1], GL_RED, GL_UNSIGNED_BYTE, imageData->getData());
+		}
 		else if (numComps == 3)
+		{
+			glPixelStorei(GL_UNPACK_ALIGNMENT, 3);
 			glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, dim[0], dim[1], GL_RGB, GL_UNSIGNED_BYTE, imageData->getData());
+		}
+
+		glUniform1i(glGetUniformLocation(0, "tex"), 0);
 	}
 }
 void ImageMapper::updateBuffer()

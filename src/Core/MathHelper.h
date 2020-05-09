@@ -36,6 +36,7 @@ namespace geom2d
 }
 namespace geom3d
 {
+	class Ray;
 	class Rect;
 }
 
@@ -185,6 +186,8 @@ public:
 
 	// Triangle vs Point
 	static bool intersectTrianglePoint(const glm::vec2& a, const glm::vec2& b, const glm::vec2& c, const glm::vec2& pt);
+	// Plane vs Point
+	static bool intersectPlaneRay(const glm::vec3& n, const glm::vec3& planePt, const geom3d::Ray& ray, glm::vec3& intersectionPt);
 	// Segment vs Segment (inclusive)
 	static bool intersectSegmentSegment(
 		const glm::vec2& a1, const glm::vec2& a2,
