@@ -34,10 +34,21 @@ public:
 	// Computes area of a 2d XY polygon, temporary
 	GLfloat getArea() const;
 	glm::vec3 getCenter() const;
+	float* getBounds() { return bounds; }
 
 	void setPoints(PointData points) { this->points = points; }
 	void setCells(CellData cells) { this->cells = cells; }
 	void setCellType(CellType type);
+	void setBounds(float left, float right, float bottom, float top, float back, float front)
+	{
+		this->bounds[0] = left;
+		this->bounds[1] = right;
+		this->bounds[2] = bottom;
+		this->bounds[3] = top;
+		this->bounds[4] = back;
+		this->bounds[5] = front;
+	}
+	void setBounds(float* bounds) { setBounds(bounds[0], bounds[1], bounds[2], bounds[3], bounds[4], bounds[5]); }
 
 public:
 	// Allocate vertices and sets type
@@ -50,8 +61,11 @@ public:
 	void clear();
 	// Doesn't copy attributes
 	void copy(std::shared_ptr<PolyData> sourcePolyData);
+	// Recompute the bounds
+	void updateBounds();
 
 protected:
 	PointData points;
 	CellData cells;
+	float bounds[6] = { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f };
 };

@@ -4,25 +4,19 @@
 #include <memory>
 
 class AbstractMapper;
-class DeferredRenderer;
+class Camera;
 class Framebuffer;
 class FramebufferAttachment;
+class Scene;
 
-enum class RenderPassType
-{
-	FULL_PASS,
-	QUAD_PASS,
-	CUSTOM_PASS
-};
-
+// A render pass takes 0-N input framebuffers and produces
+// 0-N output framebuffers by doing rendering
 class RenderPass
 {
+protected:
+	RenderPass(const std::string& name);
+
 public:
-	RenderPass(std::string name, RenderPassType type) : 
-		passName(name), passType(type)
-	{
-		framebuffer = std::make_shared<Framebuffer>();
-	}
 	virtual ~RenderPass() = default;
 
 public:
@@ -30,9 +24,13 @@ public:
 	UINT getNumberOfOutputPorts() const { return static_cast<UINT>(outputs.size()); }
 	std::shared_ptr<FramebufferAttachment> getInput(size_t portNum) const { return inputs[portNum]; };
 	std::shared_ptr<FramebufferAttachment> getOutput(size_t portNum) const { return outputs[portNum]; }
-	std::string getPassName() const { return passName; }
+	const std::string& getPassName() const { return passName; }
 	std::shared_ptr<Framebuffer> getFramebuffer() const { return framebuffer; }
+	std::shared_ptr<Camera> getCamera() const { return cam; }
+	std::shared_ptr<Scene> getScene() const { return scene; }
 
+	void setScene(std::shared_ptr<Scene> scene) { this->scene = scene; }
+	void setCamera(std::shared_ptr<Camera> cam) { this->cam = cam; }
 	void setInput(size_t portNum, std::shared_ptr<FramebufferAttachment> fboIn) { inputs[portNum] = fboIn; }
 	void setNumberOfInputPorts(UINT numberOfPorts)
 	{
@@ -40,17 +38,15 @@ public:
 		std::fill_n(inputs.data(), inputs.size(), nullptr);
 	}
 	void setNumberOfOutputPorts(UINT numberOfPorts);
-	// If on the pass will iterate over
-	void setPassType(const RenderPassType passType) { this->passType = passType; }
-
-	void addMapper(std::shared_ptr<AbstractMapper> mapper) { mappers.push_back(mapper); }
 
 	void resizeFramebuffer(UINT width, UINT height);
-	void render(DeferredRenderer* ren);
+	virtual void render(const std::string& shaderGroup) = 0;
 
 protected:
-	virtual void clear(DeferredRenderer* ren);
-	virtual void bindInputs(DeferredRenderer* ren) { };
+	// Calls glClear, one may override to clear to more specific values
+	virtual void clear();
+	virtual void bindInputs() { };
+	// Resize is also responsible for defining the fbo attachments
 	virtual void resize(UINT width, UINT height) = 0;
 
 protected:
@@ -58,9 +54,8 @@ protected:
 	std::shared_ptr<Framebuffer> framebuffer = nullptr;
 	std::vector<std::shared_ptr<FramebufferAttachment>> inputs;
 	std::vector<std::shared_ptr<FramebufferAttachment>> outputs;
+	std::shared_ptr<Scene> scene = nullptr;
+	std::shared_ptr<Camera> cam = nullptr;
 	UINT fboWidth = 100;
 	UINT fboHeight = 100;
-
-	RenderPassType passType = RenderPassType::FULL_PASS;
-	std::vector<std::shared_ptr<AbstractMapper>> mappers;
 };

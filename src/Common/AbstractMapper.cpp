@@ -1,5 +1,4 @@
 #include "AbstractMapper.h"
-#include "Renderer.h"
 
 std::string ShaderProperties::getFullPropertyString()
 {
@@ -41,5 +40,3 @@ unsigned long long ShaderProperties::update()
 	keyLong = key.to_ullong();
 	return keyLong;
 }
-
-bool AbstractMapper::use(Renderer* ren) { return useShader(ren->getShaderGroup()); }

@@ -1,5 +1,5 @@
 #pragma once
-#include "RenderPass.h"
+#include "FramePass.h"
 
 class ShaderProgram;
 
@@ -7,7 +7,7 @@ class ShaderProgram;
 // From "Image Enhancement by Unsharp Masking the Depth Buffer; Luft, et al. Siggraph 2006
 // We essentially blur the depth buffer and subtract it from the original depth buffer
 // Then blend into the color.
-class UnsharpMaskingPass : public RenderPass
+class UnsharpMaskingPass : public FramePass
 {
 public:
 	UnsharpMaskingPass();
@@ -16,15 +16,21 @@ public:
 	void setColorInput(std::shared_ptr<FramebufferAttachment> colorInput) { setInput(0, colorInput); }
 	void setDepthInput(std::shared_ptr<FramebufferAttachment> depthInput) { setInput(1, depthInput); }
 	// Enhances the effect
-	void setDarknessFactor(GLfloat darknessFactor) { UnsharpMaskingPass::darknessFactor = darknessFactor; }
+	void setDarknessFactor(float darknessFactor) { this->darknessFactor = darknessFactor; }
 	// Area of effect (radius for the gaussian blur)
-	void setRadius(GLuint radius) { UnsharpMaskingPass::radius = radius; }
+	void setRadius(UINT radius) { this->radius = radius; }
 	// If specified will use a ratio of the buffer diagonal instead
-	void setRadiusRatio(GLfloat radiusRatio) { UnsharpMaskingPass::radiusRatio = radiusRatio; }
+	void setRadiusRatio(float radiusRatio) { this->radiusRatio = radiusRatio; }
 	// Gaussian blur sigma, if not specified will use sigma = blurRadius
-	void setSigma(GLfloat sigma) { UnsharpMaskingPass::sigma = sigma; }
+	void setSigma(float sigma) { this->sigma = sigma; }
 
-	void bindInputs(DeferredRenderer* ren) override;
+	float getDarknessFactor() const { return darknessFactor; }
+	UINT getRadius() const { return radius; }
+	float getRadiusRatio() const { return radiusRatio; }
+	float getSigma() const { return sigma; }
+
+protected:
+	void bindInputs() override;
 	void resize(UINT width, UINT height) override;
 
 private:

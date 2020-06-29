@@ -1,10 +1,13 @@
 #pragma once
-#include "RenderPass.h"
+#include "CameraPass.h"
 
-class GeometryPass : public RenderPass
+// Defines a RenderPass that renders the scene using a camera to a gbuffer of
+// position, normal, diffuse, ambient, and depth
+class GeometryPass : public CameraPass
 {
 public:
-	GeometryPass();
+	GeometryPass(const std::string& passName = "Geometry_Pass");
+	virtual ~GeometryPass() override = default;
 
 public:
 	std::shared_ptr<FramebufferAttachment> getPosOutput() const { return getOutput(0); }
@@ -13,6 +16,7 @@ public:
 	std::shared_ptr<FramebufferAttachment> getAmbientOutput() const { return getOutput(3); }
 	std::shared_ptr<FramebufferAttachment> getDepthOutput() const { return getOutput(4); }
 
-	void clear(DeferredRenderer* ren) override;
+protected:
+	void clear() override;
 	void resize(UINT width, UINT height) override;
 };

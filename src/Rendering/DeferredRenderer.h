@@ -5,24 +5,21 @@ class Framebuffer;
 class RenderPass;
 
 // Implements a deferred rendering process
-// Specifically, it implements render passes which manage various framebuffers
+// While Renderer defines a single camera pass
+// The DeferredRenderer defines a vector passes that can be modified
+// or the default GeometryPass -> LightingPass will be used
 class DeferredRenderer : public Renderer
 {
 public:
 	DeferredRenderer(bool useDefaults = true);
-	virtual ~DeferredRenderer() override;
+	virtual ~DeferredRenderer() override = default;
 
 public:
 	void setColorFbo(std::shared_ptr<Framebuffer> fbo) { colorOutputFbo = fbo; }
 	void setDepthFbo(std::shared_ptr<Framebuffer> fbo) { depthOutputFbo = fbo; }
 	void setStencilFbo(std::shared_ptr<Framebuffer> fbo) { stencilOutputFbo = fbo; }
 
-	void render() override;
-
-	// Does a full pass over every mapper
-	void fullPass();
-	// Does a pass with a quad
-	void quadPass();
+	virtual void render() override;
 
 	void addPass(std::shared_ptr<RenderPass> pass)
 	{
@@ -33,8 +30,7 @@ public:
 
 	void resizeFramebuffer(UINT width, UINT height) override;
 
-private:
-	GLuint emptyVaoID = -1;
+protected:
 	bool useDefaults = true;
 	std::vector<std::shared_ptr<RenderPass>> renderPasses;
 	bool PassesModified = false;

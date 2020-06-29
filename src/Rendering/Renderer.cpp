@@ -1,13 +1,20 @@
 #include "Renderer.h"
 #include "AbstractMapper.h"
+#include "CameraPass.h"
 #include "Framebuffer.h"
 #include "ImageData.h"
+#include "MapperComponent.h"
+#include "Scene.h"
+#include "SceneObject.h"
 #include "Shaders.h"
 
-Renderer::Renderer()
+Renderer::Renderer() :
+	camPass(std::make_shared<CameraPass>()),
+	scene(std::make_shared<Scene>())
 {
 	shaderGroup = "DirectRasterize";
-	framebuffer = colorOutputFbo = depthOutputFbo = stencilOutputFbo = std::make_shared<Framebuffer>();
+	colorOutputFbo = depthOutputFbo = stencilOutputFbo = camPass->getFramebuffer();
+	camPass->setScene(scene);
 }
 
 std::shared_ptr<ImageData> Renderer::getOutputImage() const
@@ -45,53 +52,37 @@ std::shared_ptr<Framebuffer> Renderer::getColorOutput() const { return colorOutp
 std::shared_ptr<Framebuffer> Renderer::getDepthOutput() const { return depthOutputFbo; }
 std::shared_ptr<Framebuffer> Renderer::getStencilOutput() const { return stencilOutputFbo; }
 
-glm::ivec2 Renderer::getFramebufferDim() const { return framebuffer->getDim(); }
-
-bool Renderer::containsRenderItem(std::shared_ptr<AbstractMapper> mapper) const
-{
-	for (UINT i = 0; i < mappers.size(); i++)
-	{
-		if (mappers[i] == mapper)
-			return true;
-	}
-	return false;
-}
+glm::ivec2 Renderer::getFramebufferDim() const { return colorOutputFbo->getDim(); }
 
 void Renderer::setClearColor(float r, float g, float b, float a)
 {
 	clearColor = glm::vec4(r, g, b, a);
 	glClearColor(r, g, b, a);
 }
+void Renderer::setDepthTest(bool depthTestOn) { camPass->setUseDepth(depthTestOn); }
 
 void Renderer::render()
 {
 	if (cam == nullptr)
-		printf("Renderer missing camera.\n");
-
-	framebuffer->bind();
-	framebuffer->clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-
-	for (UINT i = 0; i < mappers.size(); i++)
 	{
-		std::shared_ptr<AbstractMapper> mapper = mappers[i];
-		if (mapper->use(this))
-			mapper->draw(this);
+		printf("Renderer missing camera.\n");
+		return;
 	}
 
-	framebuffer->unbind();
+	if (scene == nullptr)
+	{
+		printf("Renderer missing a scene.\n");
+		return;
+	}
+
+	camPass->setScene(scene);
+	camPass->setCamera(cam);
+	camPass->render(shaderGroup);
 }
 
 void Renderer::resizeFramebuffer(UINT width, UINT height)
 {
-	if (!framebuffer->isGenerated())
-	{
-		if (!framebuffer->generate(width, height,
-			{ { Framebuffer::AttachmentType::COLOR, FramebufferAttachment::Format::RGBA, nullptr },
-			{ Framebuffer::AttachmentType::DEPTH, FramebufferAttachment::Format::DEPTH32F, nullptr } }))
-			printf("Warning, framebuffer incomplete");
-	}
-	else
-		framebuffer->resize(width, height);
+	camPass->resizeFramebuffer(width, height);
 
 	glViewport(0, 0, width, height);
 }

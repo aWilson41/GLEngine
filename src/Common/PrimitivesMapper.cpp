@@ -5,6 +5,7 @@
 #include "PhongMaterial.h"
 #include "PolyData.h"
 #include "Renderer.h"
+#include "Scene.h"
 #include "Shaders.h"
 #include "SphereSource.h"
 #include "stdNew.h"
@@ -203,7 +204,7 @@ void PrimitivesMapper::updateBuffer()
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
-bool PrimitivesMapper::useShader(std::string shaderGroup)
+bool PrimitivesMapper::use(const std::string& shaderGroup)
 {
 	if (inputPolyData == nullptr || vaoID == -1)
 		return false;
@@ -218,7 +219,7 @@ bool PrimitivesMapper::useShader(std::string shaderGroup)
 	return true;
 }
 
-void PrimitivesMapper::draw(Renderer* ren) const
+void PrimitivesMapper::draw(std::shared_ptr<Camera> cam, std::shared_ptr<Scene> scene) const
 {
 	if (inputPolyData == nullptr || vaoID == -1)
 		return;
@@ -229,13 +230,13 @@ void PrimitivesMapper::draw(Renderer* ren) const
 
 	// Set object uniforms
 	const GLuint shaderProgramId = shaderProgram->getProgramID();
-	glm::mat4 viewProj = ren->getCamera()->proj * ren->getCamera()->view;
+	glm::mat4 viewProj = cam->proj * cam->view;
 	const GLuint mvpMatrixLocation = glGetUniformLocation(shaderProgramId, "mvp_matrix");
 	if (mvpMatrixLocation != -1)
 		glUniformMatrix4fv(mvpMatrixLocation, 1, GL_FALSE, &viewProj[0][0]);
 	const GLuint viewDirLocation = glGetUniformLocation(shaderProgramId, "viewDir");
 	if (viewDirLocation != -1)
-		glUniform3fv(viewDirLocation, 1, &ren->getCamera()->getLookDir()[0]);
+		glUniform3fv(viewDirLocation, 1, &cam->getLookDir()[0]);
 	const GLuint lineThicknessLocation = glGetUniformLocation(shaderProgramId, "lineThickness");
 	if (lineThicknessLocation != -1)
 		glUniform1f(lineThicknessLocation, lineWidth);
@@ -260,7 +261,7 @@ void PrimitivesMapper::draw(Renderer* ren) const
 	// Set the scene uniforms
 	const GLuint lightDirLocation = glGetUniformLocation(shaderProgramId, "lightDir");
 	if (lightDirLocation != -1)
-		glUniform3fv(lightDirLocation, 1, &ren->getLightDir()[0]);
+		glUniform3fv(lightDirLocation, 1, &scene->getLightDir()[0]);
 
 	glBindVertexArray(vaoID);
 	glDrawElements(GL_LINES, inputPolyData->getIndexCount(), GL_UNSIGNED_INT, (void*)(uintptr_t)0);

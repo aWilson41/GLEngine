@@ -3,7 +3,7 @@
 #include "Camera.h"
 #include "PhongMaterial.h"
 #include "PolyData.h"
-#include "Renderer.h"
+#include "Scene.h"
 #include "ShaderProgram.h"
 #include "Shaders.h"
 
@@ -152,7 +152,7 @@ void SkyMapper::update()
 	params[9] *= 0.6f + 0.45f * sunAmount;
 }
 
-bool SkyMapper::useShader(std::string shaderGroup)
+bool SkyMapper::use(const std::string& shaderGroup)
 {
 	if (objectProperties->isOutOfDate())
 	{
@@ -167,7 +167,7 @@ bool SkyMapper::useShader(std::string shaderGroup)
 	return true;
 }
 
-void SkyMapper::draw(Renderer* ren) const
+void SkyMapper::draw(std::shared_ptr<Camera> cam, std::shared_ptr<Scene> scene) const
 {
 	if (vaoID == -1)
 		return;
@@ -187,16 +187,16 @@ void SkyMapper::draw(Renderer* ren) const
 	glm::quat orientation;
 	glm::vec3 translate, scale, skew;
 	glm::vec4 persp;
-	glm::decompose(ren->getCamera()->view, scale, orientation, translate, skew, persp);
+	glm::decompose(cam->view, scale, orientation, translate, skew, persp);
 
-	const glm::mat4 viewProj = ren->getCamera()->proj * glm::toMat4(orientation);
+	const glm::mat4 viewProj = cam->proj * glm::toMat4(orientation);
 	const GLuint projMatrixLocation = glGetUniformLocation(shaderProgramId, "projMatrix");
 	if (projMatrixLocation != -1)
 		glUniformMatrix4fv(projMatrixLocation, 1, GL_FALSE, &viewProj[0][0]);
 	// Set the scene uniforms
 	const GLuint lightDirLocation = glGetUniformLocation(shaderProgramId, "lightDir");
 	if (lightDirLocation != -1)
-		glUniform3fv(lightDirLocation, 1, &ren->getLightDir()[0]);
+		glUniform3fv(lightDirLocation, 1, &scene->getLightDir()[0]);
 	const GLuint paramsLocation = glGetUniformLocation(shaderProgramId, "params");
 	if (paramsLocation != -1)
 		glUniform3fv(paramsLocation, 10, &params[0][0]);

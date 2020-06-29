@@ -1,4 +1,5 @@
 #include "PolyData.h"
+#include "Geometry3D.h"
 
 GLfloat PolyData::getArea() const
 {
@@ -131,4 +132,16 @@ void PolyData::copy(std::shared_ptr<PolyData> sourcePolyData)
 		points.data = new float[points.count * 3];
 		std::copy_n(sourcePolyData->points.data, points.count * 3, points.data);
 	}
+}
+
+void PolyData::updateBounds()
+{
+	geom3d::Rect rectBounds = MathHelp::get3dBounds(reinterpret_cast<glm::vec3*>(points.data), points.count);
+	float* boundsc = rectBounds.bounds();
+	bounds[0] = boundsc[0];
+	bounds[1] = boundsc[1];
+	bounds[2] = boundsc[2];
+	bounds[3] = boundsc[3];
+	bounds[4] = boundsc[4];
+	bounds[5] = boundsc[5];
 }

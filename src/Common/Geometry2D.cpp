@@ -58,6 +58,10 @@ namespace geom2d
 	glm::vec2 Rect::bottomRight() const { return pos + extent; }
 	glm::vec2 Rect::bottomLeft() const { return pos + glm::vec2(-extent.x, extent.y); }
 	glm::vec2 Rect::size() const { return extent * 2.0f; }
+	float Rect::left() const { return pos.x - extent.x; }
+	float Rect::right() const { return pos.x + extent.x; }
+	float Rect::top() const { return pos.y + extent.y; }
+	float Rect::bottom() const { return pos.y - extent.y; }
 
 	// Ray
 	Ray::Ray(glm::vec3 start, glm::vec3 direction)

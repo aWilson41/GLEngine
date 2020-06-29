@@ -3,16 +3,16 @@
 #include "Framebuffer.h"
 #include "GeometryPass.h"
 #include "LightingPass.h"
+#include "MapperComponent.h"
 #include "PlaneSource.h"
 #include "PolyDataMapper.h"
+#include "Scene.h"
+#include "SceneObject.h"
 #include "Shaders.h"
 
 DeferredRenderer::DeferredRenderer(bool useDefaults)
 {
 	shaderGroup = "DeferredRasterize";
-
-	// A non-zero vao must be bound even if not using vertex attributes for quad pass
-	glGenVertexArrays(1, &emptyVaoID);
 
 	this->useDefaults = useDefaults;
 	if (useDefaults)
@@ -33,15 +33,19 @@ DeferredRenderer::DeferredRenderer(bool useDefaults)
 	}
 }
 
-DeferredRenderer::~DeferredRenderer()
-{
-	glDeleteVertexArrays(1, &emptyVaoID);
-}
-
 void DeferredRenderer::render()
 {
 	if (cam == nullptr)
+	{
 		printf("Renderer missing camera.\n");
+		return;
+	}
+
+	if (scene == nullptr)
+	{
+		printf("Renderer missing a scene.\n");
+		return;
+	}
 
 	const glm::ivec2 fboDim = getFramebufferDim();
 	if (PassesModified)
@@ -50,27 +54,10 @@ void DeferredRenderer::render()
 	// Execute all the render passses
 	for (UINT i = 0; i < renderPasses.size(); i++)
 	{
-		renderPasses[i]->render(this);
+		renderPasses[i]->setScene(scene);
+		renderPasses[i]->setCamera(cam);
+		renderPasses[i]->render(shaderGroup);
 	}
-}
-
-void DeferredRenderer::fullPass()
-{
-	// Render the geometry
-	for (UINT i = 0; i < mappers.size(); i++)
-	{
-		std::shared_ptr<AbstractMapper> mapper = mappers[i];
-		mapper->use(this);
-		mapper->draw(this);
-	}
-}
-
-void DeferredRenderer::quadPass()
-{
-	// Then render the quad
-	glBindVertexArray(emptyVaoID);
-	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-	glBindVertexArray(0);
 }
 
 void DeferredRenderer::removePass(std::shared_ptr<RenderPass> pass)

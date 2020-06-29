@@ -33,7 +33,7 @@ void ImageData::allocate3DImage(UINT* dim, double* spacing, double* origin, UINT
 	this->spacing[2] = spacing[2];
 	this->origin[0] = origin[0];
 	this->origin[1] = origin[1];
-	this->origin[2] = 0.0;
+	this->origin[2] = origin[2];
 	this->numComps = numComps;
 	this->type = type;
 	updateBounds();

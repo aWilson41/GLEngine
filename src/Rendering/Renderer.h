@@ -4,13 +4,14 @@
 #include <string>
 #include <memory>
 
-class AbstractMapper;
+class Scene;
 class Camera;
+class CameraPass;
 class Framebuffer;
-class FramebufferAttachment;
 class ImageData;
 
-// Does the rendering, mostly just managing the scene (there is no scene object)
+// A renderer defines how to render a scene, this generally involves defining
+// passes to utlimately produce a output color fbo
 class Renderer
 {
 public:
@@ -18,45 +19,40 @@ public:
 	virtual ~Renderer() = default;
 
 public:
-	std::shared_ptr<AbstractMapper> getRenderItem(UINT i) const { return mappers[i]; }
+	std::shared_ptr<Scene> getScene() const { return scene; }
 	std::shared_ptr<Camera> getCamera() const { return cam; }
+	// Somewhat expensive copy operation, meant for outputting to files, or given to filters
 	std::shared_ptr<ImageData> getOutputImage() const;
 	std::shared_ptr<Framebuffer> getColorOutput() const;
 	std::shared_ptr<Framebuffer> getDepthOutput() const;
 	std::shared_ptr<Framebuffer> getStencilOutput() const;
 	glm::vec4 getClearColor() const { return clearColor; }
-	glm::vec3 getLightDir() const { return lightDir; }
 	glm::ivec2 getFramebufferDim() const;
 	std::string getShaderGroup() const { return shaderGroup; };
-	// Returns if renderer contains the mapper
-	bool containsRenderItem(std::shared_ptr<AbstractMapper> mapper) const;
 
-	void setCamera(std::shared_ptr<Camera> cam) { Renderer::cam = cam; }
+	void setScene(std::shared_ptr<Scene> scene) { this->scene = scene; }
+	void setCamera(std::shared_ptr<Camera> cam) { this->cam = cam; }
 	void setClearColor(float r, float g, float b, float a);
-	void setLightDir(const glm::vec3& lightDir) { this->lightDir = lightDir; }
-	void setShaderGroup(std::string shaderGroup) { Renderer::shaderGroup = shaderGroup; }
-	void setDepthTest(bool depthTestOn) { depthTestOn ? glEnable(GL_DEPTH_TEST) : glDisable(GL_DEPTH_TEST); }
-	// Might split mapper into actor where this becomes addActor
-	void addRenderItem(std::shared_ptr<AbstractMapper> mapper) { mappers.push_back(mapper); }
+	void setShaderGroup(std::string shaderGroup) { this->shaderGroup = shaderGroup; }
+	void setDepthTest(bool depthTestOn);
 
 	virtual void render();
 	// The direct renderer uses the default framebuffer
 	virtual void resizeFramebuffer(UINT width, UINT height);
 
 protected:
-	// Default fbo of this renderer
-	std::shared_ptr<Framebuffer> framebuffer;
+	// The scene to be rendered
+	std::shared_ptr<Scene> scene = nullptr;
 
-	// Will eventually hold actors instead of mappers
-	std::vector<std::shared_ptr<AbstractMapper>> mappers;
+	// The camera to render with
 	std::shared_ptr<Camera> cam = nullptr;
 
-	PropertyMap<32> sceneProperties;
+	// Defines the set of shaders to use
 	std::string shaderGroup = "";
-	glm::vec3 lightDir = glm::vec3(0.0f, 1.0f, 1.0f); // Temporarily only supporting a single directional light
 
 	glm::vec4 clearColor = glm::vec4(0.5f, 0.3f, 0.25f, 1.0f);
 
+	std::shared_ptr<CameraPass> camPass = nullptr;
 	std::shared_ptr<Framebuffer> colorOutputFbo = nullptr;
 	std::shared_ptr<Framebuffer> depthOutputFbo = nullptr;
 	std::shared_ptr<Framebuffer> stencilOutputFbo = nullptr;

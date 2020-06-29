@@ -11,7 +11,7 @@ public:
 	virtual ~TrackballCameraInteractor() override = default;
 
 public:
-	void setCamera(std::shared_ptr<TrackballCamera> cam) { TrackballCameraInteractor::cam = cam; }
+	void setCamera(std::shared_ptr<TrackballCamera> cam) { this->cam = cam; }
 
 	void init(glm::vec2 pos, int windowWidth, int windowHeight) override;
 

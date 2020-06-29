@@ -13,7 +13,7 @@ class PolyDataMapper : public AbstractMapper
 {
 public:
 	PolyDataMapper();
-	virtual ~PolyDataMapper();
+	virtual ~PolyDataMapper() override;
 
 public:
 	std::shared_ptr<PolyData> getInput() const { return polyData; }
@@ -37,8 +37,8 @@ public:
 
 	void update() override;
 
-	bool useShader(std::string shaderGroup) override;
-	void draw(Renderer* ren) const override;
+	virtual bool use(const std::string& shaderGroup) override;
+	void draw(std::shared_ptr<Camera> cam, std::shared_ptr<Scene> scene) const override;
 
 protected:
 	// Updates internal info about the data to be processed

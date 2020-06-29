@@ -2,8 +2,10 @@
 #include "MathHelper.h"
 #include "PropertyMap.h"
 #include <string>
+#include <memory>
 
-class Renderer;
+class Camera;
+class Scene;
 class ShaderProgram;
 
 // Contains property maps that form a bitset combined of render, scene, and object properties
@@ -43,9 +45,9 @@ public:
 	virtual void update() = 0;
 
 	// Binds the shader program
-	bool use(Renderer* ren);
-	virtual bool useShader(std::string shaderGroup) = 0;
-	virtual void draw(Renderer* ren) const = 0;
+	virtual bool use(const std::string& shaderGroup) = 0;
+	// Draws the geometry
+	virtual void draw(std::shared_ptr<Camera> cam, std::shared_ptr<Scene> scene) const = 0;
 
 protected:
 	PropertyMap<32>* objectProperties = nullptr;

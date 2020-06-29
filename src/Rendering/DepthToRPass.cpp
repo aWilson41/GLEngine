@@ -1,12 +1,12 @@
 #include "DepthToRPass.h"
 #include "Camera.h"
-#include "DeferredRenderer.h"
 #include "Framebuffer.h"
 #include "Shaders.h"
 
-DepthToRPass::DepthToRPass() : RenderPass("Depth_To_R_Pass", RenderPassType::QUAD_PASS)
+DepthToRPass::DepthToRPass() :
+	FramePass("DepthToR_Pass")
 {
-	shader = Shaders::loadVSFSShader("Depth_To_R_Pass",
+	shader = Shaders::loadVSFSShader(passName,
 		"Shaders/DeferredRasterize/Passes/quadVS.glsl",
 		"Shaders/DeferredRasterize/Passes/depthToRPass.glsl");
 	GLuint shaderID = shader->getProgramID();
@@ -19,17 +19,23 @@ DepthToRPass::DepthToRPass() : RenderPass("Depth_To_R_Pass", RenderPassType::QUA
 	setNumberOfOutputPorts(1);
 }
 
-void DepthToRPass::bindInputs(DeferredRenderer* ren)
+void DepthToRPass::bindInputs()
 {
+	if (cam == nullptr)
+	{
+		printf("DepthToRPass missing camera\n");
+		return;
+	}
+
 	GLuint shaderID = shader->getProgramID();
 	glUseProgram(shaderID);
 
 	GLuint nearZLocation = glGetUniformLocation(shaderID, "nearZ");
 	if (nearZLocation != -1)
-		glUniform1f(nearZLocation, ren->getCamera()->getNearZ());
+		glUniform1f(nearZLocation, cam->getNearZ());
 	GLuint farZLocation = glGetUniformLocation(shaderID, "farZ");
 	if (farZLocation != -1)
-		glUniform1f(farZLocation, ren->getCamera()->getFarZ());
+		glUniform1f(farZLocation, cam->getFarZ());
 
 	inputs[0]->bind(0);
 }

@@ -1,9 +1,9 @@
 #pragma once
-#include "RenderPass.h"
+#include "FramePass.h"
 
 class ShaderProgram;
 
-class BilateralRgbBlurPass : public RenderPass
+class BilateralRgbBlurPass : public FramePass
 {
 public:
 	BilateralRgbBlurPass();
@@ -17,7 +17,8 @@ public:
 	void SetSigmaI(const GLfloat sigma) { sigmaI = sigma; }
 	void SetSigmaS(const GLfloat sigma) { sigmaS = sigma; }
 
-	void bindInputs(DeferredRenderer* ren) override;
+protected:
+	void bindInputs() override;
 	void resize(UINT width, UINT height) override;
 
 private:

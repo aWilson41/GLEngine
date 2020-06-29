@@ -52,6 +52,10 @@ namespace geom2d
 		glm::vec2 bottomRight() const;
 		glm::vec2 bottomLeft() const;
 		glm::vec2 size() const;
+		float left() const;
+		float right() const;
+		float top() const;
+		float bottom() const;
 
 	public:
 		glm::vec2 extent = glm::vec2(0.0f);

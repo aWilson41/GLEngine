@@ -1,12 +1,12 @@
 #include "DepthToRgbPass.h"
 #include "Camera.h"
-#include "DeferredRenderer.h"
 #include "Framebuffer.h"
 #include "Shaders.h"
 
-DepthToRgbPass::DepthToRgbPass() : RenderPass("Depth_To_Rgb_Pass", RenderPassType::QUAD_PASS)
+DepthToRgbPass::DepthToRgbPass() :
+	FramePass("DepthToRgb_Pass")
 {
-	shader = Shaders::loadVSFSShader("Depth_To_Rgb_Pass",
+	shader = Shaders::loadVSFSShader(passName,
 		"Shaders/DeferredRasterize/Passes/quadVS.glsl",
 		"Shaders/DeferredRasterize/Passes/depthToRgbPass.glsl");
 	GLuint shaderID = shader->getProgramID();
@@ -19,17 +19,23 @@ DepthToRgbPass::DepthToRgbPass() : RenderPass("Depth_To_Rgb_Pass", RenderPassTyp
 	setNumberOfOutputPorts(1);
 }
 
-void DepthToRgbPass::bindInputs(DeferredRenderer* ren)
+void DepthToRgbPass::bindInputs()
 {
+	if (cam == nullptr)
+	{
+		printf("DepthToRgbPass missing & requires a camera\n");
+		return;
+	}
+
 	GLuint shaderID = shader->getProgramID();
 	glUseProgram(shaderID);
 
 	GLuint nearZLocation = glGetUniformLocation(shaderID, "nearZ");
 	if (nearZLocation != -1)
-		glUniform1f(nearZLocation, ren->getCamera()->getNearZ());
+		glUniform1f(nearZLocation, cam->getNearZ());
 	GLuint farZLocation = glGetUniformLocation(shaderID, "farZ");
 	if (farZLocation != -1)
-		glUniform1f(farZLocation, ren->getCamera()->getFarZ());
+		glUniform1f(farZLocation, cam->getFarZ());
 
 	inputs[0]->bind(0);
 }

@@ -6,7 +6,8 @@ template<class T>
 class stdNew
 {
 public:
-	stdNew() { object = std::make_shared<T>(); }
+	explicit stdNew(std::shared_ptr<T> obj) : object(obj) { }
+	stdNew() : object(std::make_shared<T>()) { }
 
 public:
 	T* operator->() const { return object.get(); }
@@ -17,7 +18,8 @@ public:
 	operator std::shared_ptr<T>() const { return object; }
 
 private:
-	stdNew(stdNew<T> const&) = delete;
-	void operator=(stdNew<T> const&) = delete;
+	stdNew(const stdNew<T>&) = delete;
+	stdNew(const stdNew<T>&&) = delete;
+	void operator=(const stdNew<T>&) = delete;
 	std::shared_ptr<T> object;
 };

@@ -1,11 +1,11 @@
 #include "UnsharpMaskingPass.h"
-#include "DeferredRenderer.h"
 #include "Framebuffer.h"
 #include "Shaders.h"
 
-UnsharpMaskingPass::UnsharpMaskingPass() : RenderPass("Unsharp Masking Pass", RenderPassType::QUAD_PASS)
+UnsharpMaskingPass::UnsharpMaskingPass() :
+	FramePass("UnsharpMasking_Pass")
 {
-	shader = Shaders::loadVSFSShader("Unsharp_Masking_Pass",
+	shader = Shaders::loadVSFSShader(passName,
 		"Shaders/DeferredRasterize/Passes/quadVS.glsl",
 		"Shaders/DeferredRasterize/Passes/unsharpMaskingPass.glsl");
 	GLuint shaderID = shader->getProgramID();
@@ -19,7 +19,7 @@ UnsharpMaskingPass::UnsharpMaskingPass() : RenderPass("Unsharp Masking Pass", Re
 	setNumberOfOutputPorts(1);
 }
 
-void UnsharpMaskingPass::bindInputs(DeferredRenderer* ren)
+void UnsharpMaskingPass::bindInputs()
 {
 	GLuint shaderID = shader->getProgramID();
 	glUseProgram(shaderID);

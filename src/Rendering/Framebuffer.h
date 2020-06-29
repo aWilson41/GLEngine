@@ -1,8 +1,9 @@
 #pragma once
 #include "FramebufferAttachment.h"
 #include <memory>
+#include <tuple>
 
-class Framebuffer
+class Framebuffer final
 {
 public:
 	enum class AttachmentType
@@ -30,6 +31,7 @@ public:
 		else
 			return glm::ivec2(0);
 	}
+	UINT getId() const { return fboID; }
 
 	bool resize(const UINT width, const UINT height) { return resize(glm::ivec2(width, height)); }
 	bool resize(const glm::ivec2 dim);
@@ -37,8 +39,8 @@ public:
 	// Generate and add attachments (returns if succesful)
 	bool generate(const UINT width, const UINT height, std::vector<AttachmentConfig> configs);
 	// Returns true if complete
-	bool isComplete() { return (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE); }
-	bool isGenerated() { return fboID != -1; }
+	bool isComplete() const { return (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE); }
+	bool isGenerated() const { return fboID != -1; }
 
 	void bind() { glBindFramebuffer(GL_FRAMEBUFFER, fboID); }
 	void bindRead() { glBindFramebuffer(GL_READ_FRAMEBUFFER, fboID); }
@@ -58,7 +60,7 @@ public:
 	void clear() { glClear(clearMask); }
 
 private:
-	GLuint fboID = -1;
+	UINT fboID = -1;
 	std::vector<std::shared_ptr<FramebufferAttachment>> attachments;
 	std::vector<AttachmentConfig> attachmentConfigs;
 	UINT numColorAttachments = 0;

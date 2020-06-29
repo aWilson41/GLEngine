@@ -1,11 +1,11 @@
 #include "BilateralRgbBlurPass.h"
-#include "DeferredRenderer.h"
 #include "Framebuffer.h"
 #include "Shaders.h"
 
-BilateralRgbBlurPass::BilateralRgbBlurPass() : RenderPass("Bilateral_R_Blur_Pass", RenderPassType::QUAD_PASS)
+BilateralRgbBlurPass::BilateralRgbBlurPass() :
+	FramePass("BilateralRBlur_Pass") 
 {
-	shader = Shaders::loadVSFSShader("Bilateral_R_Blur_Pass",
+	shader = Shaders::loadVSFSShader(passName,
 		"Shaders/DeferredRasterize/Passes/quadVS.glsl",
 		"Shaders/DeferredRasterize/Passes/bilateralRgbBlurPass.glsl");
 	GLuint shaderID = shader->getProgramID();
@@ -18,7 +18,7 @@ BilateralRgbBlurPass::BilateralRgbBlurPass() : RenderPass("Bilateral_R_Blur_Pass
 	setNumberOfOutputPorts(1);
 }
 
-void BilateralRgbBlurPass::bindInputs(DeferredRenderer* ren)
+void BilateralRgbBlurPass::bindInputs()
 {
 	GLuint shaderID = shader->getProgramID();
 	glUseProgram(shaderID);

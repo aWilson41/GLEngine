@@ -4,6 +4,7 @@
 #include "PlaneSource.h"
 #include "PolyData.h"
 #include "Renderer.h"
+#include "Scene.h"
 #include "Shaders.h"
 
 ImageMapper::ImageMapper()
@@ -158,7 +159,7 @@ void ImageMapper::updateBuffer()
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
-bool ImageMapper::useShader(std::string shaderGroup)
+bool ImageMapper::use(const std::string& shaderGroup)
 {
 	if (imageData == nullptr || vaoID == -1)
 		return false;
@@ -173,7 +174,7 @@ bool ImageMapper::useShader(std::string shaderGroup)
 	return true;
 }
 
-void ImageMapper::draw(Renderer* ren) const
+void ImageMapper::draw(std::shared_ptr<Camera> cam, std::shared_ptr<Scene> scene) const
 {
 	if (imageData == nullptr || vaoID == -1)
 		return;
@@ -185,12 +186,12 @@ void ImageMapper::draw(Renderer* ren) const
 
 	// Object uniforms
 	const GLuint shaderProgramId = shaderProgram->getProgramID();
-	const glm::mat4 mvp = ren->getCamera()->proj * ren->getCamera()->view * model * imageSizeMat;
+	const glm::mat4 mvp = cam->proj * cam->view * model * imageSizeMat;
 	glUniformMatrix4fv(glGetUniformLocation(shaderProgramId, "mvp_matrix"), 1, GL_FALSE, &mvp[0][0]);
 	// Set the scene uniforms
 	const GLuint lightDirLocation = glGetUniformLocation(shaderProgramId, "lightDir");
 	if (lightDirLocation != -1)
-		glUniform3fv(lightDirLocation, 1, &ren->getLightDir()[0]);
+		glUniform3fv(lightDirLocation, 1, &scene->getLightDir()[0]);
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, texID);

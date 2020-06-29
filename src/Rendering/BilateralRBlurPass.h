@@ -1,9 +1,9 @@
 #pragma once
-#include "RenderPass.h"
+#include "FramePass.h"
 
 class ShaderProgram;
 
-class BilateralRBlurPass : public RenderPass
+class BilateralRBlurPass : public FramePass
 {
 public:
 	BilateralRBlurPass();
@@ -13,11 +13,12 @@ public:
 
 	void setColorInput(std::shared_ptr<FramebufferAttachment> colorInput) { setInput(0, colorInput); }
 	// Area of effect (radius for the blur)
-	void setRadius(GLuint radius) { blurRadius = radius; }
+	void setRadius(UINT radius) { blurRadius = radius; }
 	void SetSigmaI(GLfloat sigma) { sigmaI = sigma; }
 	void SetSigmaS(GLfloat sigma) { sigmaS = sigma; }
 
-	void bindInputs(DeferredRenderer* ren) override;
+protected:
+	void bindInputs() override;
 	void resize(UINT width, UINT height) override;
 
 private:
